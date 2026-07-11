@@ -11,6 +11,8 @@ builder.Services.AddSwaggerGen();
 // Add Dependency Injection
 builder.Services.AddScoped<IClienteRepository, ClienteRepository>();
 builder.Services.AddScoped<IClienteService, ClienteService>();
+builder.Services.AddScoped<IProductoRepository, ProductoRepository>();
+builder.Services.AddScoped<IProductoService, ProductoService>();
 
 var app = builder.Build();
 
@@ -28,4 +30,5 @@ if (!app.Environment.IsDevelopment())
 
 // Map endpoints
 app.MapClienteEndpoints();
+app.MapProductoEndpoints();
 app.Run();
