@@ -13,13 +13,12 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Application.Services", "App
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "WebAPI", "WebAPI\WebAPI.csproj", "{23CC020D-28D9-492B-BDC3-0ACD7B636074}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "WindowsForm", "WindowsForm\WindowsForm.csproj", "{3AE89D66-70F0-4511-9AD2-BF90084AB832}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
 		Release|Any CPU = Release|Any CPU
-	EndGlobalSection
-	GlobalSection(SolutionProperties) = preSolution
-		HideSolutionNode = FALSE
 	EndGlobalSection
 	GlobalSection(ProjectConfigurationPlatforms) = postSolution
 		{FA333E0E-56C2-48FE-93AC-C34C84370629}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
@@ -42,5 +41,15 @@ Global
 		{23CC020D-28D9-492B-BDC3-0ACD7B636074}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{23CC020D-28D9-492B-BDC3-0ACD7B636074}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{23CC020D-28D9-492B-BDC3-0ACD7B636074}.Release|Any CPU.Build.0 = Release|Any CPU
+		{3AE89D66-70F0-4511-9AD2-BF90084AB832}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{3AE89D66-70F0-4511-9AD2-BF90084AB832}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{3AE89D66-70F0-4511-9AD2-BF90084AB832}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{3AE89D66-70F0-4511-9AD2-BF90084AB832}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {87E175DD-162C-40BD-B9A2-9433FD2F611C}
 	EndGlobalSection
 EndGlobal
