@@ -9,7 +9,7 @@ namespace Domain.Model
 
         public string Descripcion { get; private set; }
 
-        public float Precio { get; private set; }
+        public decimal Precio { get; private set; }
 
         public int Stock { get; private set; }
 
@@ -17,7 +17,7 @@ namespace Domain.Model
 
         public DateTime FechaAlta { get; private set; }
 
-        public Producto(int id, string nombre, string descripcion, float precio, int stock, bool esPreVenta, DateTime fechaAlta)
+        public Producto(int id, string nombre, string descripcion, decimal precio, int stock, bool esPreVenta, DateTime fechaAlta)
         {
             SetId(id);
             SetNombre(nombre);
@@ -54,7 +54,7 @@ namespace Domain.Model
             Descripcion = descripcion;
         }
 
-        public void SetPrecio(float precio)
+        public void SetPrecio(decimal precio)
         {
             if (precio < 0)
                 throw new ArgumentException("El precio debe ser mayor que 0.", nameof(precio));

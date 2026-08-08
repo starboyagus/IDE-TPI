@@ -1,19 +1,22 @@
+using Data;
 using Domain.Model;
+using Microsoft.EntityFrameworkCore;
 
 namespace Data
 {
-    public class ClienteRepository : IClienteRepository
+    public class ClienteRepository : IClienteRepository 
     {
         private static readonly List<Cliente> clientes = new List<Cliente>();
-        private static int nextId = 1;
+        private readonly TPIContext _context;
 
-        public Task AddAsync(Cliente cliente)
+        public ClienteRepository(TPIContext context)
         {
-            // Simular auto-increment de ID
-            cliente.SetId(nextId);
-            nextId++;
-            clientes.Add(cliente);
-            return Task.CompletedTask;
+            _context = context;
+        }
+        public async Task AddAsync(Cliente cliente)
+        {
+            _context.Clientes.Add(cliente);
+            await _context.SaveChangesAsync();
         }
 
         public Task<bool> DeleteAsync(int id)
