@@ -4,10 +4,11 @@ using System.ComponentModel;
 using System.Data;
 using System.Drawing;
 using System.Linq;
+using System.Net.Http.Json;
 using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Forms;
-using Domain.Model;
+using DTOs;
 
 namespace WindowsForm
 {
@@ -18,25 +19,31 @@ namespace WindowsForm
             InitializeComponent();
         }
 
-        public void Listar()
+        public async Task Listar()
         {
-            List<Cliente> listaClientes = new List<Cliente>();
-            Cliente cliente1 = new Cliente(1, "Ana", "Gómez", "fasfa@gmail.com", DateTime.Now);
-            listaClientes.Add(cliente1);
+            try
+            {
+                var listaClientes = await ApiClient.Http.GetFromJsonAsync<List<ClienteDTO>>("clientes")
+                    ?? new List<ClienteDTO>();
 
-
-            dgvClientes.DataSource = null; // Limpia los datos anteriores (muy útil para tu botón Actualizar)
-            dgvClientes.DataSource = listaClientes; // Asigna la nueva lista
+                dgvClientes.DataSource = null; // Limpia los datos anteriores (muy útil para tu botón Actualizar)
+                dgvClientes.DataSource = listaClientes; // Asigna la nueva lista
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show($"No se pudo conectar a la API ({ApiClient.Http.BaseAddress}):\n{ex.Message}",
+                    "Error de conexión", MessageBoxButtons.OK, MessageBoxIcon.Error);
+            }
         }
 
-        private void ClienteLista_Load(object sender, EventArgs e)
+        private async void ClienteLista_Load(object sender, EventArgs e)
         {
-            Listar();
+            await Listar();
         }
 
-        private void btnActualizar_Click(object sender, EventArgs e)
+        private async void btnActualizar_Click(object sender, EventArgs e)
         {
-            Listar();
+            await Listar();
         }
 
         private void btnSalir_Click(object sender, EventArgs e)

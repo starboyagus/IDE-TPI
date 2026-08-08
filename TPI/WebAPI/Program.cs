@@ -23,46 +23,35 @@ builder.Services.AddScoped<IProductoService, ProductoService>();
 
 var app = builder.Build();
 
-// Verificar conexión y aplicar migraciones pendientes
+// Verificar conexión y crear la base de datos si no existe (el proyecto no usa Migrations)
 using (var scope = app.Services.CreateScope())
 {
     var context = scope.ServiceProvider.GetRequiredService<TPIContext>();
 
     try
     {
-        var pendingMigrations = context.Database.GetPendingMigrations().ToList();
-
-        if (pendingMigrations.Any())
-        {
-            Console.WriteLine($"⏳ Aplicando {pendingMigrations.Count} migración(es) pendiente(s)...");
-            context.Database.Migrate();
-            Console.WriteLine("✅ Migraciones aplicadas y base de datos actualizada.");
-        }
-        else
-        {
-            Console.WriteLine("✅ Conexión exitosa. Base de datos ya está actualizada.");
-        }
+        context.Database.EnsureCreated();
+        Console.WriteLine("✅ Conexión exitosa a la base de datos.");
     }
     catch (Exception ex)
     {
-        Console.WriteLine($"❌ Error al conectar o migrar: {ex.Message}");
+        Console.WriteLine($"❌ Error al conectar a la base de datos: {ex.Message}");
     }
-
-
-    // Configure the HTTP request pipeline.
-    if (app.Environment.IsDevelopment())
-    {
-        app.UseSwagger();
-        app.UseSwaggerUI();
-    }
-
-    if (!app.Environment.IsDevelopment())
-    {
-        app.UseHttpsRedirection();
-    }
-
-    // Map endpoints
-    app.MapClienteEndpoints();
-    app.MapProductoEndpoints();
-    app.Run();
 }
+
+// Configure the HTTP request pipeline.
+if (app.Environment.IsDevelopment())
+{
+    app.UseSwagger();
+    app.UseSwaggerUI();
+}
+
+if (!app.Environment.IsDevelopment())
+{
+    app.UseHttpsRedirection();
+}
+
+// Map endpoints
+app.MapClienteEndpoints();
+app.MapProductoEndpoints();
+app.Run();

@@ -4,9 +4,8 @@ using Microsoft.EntityFrameworkCore;
 
 namespace Data
 {
-    public class ClienteRepository : IClienteRepository 
+    public class ClienteRepository : IClienteRepository
     {
-        private static readonly List<Cliente> clientes = new List<Cliente>();
         private readonly TPIContext _context;
 
         public ClienteRepository(TPIContext context)
@@ -19,62 +18,60 @@ namespace Data
             await _context.SaveChangesAsync();
         }
 
-        public Task<bool> DeleteAsync(int id)
+        public async Task<bool> DeleteAsync(int id)
         {
-            var cliente = clientes.FirstOrDefault(c => c.Id == id);
-            if (cliente != null)
-            {
-                clientes.Remove(cliente);
-                return Task.FromResult(true);
-            }
-            return Task.FromResult(false);
+            var cliente = await _context.Clientes.FindAsync(id);
+            if (cliente == null)
+                return false;
+
+            _context.Clientes.Remove(cliente);
+            await _context.SaveChangesAsync();
+            return true;
         }
 
-        public Task<Cliente?> GetAsync(int id)
+        public async Task<Cliente?> GetAsync(int id)
         {
-            return Task.FromResult(clientes.FirstOrDefault(c => c.Id == id));
+            return await _context.Clientes.FindAsync(id);
         }
 
-        public Task<IEnumerable<Cliente>> GetAllAsync()
+        public async Task<IEnumerable<Cliente>> GetAllAsync()
         {
-            return Task.FromResult<IEnumerable<Cliente>>(clientes.ToList());
+            return await _context.Clientes.ToListAsync();
         }
 
-        public Task<bool> UpdateAsync(Cliente cliente)
+        public async Task<bool> UpdateAsync(Cliente cliente)
         {
-            var existing = clientes.FirstOrDefault(c => c.Id == cliente.Id);
-            if (existing != null)
-            {
-                existing.SetNombre(cliente.Nombre);
-                existing.SetApellido(cliente.Apellido);
-                existing.SetEmail(cliente.Email);
+            var existing = await _context.Clientes.FindAsync(cliente.Id);
+            if (existing == null)
+                return false;
 
-                return Task.FromResult(true);
-            }
-            return Task.FromResult(false);
+            existing.SetNombre(cliente.Nombre);
+            existing.SetApellido(cliente.Apellido);
+            existing.SetEmail(cliente.Email);
+
+            await _context.SaveChangesAsync();
+            return true;
         }
 
-        public Task<bool> EmailExistsAsync(string email, int? excludeId = null)
+        public async Task<bool> EmailExistsAsync(string email, int? excludeId = null)
         {
-            var query = clientes.Where(c => c.Email.ToLower() == email.ToLower());
+            var query = _context.Clientes.Where(c => c.Email.ToLower() == email.ToLower());
             if (excludeId.HasValue)
             {
                 query = query.Where(c => c.Id != excludeId.Value);
             }
-            return Task.FromResult(query.Any());
+            return await query.AnyAsync();
         }
 
-        public Task<IEnumerable<Cliente>> GetByCriteriaAsync(ClienteCriteria criteria)
+        public async Task<IEnumerable<Cliente>> GetByCriteriaAsync(ClienteCriteria criteria)
         {
             string searchTerm = criteria.Texto.ToLower();
 
-            IEnumerable<Cliente> result = clientes.Where(c =>
+            return await _context.Clientes.Where(c =>
                 c.Nombre.ToLower().Contains(searchTerm) ||
                 c.Apellido.ToLower().Contains(searchTerm) ||
                 c.Email.ToLower().Contains(searchTerm)
-            ).OrderBy(c => c.Nombre).ThenBy(c => c.Apellido).ToList();
-
-            return Task.FromResult(result);
+            ).OrderBy(c => c.Nombre).ThenBy(c => c.Apellido).ToListAsync();
         }
     }
 }

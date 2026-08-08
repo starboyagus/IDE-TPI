@@ -1,56 +1,58 @@
 ﻿using Domain.Model;
+using Microsoft.EntityFrameworkCore;
 
 namespace Data
 {
     public class ProductoRepository : IProductoRepository
     {
-        private static readonly List<Producto> productos = new List<Producto>();
-        private static int nextId = 1;
+        private readonly TPIContext _context;
 
-        public Task AddAsync(Producto producto)
+        public ProductoRepository(TPIContext context)
         {
-            // Simular auto-increment de ID
-            producto.SetId(nextId);
-            nextId++;
-            productos.Add(producto);
-            return Task.CompletedTask;
+            _context = context;
         }
 
-        public Task<bool> DeleteAsync(int id)
+        public async Task AddAsync(Producto producto)
         {
-            var producto = productos.FirstOrDefault(p => p.Id == id);
-            if (producto != null)
-            {
-                productos.Remove(producto);
-                return Task.FromResult(true);
-            }
-            return Task.FromResult(false);
+            _context.Productos.Add(producto);
+            await _context.SaveChangesAsync();
         }
 
-        public Task<Producto?> GetAsync(int id)
+        public async Task<bool> DeleteAsync(int id)
         {
-            return Task.FromResult(productos.FirstOrDefault(p => p.Id == id));
+            var producto = await _context.Productos.FindAsync(id);
+            if (producto == null)
+                return false;
+
+            _context.Productos.Remove(producto);
+            await _context.SaveChangesAsync();
+            return true;
         }
 
-        public Task<IEnumerable<Producto>> GetAllAsync()
+        public async Task<Producto?> GetAsync(int id)
         {
-            return Task.FromResult<IEnumerable<Producto>>(productos.ToList());
+            return await _context.Productos.FindAsync(id);
         }
 
-        public Task<bool> UpdateAsync(Producto producto)
+        public async Task<IEnumerable<Producto>> GetAllAsync()
         {
-            var existing = productos.FirstOrDefault(p => p.Id == producto.Id);
-            if (existing != null)
-            {
-                existing.SetNombre(producto.Nombre);
-                existing.SetDescripcion(producto.Descripcion);
-                existing.SetPrecio(producto.Precio);
-                existing.SetStock(producto.Stock);
-                existing.SetEsPreVenta(producto.EsPreVenta);
+            return await _context.Productos.ToListAsync();
+        }
 
-                return Task.FromResult(true);
-            }
-            return Task.FromResult(false);
+        public async Task<bool> UpdateAsync(Producto producto)
+        {
+            var existing = await _context.Productos.FindAsync(producto.Id);
+            if (existing == null)
+                return false;
+
+            existing.SetNombre(producto.Nombre);
+            existing.SetDescripcion(producto.Descripcion);
+            existing.SetPrecio(producto.Precio);
+            existing.SetStock(producto.Stock);
+            existing.SetEsPreVenta(producto.EsPreVenta);
+
+            await _context.SaveChangesAsync();
+            return true;
         }
 
     }
