@@ -122,7 +122,6 @@ namespace WindowsForm
             // tsbNuevo
             //
             tsbNuevo.DisplayStyle = ToolStripItemDisplayStyle.Image;
-            tsbNuevo.Image = (Image)resources.GetObject("tsbNuevo.Image");
             tsbNuevo.ImageTransparentColor = Color.Magenta;
             tsbNuevo.Name = "tsbNuevo";
             tsbNuevo.Size = new Size(23, 22);
