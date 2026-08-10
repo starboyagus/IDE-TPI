@@ -31,14 +31,14 @@
             mnsPrincipal = new MenuStrip();
             mnuOpciones = new ToolStripMenuItem();
             mnuSalir = new ToolStripMenuItem();
-            clientesToolStripMenuItem = new ToolStripMenuItem();
+            usuariosToolStripMenuItem = new ToolStripMenuItem();
             productoToolStripMenuItem = new ToolStripMenuItem();
             mnsPrincipal.SuspendLayout();
             SuspendLayout();
-            // 
+            //
             // mnsPrincipal
-            // 
-            mnsPrincipal.Items.AddRange(new ToolStripItem[] { mnuOpciones, clientesToolStripMenuItem, productoToolStripMenuItem });
+            //
+            mnsPrincipal.Items.AddRange(new ToolStripItem[] { mnuOpciones, usuariosToolStripMenuItem, productoToolStripMenuItem });
             mnsPrincipal.Location = new Point(0, 0);
             mnsPrincipal.Name = "mnsPrincipal";
             mnsPrincipal.Size = new Size(1108, 24);
@@ -58,16 +58,16 @@
             mnuSalir.Size = new Size(96, 22);
             mnuSalir.Text = "Salir";
             mnuSalir.Click += mnuSalir_Click;
-            // 
-            // clientesToolStripMenuItem
-            // 
-            clientesToolStripMenuItem.Name = "clientesToolStripMenuItem";
-            clientesToolStripMenuItem.Size = new Size(61, 20);
-            clientesToolStripMenuItem.Text = "Clientes";
-            clientesToolStripMenuItem.Click += clientesToolStripMenuItem_Click;
-            // 
+            //
+            // usuariosToolStripMenuItem
+            //
+            usuariosToolStripMenuItem.Name = "usuariosToolStripMenuItem";
+            usuariosToolStripMenuItem.Size = new Size(61, 20);
+            usuariosToolStripMenuItem.Text = "Usuarios";
+            usuariosToolStripMenuItem.Click += usuariosToolStripMenuItem_Click;
+            //
             // productoToolStripMenuItem
-            // 
+            //
             productoToolStripMenuItem.Name = "productoToolStripMenuItem";
             productoToolStripMenuItem.Size = new Size(68, 20);
             productoToolStripMenuItem.Text = "Producto";
@@ -95,7 +95,7 @@
         private MenuStrip mnsPrincipal;
         private ToolStripMenuItem mnuOpciones;
         private ToolStripMenuItem mnuSalir;
-        private ToolStripMenuItem clientesToolStripMenuItem;
+        private ToolStripMenuItem usuariosToolStripMenuItem;
         private ToolStripMenuItem productoToolStripMenuItem;
     }
 }

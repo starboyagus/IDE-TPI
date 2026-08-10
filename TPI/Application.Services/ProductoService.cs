@@ -17,12 +17,13 @@ namespace Application.Services
         {
 
             var fechaAlta = DateTime.Now;
-            Producto producto = new Producto(0, dto.Nombre, dto.Descripcion, dto.Precio, dto.Stock, dto.EsPreVenta, fechaAlta);
+            Producto producto = new Producto(0, dto.Nombre, dto.Descripcion, dto.Precio, dto.Stock, dto.EsPreVenta, fechaAlta, true);
 
             await productoRepository.AddAsync(producto);
 
             dto.Id = producto.Id;
             dto.FechaAlta = producto.FechaAlta;
+            dto.EsActivo = producto.EsActivo;
 
             return dto;
         }
@@ -47,7 +48,8 @@ namespace Application.Services
                 Precio = producto.Precio,
                 Stock = producto.Stock,
                 EsPreVenta = producto.EsPreVenta,
-                FechaAlta = producto.FechaAlta
+                FechaAlta = producto.FechaAlta,
+                EsActivo = producto.EsActivo
             };
         }
 
@@ -63,7 +65,8 @@ namespace Application.Services
                 Precio = producto.Precio,
                 Stock = producto.Stock,
                 EsPreVenta = producto.EsPreVenta,
-                FechaAlta = producto.FechaAlta
+                FechaAlta = producto.FechaAlta,
+                EsActivo = producto.EsActivo
             }).ToList();
         }
 
@@ -74,7 +77,7 @@ namespace Application.Services
             if (existing == null)
                 return false;
 
-            Producto producto = new Producto(dto.Id, dto.Nombre, dto.Descripcion, dto.Precio, dto.Stock, dto.EsPreVenta, existing.FechaAlta);
+            Producto producto = new Producto(dto.Id, dto.Nombre, dto.Descripcion, dto.Precio, dto.Stock, dto.EsPreVenta, existing.FechaAlta, dto.EsActivo);
             return await productoRepository.UpdateAsync(producto);
         }
     }

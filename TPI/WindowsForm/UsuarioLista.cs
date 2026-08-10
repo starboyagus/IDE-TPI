@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.Data;
@@ -12,9 +12,9 @@ using DTOs;
 
 namespace WindowsForm
 {
-    public partial class ClienteLista : Form
+    public partial class UsuarioLista : Form
     {
-        public ClienteLista()
+        public UsuarioLista()
         {
             InitializeComponent();
         }
@@ -23,11 +23,11 @@ namespace WindowsForm
         {
             try
             {
-                var listaClientes = await ApiClient.Http.GetFromJsonAsync<List<ClienteDTO>>("clientes")
-                    ?? new List<ClienteDTO>();
+                var listaUsuarios = await ApiClient.Http.GetFromJsonAsync<List<UsuarioDTO>>("usuarios")
+                    ?? new List<UsuarioDTO>();
 
-                dgvClientes.DataSource = null; // Limpia los datos anteriores (muy útil para tu botón Actualizar)
-                dgvClientes.DataSource = listaClientes; // Asigna la nueva lista
+                dgvUsuarios.DataSource = null; // Limpia los datos anteriores (muy útil para tu botón Actualizar)
+                dgvUsuarios.DataSource = listaUsuarios; // Asigna la nueva lista
             }
             catch (Exception ex)
             {
@@ -36,7 +36,7 @@ namespace WindowsForm
             }
         }
 
-        private async void ClienteLista_Load(object sender, EventArgs e)
+        private async void UsuarioLista_Load(object sender, EventArgs e)
         {
             await Listar();
         }

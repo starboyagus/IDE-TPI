@@ -17,7 +17,9 @@ namespace Domain.Model
 
         public DateTime FechaAlta { get; private set; }
 
-        public Producto(int id, string nombre, string descripcion, decimal precio, int stock, bool esPreVenta, DateTime fechaAlta)
+        public bool EsActivo { get; private set; }
+
+        public Producto(int id, string nombre, string descripcion, decimal precio, int stock, bool esPreVenta, DateTime fechaAlta, bool esActivo)
         {
             SetId(id);
             SetNombre(nombre);
@@ -26,6 +28,7 @@ namespace Domain.Model
             SetStock(stock);
             SetEsPreVenta(esPreVenta);
             SetFechaAlta(fechaAlta);
+            SetEsActivo(esActivo);
         }
 
         public void SetId(int id)
@@ -73,6 +76,11 @@ namespace Domain.Model
             if (fechaAlta == default)
                 throw new ArgumentException("La fecha de alta no puede ser nula.", nameof(fechaAlta));
             FechaAlta = fechaAlta;
+        }
+
+        public void SetEsActivo(bool esActivo)
+        {
+            EsActivo = esActivo;
         }
     }
 }

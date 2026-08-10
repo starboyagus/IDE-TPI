@@ -1,10 +1,10 @@
 namespace Domain.Model
 {
-    public class ClienteCriteria
+    public class UsuarioCriteria
     {
         public string Texto { get; private set; }
 
-        public ClienteCriteria(string texto)
+        public UsuarioCriteria(string texto)
         {
             Texto = texto.Trim();
         }

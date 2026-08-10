@@ -3,13 +3,13 @@ using DTOs;
 
 namespace WebAPI
 {
-    public static class ClienteEndpoints
+    public static class UsuarioEndpoints
     {
-        public static void MapClienteEndpoints(this WebApplication app)
+        public static void MapUsuarioEndpoints(this WebApplication app)
         {
-            app.MapGet("/clientes/{id}", async (int id, IClienteService clienteService) =>
+            app.MapGet("/usuarios/{id}", async (int id, IUsuarioService usuarioService) =>
             {
-                ClienteDTO? dto = await clienteService.GetAsync(id);
+                UsuarioDTO? dto = await usuarioService.GetAsync(id);
 
                 if (dto == null)
                 {
@@ -18,44 +18,44 @@ namespace WebAPI
 
                 return Results.Ok(dto);
             })
-            .WithName("GetCliente")
-            .Produces<ClienteDTO>(StatusCodes.Status200OK)
+            .WithName("GetUsuario")
+            .Produces<UsuarioDTO>(StatusCodes.Status200OK)
             .Produces(StatusCodes.Status404NotFound)
             .WithOpenApi();
 
-            app.MapGet("/clientes", async (IClienteService clienteService) =>
+            app.MapGet("/usuarios", async (IUsuarioService usuarioService) =>
             {
-                var dtos = await clienteService.GetAllAsync();
+                var dtos = await usuarioService.GetAllAsync();
 
                 return Results.Ok(dtos);
             })
-            .WithName("GetAllClientes")
-            .Produces<List<ClienteDTO>>(StatusCodes.Status200OK)
+            .WithName("GetAllUsuarios")
+            .Produces<List<UsuarioDTO>>(StatusCodes.Status200OK)
             .WithOpenApi();
 
-            app.MapPost("/clientes", async (ClienteDTO dto, IClienteService clienteService) =>
+            app.MapPost("/usuarios", async (UsuarioDTO dto, IUsuarioService usuarioService) =>
             {
                 try
                 {
-                    ClienteDTO clienteDTO = await clienteService.AddAsync(dto);
+                    UsuarioDTO usuarioDTO = await usuarioService.AddAsync(dto);
 
-                    return Results.Created($"/clientes/{clienteDTO.Id}", clienteDTO);
+                    return Results.Created($"/usuarios/{usuarioDTO.Id}", usuarioDTO);
                 }
                 catch (ArgumentException ex)
                 {
                     return Results.BadRequest(new { error = ex.Message });
                 }
             })
-            .WithName("AddCliente")
-            .Produces<ClienteDTO>(StatusCodes.Status201Created)
+            .WithName("AddUsuario")
+            .Produces<UsuarioDTO>(StatusCodes.Status201Created)
             .Produces(StatusCodes.Status400BadRequest)
             .WithOpenApi();
 
-            app.MapPut("/clientes", async (ClienteDTO dto, IClienteService clienteService) =>
+            app.MapPut("/usuarios", async (UsuarioDTO dto, IUsuarioService usuarioService) =>
             {
                 try
                 {
-                    var found = await clienteService.UpdateAsync(dto);
+                    var found = await usuarioService.UpdateAsync(dto);
 
                     if (!found)
                     {
@@ -69,14 +69,14 @@ namespace WebAPI
                     return Results.BadRequest(new { error = ex.Message });
                 }
             })
-            .WithName("UpdateCliente")
+            .WithName("UpdateUsuario")
             .Produces(StatusCodes.Status404NotFound)
             .Produces(StatusCodes.Status400BadRequest)
             .WithOpenApi();
 
-            app.MapDelete("/clientes/{id}", async (int id, IClienteService clienteService) =>
+            app.MapDelete("/usuarios/{id}", async (int id, IUsuarioService usuarioService) =>
             {
-                var deleted = await clienteService.DeleteAsync(id);
+                var deleted = await usuarioService.DeleteAsync(id);
 
                 if (!deleted)
                 {
@@ -85,25 +85,25 @@ namespace WebAPI
 
                 return Results.NoContent();
             })
-            .WithName("DeleteCliente")
+            .WithName("DeleteUsuario")
             .Produces(StatusCodes.Status204NoContent)
             .Produces(StatusCodes.Status404NotFound)
             .WithOpenApi();
 
-            app.MapGet("/clientes/criteria", async (string texto, IClienteService clienteService) =>
+            app.MapGet("/usuarios/criteria", async (string texto, IUsuarioService usuarioService) =>
             {
                 try
                 {
-                    var criteria = new ClienteCriteriaDTO { Texto = texto };
-                    var clientes = await clienteService.GetByCriteriaAsync(criteria);
-                    return Results.Ok(clientes);
+                    var criteria = new UsuarioCriteriaDTO { Texto = texto };
+                    var usuarios = await usuarioService.GetByCriteriaAsync(criteria);
+                    return Results.Ok(usuarios);
                 }
                 catch (Exception ex)
                 {
                     return Results.BadRequest(new { error = ex.Message });
                 }
             })
-            .WithName("GetClientesByCriteria")
+            .WithName("GetUsuariosByCriteria")
             .WithOpenApi();
         }
     }

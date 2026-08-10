@@ -1,6 +1,6 @@
 namespace DTOs
 {
-    public class ClienteCriteriaDTO
+    public class UsuarioCriteriaDTO
     {
         public string Texto { get; set; } = string.Empty;
     }

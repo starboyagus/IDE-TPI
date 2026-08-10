@@ -32,13 +32,13 @@ namespace WindowsForm
 
         }
 
-        private void clientesToolStripMenuItem_Click(object sender, EventArgs e)
+        private void usuariosToolStripMenuItem_Click(object sender, EventArgs e)
         {
-            // 1. Creamos una instancia del formulario ClienteLista
-            ClienteLista formClientes = new ClienteLista();
+            // 1. Creamos una instancia del formulario UsuarioLista
+            UsuarioLista formUsuarios = new UsuarioLista();
 
             // 2. Lo mostramos en pantalla
-            formClientes.Show();
+            formUsuarios.Show();
         }
     }
 }

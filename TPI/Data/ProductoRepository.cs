@@ -24,7 +24,7 @@ namespace Data
             if (producto == null)
                 return false;
 
-            _context.Productos.Remove(producto);
+            producto.SetEsActivo(false);
             await _context.SaveChangesAsync();
             return true;
         }
@@ -36,7 +36,7 @@ namespace Data
 
         public async Task<IEnumerable<Producto>> GetAllAsync()
         {
-            return await _context.Productos.ToListAsync();
+            return await _context.Productos.Where(p => p.EsActivo).ToListAsync();
         }
 
         public async Task<bool> UpdateAsync(Producto producto)
@@ -50,6 +50,7 @@ namespace Data
             existing.SetPrecio(producto.Precio);
             existing.SetStock(producto.Stock);
             existing.SetEsPreVenta(producto.EsPreVenta);
+            existing.SetEsActivo(producto.EsActivo);
 
             await _context.SaveChangesAsync();
             return true;

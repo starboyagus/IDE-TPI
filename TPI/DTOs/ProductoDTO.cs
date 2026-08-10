@@ -11,6 +11,7 @@ namespace DTOs
         public int Stock { get; set; }
         public bool EsPreVenta { get; set; }
         public DateTime FechaAlta { get; set; }
+        public bool EsActivo { get; set; }
 
     }
 }

@@ -1,23 +1,28 @@
-﻿using System.Text.RegularExpressions;
+using System.Text.RegularExpressions;
 
 namespace Domain.Model
 {
-    public class Cliente
+    public class Usuario
     {
         public int Id { get; private set; }
         public string Nombre { get; private set; }
         public string Apellido { get; private set; }
         public string Email { get; private set; }
-        
+        public string Telefono { get; private set; }
+        public RolUsuario Rol { get; private set; }
         public DateTime FechaAlta { get; private set; }
+        public bool EsActivo { get; private set; }
 
-        public Cliente(int id, string nombre, string apellido, string email, DateTime fechaAlta)
+        public Usuario(int id, string nombre, string apellido, string email, string telefono, RolUsuario rol, DateTime fechaAlta, bool esActivo)
         {
             SetId(id);
             SetNombre(nombre);
             SetApellido(apellido);
             SetEmail(email);
+            SetTelefono(telefono);
+            SetRol(rol);
             SetFechaAlta(fechaAlta);
+            SetEsActivo(esActivo);
         }
 
         public void SetId(int id)
@@ -55,11 +60,30 @@ namespace Domain.Model
             return Regex.IsMatch(email, @"^[^@\s]+@[^@\s]+\.[^@\s]+$");
         }
 
+        public void SetTelefono(string telefono)
+        {
+            if (string.IsNullOrWhiteSpace(telefono))
+                throw new ArgumentException("El teléfono no puede ser nulo o vacío.", nameof(telefono));
+            Telefono = telefono;
+        }
+
+        public void SetRol(RolUsuario rol)
+        {
+            if (!Enum.IsDefined(typeof(RolUsuario), rol))
+                throw new ArgumentException("El rol no es válido.", nameof(rol));
+            Rol = rol;
+        }
+
         public void SetFechaAlta(DateTime fechaAlta)
         {
             if (fechaAlta == default)
                 throw new ArgumentException("La fecha de alta no puede ser nula.", nameof(fechaAlta));
             FechaAlta = fechaAlta;
+        }
+
+        public void SetEsActivo(bool esActivo)
+        {
+            EsActivo = esActivo;
         }
     }
 }
