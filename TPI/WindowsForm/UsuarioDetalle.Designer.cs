@@ -33,6 +33,7 @@
             apellidoTextBox = new TextBox();
             emailTextBox = new TextBox();
             telefonoTextBox = new TextBox();
+            contraseniaTextBox = new TextBox();
             rolComboBox = new ComboBox();
             aceptarButton = new Button();
             cancelarButton = new Button();
@@ -42,6 +43,7 @@
             emailLabel = new Label();
             rolLabel = new Label();
             telefonoLabel = new Label();
+            contraseniaLabel = new Label();
             SuspendLayout();
             // 
             // idTextBox
@@ -80,93 +82,111 @@
             telefonoTextBox.Size = new Size(212, 23);
             telefonoTextBox.TabIndex = 4;
             //
+            // contraseniaTextBox
+            //
+            contraseniaTextBox.Location = new Point(205, 314);
+            contraseniaTextBox.Name = "contraseniaTextBox";
+            contraseniaTextBox.Size = new Size(212, 23);
+            contraseniaTextBox.TabIndex = 5;
+            contraseniaTextBox.UseSystemPasswordChar = true;
+            //
             // rolComboBox
             //
             rolComboBox.DropDownStyle = ComboBoxStyle.DropDownList;
-            rolComboBox.Location = new Point(205, 314);
+            rolComboBox.Location = new Point(205, 370);
             rolComboBox.Name = "rolComboBox";
             rolComboBox.Size = new Size(212, 23);
-            rolComboBox.TabIndex = 5;
+            rolComboBox.TabIndex = 6;
             //
             // aceptarButton
-            // 
-            aceptarButton.Location = new Point(482, 383);
+            //
+            aceptarButton.Location = new Point(482, 439);
             aceptarButton.Name = "aceptarButton";
             aceptarButton.Size = new Size(106, 36);
-            aceptarButton.TabIndex = 6;
+            aceptarButton.TabIndex = 7;
             aceptarButton.Text = "Aceptar";
             aceptarButton.UseVisualStyleBackColor = true;
             aceptarButton.Click += aceptarButton_Click;
-            // 
+            //
             // cancelarButton
-            // 
-            cancelarButton.Location = new Point(621, 383);
+            //
+            cancelarButton.Location = new Point(621, 439);
             cancelarButton.Name = "cancelarButton";
             cancelarButton.Size = new Size(101, 36);
-            cancelarButton.TabIndex = 7;
+            cancelarButton.TabIndex = 8;
             cancelarButton.Text = "Cancelar";
             cancelarButton.UseVisualStyleBackColor = true;
             cancelarButton.Click += cancelarButton_Click;
             // 
             // idLabel
-            // 
+            //
             idLabel.AutoSize = true;
             idLabel.Location = new Point(106, 47);
             idLabel.Name = "idLabel";
             idLabel.Size = new Size(18, 15);
-            idLabel.TabIndex = 8;
+            idLabel.TabIndex = 9;
             idLabel.Text = "ID";
-            // 
+            //
             // nombreLabel
-            // 
+            //
             nombreLabel.AutoSize = true;
             nombreLabel.Location = new Point(106, 98);
             nombreLabel.Name = "nombreLabel";
             nombreLabel.Size = new Size(51, 15);
-            nombreLabel.TabIndex = 9;
+            nombreLabel.TabIndex = 10;
             nombreLabel.Text = "Nombre";
-            // 
+            //
             // apellidoLabel
-            // 
+            //
             apellidoLabel.AutoSize = true;
             apellidoLabel.Location = new Point(106, 144);
             apellidoLabel.Name = "apellidoLabel";
             apellidoLabel.Size = new Size(51, 15);
-            apellidoLabel.TabIndex = 10;
+            apellidoLabel.TabIndex = 11;
             apellidoLabel.Text = "Apellido";
-            // 
+            //
             // emailLabel
-            // 
+            //
             emailLabel.AutoSize = true;
             emailLabel.Location = new Point(106, 204);
             emailLabel.Name = "emailLabel";
             emailLabel.Size = new Size(36, 15);
-            emailLabel.TabIndex = 11;
+            emailLabel.TabIndex = 12;
             emailLabel.Text = "Email";
-            // 
+            //
             // rolLabel
-            // 
+            //
             rolLabel.AutoSize = true;
-            rolLabel.Location = new Point(106, 317);
+            rolLabel.Location = new Point(106, 373);
             rolLabel.Name = "rolLabel";
             rolLabel.Size = new Size(24, 15);
-            rolLabel.TabIndex = 12;
+            rolLabel.TabIndex = 13;
             rolLabel.Text = "Rol";
-            // 
+            //
             // telefonoLabel
-            // 
+            //
             telefonoLabel.AutoSize = true;
             telefonoLabel.Location = new Point(104, 258);
             telefonoLabel.Name = "telefonoLabel";
             telefonoLabel.Size = new Size(53, 15);
-            telefonoLabel.TabIndex = 13;
+            telefonoLabel.TabIndex = 14;
             telefonoLabel.Text = "Telefono";
-            // 
+            //
+            // contraseniaLabel
+            //
+            contraseniaLabel.AutoSize = true;
+            contraseniaLabel.Location = new Point(106, 317);
+            contraseniaLabel.Name = "contraseniaLabel";
+            contraseniaLabel.Size = new Size(75, 15);
+            contraseniaLabel.TabIndex = 15;
+            contraseniaLabel.Text = "Contraseña";
+            //
             // UsuarioDetalle
-            // 
+            //
             AutoScaleDimensions = new SizeF(7F, 15F);
             AutoScaleMode = AutoScaleMode.Font;
-            ClientSize = new Size(800, 450);
+            ClientSize = new Size(800, 506);
+            Controls.Add(contraseniaLabel);
             Controls.Add(telefonoLabel);
             Controls.Add(rolLabel);
             Controls.Add(emailLabel);
@@ -176,6 +196,7 @@
             Controls.Add(cancelarButton);
             Controls.Add(aceptarButton);
             Controls.Add(rolComboBox);
+            Controls.Add(contraseniaTextBox);
             Controls.Add(telefonoTextBox);
             Controls.Add(emailTextBox);
             Controls.Add(apellidoTextBox);
@@ -194,6 +215,7 @@
         private TextBox apellidoTextBox;
         private TextBox emailTextBox;
         private TextBox telefonoTextBox;
+        private TextBox contraseniaTextBox;
         private ComboBox rolComboBox;
         private Button aceptarButton;
         private Button cancelarButton;
@@ -203,5 +225,6 @@
         private Label emailLabel;
         private Label rolLabel;
         private Label telefonoLabel;
+        private Label contraseniaLabel;
     }
 }

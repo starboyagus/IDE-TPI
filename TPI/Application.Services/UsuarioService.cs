@@ -22,9 +22,14 @@ namespace Application.Services
                 throw new ArgumentException($"Ya existe un usuario con el Email '{dto.Email}'.");
             }
 
+            if (string.IsNullOrWhiteSpace(dto.Contrasenia))
+            {
+                throw new ArgumentException("La contraseña es obligatoria.");
+            }
+
             var fechaAlta = DateTime.Now;
             // El rol por defecto de todo usuario nuevo es "Usuario"; se ignora lo que venga en el DTO.
-            Usuario usuario = new Usuario(0, dto.Nombre, dto.Apellido, dto.Email, dto.Telefono, RolUsuario.Usuario, fechaAlta, true);
+            Usuario usuario = new Usuario(0, dto.Nombre, dto.Apellido, dto.Email, dto.Telefono, dto.Contrasenia, RolUsuario.Usuario, fechaAlta, true);
 
             await usuarioRepository.AddAsync(usuario);
 
@@ -32,6 +37,7 @@ namespace Application.Services
             dto.Rol = usuario.Rol;
             dto.FechaAlta = usuario.FechaAlta;
             dto.EsActivo = usuario.EsActivo;
+            dto.Contrasenia = null; // nunca se devuelve la contraseña
 
             return dto;
         }
@@ -57,6 +63,8 @@ namespace Application.Services
                 Telefono = usuario.Telefono,
                 Rol = usuario.Rol,
                 FechaAlta = usuario.FechaAlta,
+                EsActivo = usuario.EsActivo
+                // Contrasenia queda sin mapear a propósito: nunca se devuelve por GET.
             };
         }
 
@@ -73,6 +81,7 @@ namespace Application.Services
                 Telefono = usuario.Telefono,
                 Rol = usuario.Rol,
                 FechaAlta = usuario.FechaAlta,
+                EsActivo = usuario.EsActivo
             }).ToList();
         }
 
@@ -84,12 +93,14 @@ namespace Application.Services
                 throw new ArgumentException($"Ya existe otro usuario con el Email '{dto.Email}'.");
             }
 
-            // Obtener el usuario existente para preservar FechaAlta
+            // Obtener el usuario existente para preservar FechaAlta y, si no mandan una nueva, la Contraseña
             var existing = await usuarioRepository.GetAsync(dto.Id);
             if (existing == null)
                 return false;
 
-            Usuario usuario = new Usuario(dto.Id, dto.Nombre, dto.Apellido, dto.Email, dto.Telefono, dto.Rol, existing.FechaAlta, dto.EsActivo);
+            string contrasenia = string.IsNullOrWhiteSpace(dto.Contrasenia) ? existing.Contrasenia : dto.Contrasenia;
+
+            Usuario usuario = new Usuario(dto.Id, dto.Nombre, dto.Apellido, dto.Email, dto.Telefono, contrasenia, dto.Rol, existing.FechaAlta, dto.EsActivo);
             return await usuarioRepository.UpdateAsync(usuario);
         }
 

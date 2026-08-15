@@ -48,6 +48,7 @@ namespace Data
             existing.SetApellido(usuario.Apellido);
             existing.SetEmail(usuario.Email);
             existing.SetTelefono(usuario.Telefono);
+            existing.SetContrasenia(usuario.Contrasenia);
             existing.SetRol(usuario.Rol);
             existing.SetEsActivo(usuario.EsActivo);
 

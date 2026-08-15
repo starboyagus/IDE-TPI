@@ -64,6 +64,10 @@ namespace Data
                     .IsRequired()
                     .HasMaxLength(30);
 
+                entity.Property(e => e.Contrasenia)
+                    .IsRequired()
+                    .HasMaxLength(255);
+
                 entity.Property(e => e.Rol)
                     .IsRequired()
                     .HasConversion<int>();
@@ -77,7 +81,7 @@ namespace Data
 
                 //Datos inical de prueba
                 entity.HasData(
-                    new { Id = 1, Nombre = "Juan", Apellido = "Pérez", Email = "juan@gmail.com", Telefono = "3511234567", Rol = RolUsuario.Usuario, FechaAlta = DateTime.Now, EsActivo = true });
+                    new { Id = 1, Nombre = "Juan", Apellido = "Pérez", Email = "juan@gmail.com", Telefono = "3511234567", Contrasenia = "usuario123", Rol = RolUsuario.Usuario, FechaAlta = DateTime.Now, EsActivo = true });
                     });
 
             modelBuilder.Entity<Producto>(entity =>

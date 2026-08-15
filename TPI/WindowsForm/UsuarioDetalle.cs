@@ -67,6 +67,7 @@ namespace WindowsForm
                 // Todo usuario nuevo se crea con Rol = Usuario; el combo no se muestra hasta que exista en un Update.
                 rolLabel.Visible = false;
                 rolComboBox.Visible = false;
+                contraseniaLabel.Text = "Contraseña";
             }
 
             if (Mode == FormMode.Update)
@@ -75,6 +76,7 @@ namespace WindowsForm
                 idTextBox.Visible = true;
                 rolLabel.Visible = true;
                 rolComboBox.Visible = true;
+                contraseniaLabel.Text = "Nueva contraseña (opcional)";
             }
         }
 
@@ -123,6 +125,13 @@ namespace WindowsForm
                 return false;
             }
 
+            // En Add la contraseña es obligatoria; en Update se puede dejar vacía para no cambiarla.
+            if (this.Mode == FormMode.Add && string.IsNullOrWhiteSpace(contraseniaTextBox.Text))
+            {
+                MessageBox.Show("Ingresá una contraseña.", "Datos incompletos", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                return false;
+            }
+
             return true;
         }
 
@@ -135,6 +144,8 @@ namespace WindowsForm
             this.Usuario.Apellido = apellidoTextBox.Text.Trim();
             this.Usuario.Email = emailTextBox.Text.Trim();
             this.Usuario.Telefono = telefonoTextBox.Text.Trim();
+            // Vacío = no cambiar la contraseña (el servidor conserva la actual cuando llega null/vacío).
+            this.Usuario.Contrasenia = string.IsNullOrWhiteSpace(contraseniaTextBox.Text) ? null : contraseniaTextBox.Text;
 
             try
             {

@@ -9,17 +9,19 @@ namespace Domain.Model
         public string Apellido { get; private set; }
         public string Email { get; private set; }
         public string Telefono { get; private set; }
+        public string Contrasenia { get; private set; }
         public RolUsuario Rol { get; private set; }
         public DateTime FechaAlta { get; private set; }
         public bool EsActivo { get; private set; }
 
-        public Usuario(int id, string nombre, string apellido, string email, string telefono, RolUsuario rol, DateTime fechaAlta, bool esActivo)
+        public Usuario(int id, string nombre, string apellido, string email, string telefono, string contrasenia, RolUsuario rol, DateTime fechaAlta, bool esActivo)
         {
             SetId(id);
             SetNombre(nombre);
             SetApellido(apellido);
             SetEmail(email);
             SetTelefono(telefono);
+            SetContrasenia(contrasenia);
             SetRol(rol);
             SetFechaAlta(fechaAlta);
             SetEsActivo(esActivo);
@@ -65,6 +67,13 @@ namespace Domain.Model
             if (string.IsNullOrWhiteSpace(telefono))
                 throw new ArgumentException("El teléfono no puede ser nulo o vacío.", nameof(telefono));
             Telefono = telefono;
+        }
+
+        public void SetContrasenia(string contrasenia)
+        {
+            if (string.IsNullOrWhiteSpace(contrasenia))
+                throw new ArgumentException("La contraseña no puede ser nula o vacía.", nameof(contrasenia));
+            Contrasenia = contrasenia;
         }
 
         public void SetRol(RolUsuario rol)
