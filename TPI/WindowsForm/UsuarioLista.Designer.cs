@@ -88,6 +88,7 @@ namespace WindowsForm
             dgvUsuarios.Dock = DockStyle.Fill;
             dgvUsuarios.Location = new Point(3, 3);
             dgvUsuarios.Name = "dgvUsuarios";
+            dgvUsuarios.ReadOnly = true;
             dgvUsuarios.Size = new Size(794, 390);
             dgvUsuarios.TabIndex = 0;
             // 

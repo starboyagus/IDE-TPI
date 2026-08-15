@@ -1,12 +1,14 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.Data;
 using System.Drawing;
 using System.Linq;
+using System.Net.Http.Json;
 using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Forms;
+using Domain.Model;
 using DTOs;
 using System.Text.Json;
 
@@ -51,7 +53,7 @@ namespace WindowsForm
             this.apellidoTextBox.Text = this.Usuario.Apellido;
             this.emailTextBox.Text = this.Usuario.Email;
             this.telefonoTextBox.Text = this.Usuario.Telefono;
-            this.rolTextBox.Text = this.Usuario.Rol.ToString();
+            this.rolComboBox.SelectedItem = this.Usuario.Rol == default ? RolUsuario.Usuario : this.Usuario.Rol;
         }
 
         private void SetFormMode(FormMode value)
@@ -62,14 +64,17 @@ namespace WindowsForm
             {
                 idLabel.Visible = false;
                 idTextBox.Visible = false;
+                // Todo usuario nuevo se crea con Rol = Usuario; el combo no se muestra hasta que exista en un Update.
                 rolLabel.Visible = false;
-                rolTextBox.Visible = false;
+                rolComboBox.Visible = false;
             }
 
             if (Mode == FormMode.Update)
             {
                 idLabel.Visible = true;
                 idTextBox.Visible = true;
+                rolLabel.Visible = true;
+                rolComboBox.Visible = true;
             }
         }
 
@@ -88,6 +93,7 @@ namespace WindowsForm
         public UsuarioDetalle()
         {
             InitializeComponent();
+            rolComboBox.Items.AddRange(Enum.GetValues(typeof(RolUsuario)).Cast<object>().ToArray());
         }
 
         public UsuarioDetalle(FormMode mode, UsuarioDTO usuario) : this()
@@ -100,38 +106,81 @@ namespace WindowsForm
             this.Close();
         }
 
+        private bool ValidarCampos()
+        {
+            if (string.IsNullOrWhiteSpace(nombreTextBox.Text) ||
+                string.IsNullOrWhiteSpace(apellidoTextBox.Text) ||
+                string.IsNullOrWhiteSpace(emailTextBox.Text) ||
+                string.IsNullOrWhiteSpace(telefonoTextBox.Text))
+            {
+                MessageBox.Show("Completá nombre, apellido, email y teléfono.", "Datos incompletos", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                return false;
+            }
+
+            if (this.Mode == FormMode.Update && rolComboBox.SelectedItem == null)
+            {
+                MessageBox.Show("Seleccioná un rol.", "Datos incompletos", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                return false;
+            }
+
+            return true;
+        }
+
         private async void aceptarButton_Click(object sender, EventArgs e)
         {
+            if (!ValidarCampos())
+                return;
+
+            this.Usuario.Nombre = nombreTextBox.Text.Trim();
+            this.Usuario.Apellido = apellidoTextBox.Text.Trim();
+            this.Usuario.Email = emailTextBox.Text.Trim();
+            this.Usuario.Telefono = telefonoTextBox.Text.Trim();
+
+            try
             {
-                try
+                HttpResponseMessage response;
+
+                if (this.Mode == FormMode.Update)
                 {
-
-                    this.Usuario.Nombre = nombreTextBox.Text;
-                    this.Usuario.Apellido = apellidoTextBox.Text;
-                    this.Usuario.Email = emailTextBox.Text;
-                    this.Usuario.Telefono = telefonoTextBox.Text;
-
-                    if (this.Mode == FormMode.Update)
-                    {
-                        string json = JsonSerializer.Serialize(this.Usuario);
-                        var content = new StringContent(json, encoding: Encoding.UTF8, mediaType: "application/json");
-                        var reponse = await ApiClient.Http.PutAsync("usuarios", content);
-
-                    }
-                    else
-                    {
-                        string json = JsonSerializer.Serialize(this.Usuario);
-                        var content = new StringContent(json, encoding: Encoding.UTF8, mediaType: "application/json");
-                        var reponse = await ApiClient.Http.PostAsync("usuarios", content);
-                    }
-
-                    this.Close();
+                    this.Usuario.Rol = (RolUsuario)rolComboBox.SelectedItem!;
+                    response = await ApiClient.Http.PutAsJsonAsync("usuarios", this.Usuario);
                 }
-                catch (Exception ex)
+                else
                 {
-                    MessageBox.Show($"Error al guardar cliente: {ex.Message}", "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                    response = await ApiClient.Http.PostAsJsonAsync("usuarios", this.Usuario);
+                }
+
+                if (!response.IsSuccessStatusCode)
+                {
+                    string mensaje = await ExtraerMensajeError(response);
+                    MessageBox.Show(mensaje, "No se pudo guardar", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                    return;
+                }
+
+                this.Close();
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show($"Error al guardar el usuario: {ex.Message}", "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+            }
+        }
+
+        private static async Task<string> ExtraerMensajeError(HttpResponseMessage response)
+        {
+            try
+            {
+                var body = await response.Content.ReadFromJsonAsync<JsonElement>();
+                if (body.ValueKind == JsonValueKind.Object && body.TryGetProperty("error", out var errorProp))
+                {
+                    return errorProp.GetString() ?? "Ocurrió un error al guardar el usuario.";
                 }
             }
+            catch
+            {
+                // El cuerpo de la respuesta no tenía el formato esperado; se usa el mensaje genérico de abajo.
+            }
+
+            return $"Ocurrió un error al guardar el usuario ({(int)response.StatusCode} {response.ReasonPhrase}).";
         }
     }
 }

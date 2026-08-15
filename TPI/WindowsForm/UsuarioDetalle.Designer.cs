@@ -33,7 +33,7 @@
             apellidoTextBox = new TextBox();
             emailTextBox = new TextBox();
             telefonoTextBox = new TextBox();
-            rolTextBox = new TextBox();
+            rolComboBox = new ComboBox();
             aceptarButton = new Button();
             cancelarButton = new Button();
             idLabel = new Label();
@@ -48,6 +48,7 @@
             // 
             idTextBox.Location = new Point(205, 44);
             idTextBox.Name = "idTextBox";
+            idTextBox.ReadOnly = true;
             idTextBox.Size = new Size(212, 23);
             idTextBox.TabIndex = 0;
             // 
@@ -78,14 +79,15 @@
             telefonoTextBox.Name = "telefonoTextBox";
             telefonoTextBox.Size = new Size(212, 23);
             telefonoTextBox.TabIndex = 4;
-            // 
-            // rolTextBox
-            // 
-            rolTextBox.Location = new Point(205, 314);
-            rolTextBox.Name = "rolTextBox";
-            rolTextBox.Size = new Size(212, 23);
-            rolTextBox.TabIndex = 5;
-            // 
+            //
+            // rolComboBox
+            //
+            rolComboBox.DropDownStyle = ComboBoxStyle.DropDownList;
+            rolComboBox.Location = new Point(205, 314);
+            rolComboBox.Name = "rolComboBox";
+            rolComboBox.Size = new Size(212, 23);
+            rolComboBox.TabIndex = 5;
+            //
             // aceptarButton
             // 
             aceptarButton.Location = new Point(482, 383);
@@ -173,7 +175,7 @@
             Controls.Add(idLabel);
             Controls.Add(cancelarButton);
             Controls.Add(aceptarButton);
-            Controls.Add(rolTextBox);
+            Controls.Add(rolComboBox);
             Controls.Add(telefonoTextBox);
             Controls.Add(emailTextBox);
             Controls.Add(apellidoTextBox);
@@ -192,7 +194,7 @@
         private TextBox apellidoTextBox;
         private TextBox emailTextBox;
         private TextBox telefonoTextBox;
-        private TextBox rolTextBox;
+        private ComboBox rolComboBox;
         private Button aceptarButton;
         private Button cancelarButton;
         private Label idLabel;

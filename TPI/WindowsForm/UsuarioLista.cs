@@ -27,7 +27,7 @@ namespace WindowsForm
                 var listaUsuarios = await ApiClient.Http.GetFromJsonAsync<List<UsuarioDTO>>("usuarios")
                     ?? new List<UsuarioDTO>();
 
-                dgvUsuarios.DataSource = null; // Limpia los datos anteriores 
+                dgvUsuarios.DataSource = null; // Limpia los datos anteriores
                 dgvUsuarios.DataSource = listaUsuarios; // Asigna la nueva lista
             }
             catch (Exception ex)
@@ -44,10 +44,21 @@ namespace WindowsForm
 
         private async void btnActualizar_Click(object sender, EventArgs e)
         {
+            var seleccionado = this.SelectedItem();
+            if (seleccionado == null)
+            {
+                MessageBox.Show("Seleccioná un usuario de la lista primero.", "Sin selección", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                return;
+            }
+
             try
             {
-                int id = this.SelectedItem().Id;
-                UsuarioDTO usuario = await ApiClient.Http.GetFromJsonAsync<UsuarioDTO>($"usuarios/{id}");
+                UsuarioDTO? usuario = await ApiClient.Http.GetFromJsonAsync<UsuarioDTO>($"usuarios/{seleccionado.Id}");
+                if (usuario == null)
+                {
+                    MessageBox.Show("El usuario ya no existe.", "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                    return;
+                }
 
                 UsuarioDetalle usuarioDetalle = new UsuarioDetalle(FormMode.Update, usuario);
                 usuarioDetalle.ShowDialog();
@@ -57,7 +68,7 @@ namespace WindowsForm
             }
             catch (Exception ex)
             {
-                MessageBox.Show($"Error al actualizar cliente: {ex.Message}", "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                MessageBox.Show($"Error al actualizar el usuario: {ex.Message}", "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
             }
         }
 
@@ -66,12 +77,12 @@ namespace WindowsForm
             this.Close();
         }
 
-        private UsuarioDTO SelectedItem()
+        private UsuarioDTO? SelectedItem()
         {
-            UsuarioDTO usuario;
+            if (dgvUsuarios.SelectedRows.Count == 0)
+                return null;
 
-            usuario = (UsuarioDTO)dgvUsuarios.SelectedRows[0].DataBoundItem;
-            return usuario;
+            return dgvUsuarios.SelectedRows[0].DataBoundItem as UsuarioDTO;
         }
 
         private async void tsbNuevo_Click(object sender, EventArgs e)
@@ -89,23 +100,34 @@ namespace WindowsForm
 
         private async void btnEliminar_Click(object sender, EventArgs e)
         {
-            UsuarioDTO usuario = this.SelectedItem();
-
-
-            var result = MessageBox.Show($"¿Está seguro que desea eliminar el cliente {usuario.Nombre} {usuario.Apellido} ({usuario.Email})?", "Confirmar eliminación", MessageBoxButtons.YesNo, MessageBoxIcon.Question);
-
-            if (result == DialogResult.Yes)
+            var usuario = this.SelectedItem();
+            if (usuario == null)
             {
-                try
-                {
-                    await ApiClient.Http.DeleteAsync($"usuarios/{usuario.Id}");
-                }
-                catch (Exception ex)
-                {
-                    MessageBox.Show($"Error al eliminar cliente: {ex.Message}", "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
-                }
-                await Listar();
+                MessageBox.Show("Seleccioná un usuario de la lista primero.", "Sin selección", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                return;
             }
+
+            var result = MessageBox.Show($"¿Está seguro que desea eliminar el usuario {usuario.Nombre} {usuario.Apellido} ({usuario.Email})?", "Confirmar eliminación", MessageBoxButtons.YesNo, MessageBoxIcon.Question);
+
+            if (result != DialogResult.Yes)
+                return;
+
+            try
+            {
+                var response = await ApiClient.Http.DeleteAsync($"usuarios/{usuario.Id}");
+                if (!response.IsSuccessStatusCode)
+                {
+                    MessageBox.Show($"No se pudo eliminar el usuario ({(int)response.StatusCode} {response.ReasonPhrase}).", "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                    return;
+                }
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show($"Error al eliminar el usuario: {ex.Message}", "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                return;
+            }
+
+            await Listar();
         }
     }
 }
