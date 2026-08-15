@@ -57,7 +57,6 @@ namespace Application.Services
                 Telefono = usuario.Telefono,
                 Rol = usuario.Rol,
                 FechaAlta = usuario.FechaAlta,
-                EsActivo = usuario.EsActivo
             };
         }
 
@@ -74,7 +73,6 @@ namespace Application.Services
                 Telefono = usuario.Telefono,
                 Rol = usuario.Rol,
                 FechaAlta = usuario.FechaAlta,
-                EsActivo = usuario.EsActivo
             }).ToList();
         }
 

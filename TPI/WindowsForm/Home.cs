@@ -31,13 +31,9 @@ namespace WindowsForm
             }
 
         }
-
         private void usuariosToolStripMenuItem_Click(object sender, EventArgs e)
         {
-            // 1. Creamos una instancia del formulario UsuarioLista
             UsuarioLista formUsuarios = new UsuarioLista();
-
-            // 2. Lo mostramos en pantalla
             formUsuarios.Show();
         }
     }

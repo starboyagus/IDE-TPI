@@ -29,6 +29,8 @@ namespace WindowsForm
 
                 dgvUsuarios.DataSource = null; // Limpia los datos anteriores
                 dgvUsuarios.DataSource = listaUsuarios; // Asigna la nueva lista
+
+                dgvUsuarios.Columns["esActivo"].Visible = false;
             }
             catch (Exception ex)
             {
@@ -88,10 +90,7 @@ namespace WindowsForm
         private async void tsbNuevo_Click(object sender, EventArgs e)
         {
             UsuarioDTO usuarioNuevo = new UsuarioDTO();
-            // 1. Creamos una instancia del formulario UsuarioDetalle
             UsuarioDetalle formUsuariosDetalle = new UsuarioDetalle(FormMode.Add, usuarioNuevo);
-
-            // 2. Lo mostramos en pantalla
             formUsuariosDetalle.ShowDialog();
 
             await Listar();

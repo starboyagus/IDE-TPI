@@ -177,7 +177,6 @@ namespace WindowsForm
             }
             catch
             {
-                // El cuerpo de la respuesta no tenía el formato esperado; se usa el mensaje genérico de abajo.
             }
 
             return $"Ocurrió un error al guardar el usuario ({(int)response.StatusCode} {response.ReasonPhrase}).";

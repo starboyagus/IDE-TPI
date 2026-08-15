@@ -31,11 +31,11 @@ namespace WindowsForm
             tscUsuarios = new ToolStripContainer();
             tlUsuarios = new TableLayoutPanel();
             dgvUsuarios = new DataGridView();
-            btnActualizar = new Button();
             btnSalir = new Button();
+            btnActualizar = new Button();
+            btnEliminar = new Button();
             tsUsuarios = new ToolStrip();
             tsbNuevo = new ToolStripButton();
-            btnEliminar = new Button();
             tscUsuarios.ContentPanel.SuspendLayout();
             tscUsuarios.TopToolStripPanel.SuspendLayout();
             tscUsuarios.SuspendLayout();
@@ -69,9 +69,9 @@ namespace WindowsForm
             tlUsuarios.ColumnStyles.Add(new ColumnStyle());
             tlUsuarios.ColumnStyles.Add(new ColumnStyle());
             tlUsuarios.Controls.Add(dgvUsuarios, 0, 0);
-            tlUsuarios.Controls.Add(btnSalir, 1, 1);
+            tlUsuarios.Controls.Add(btnSalir, 2, 1);
+            tlUsuarios.Controls.Add(btnEliminar, 1, 1);
             tlUsuarios.Controls.Add(btnActualizar, 0, 1);
-            tlUsuarios.Controls.Add(btnEliminar, 2, 0);
             tlUsuarios.Dock = DockStyle.Fill;
             tlUsuarios.Location = new Point(0, 0);
             tlUsuarios.Name = "tlUsuarios";
@@ -83,6 +83,7 @@ namespace WindowsForm
             // 
             // dgvUsuarios
             // 
+            dgvUsuarios.BackgroundColor = SystemColors.ControlDarkDark;
             dgvUsuarios.ColumnHeadersHeightSizeMode = DataGridViewColumnHeadersHeightSizeMode.AutoSize;
             tlUsuarios.SetColumnSpan(dgvUsuarios, 3);
             dgvUsuarios.Dock = DockStyle.Fill;
@@ -91,17 +92,6 @@ namespace WindowsForm
             dgvUsuarios.ReadOnly = true;
             dgvUsuarios.Size = new Size(794, 390);
             dgvUsuarios.TabIndex = 0;
-            // 
-            // btnActualizar
-            // 
-            btnActualizar.Anchor = AnchorStyles.Top | AnchorStyles.Right;
-            btnActualizar.Location = new Point(641, 399);
-            btnActualizar.Name = "btnActualizar";
-            btnActualizar.Size = new Size(75, 23);
-            btnActualizar.TabIndex = 1;
-            btnActualizar.Text = "Actualizar";
-            btnActualizar.UseVisualStyleBackColor = true;
-            btnActualizar.Click += btnActualizar_Click;
             // 
             // btnSalir
             // 
@@ -113,34 +103,46 @@ namespace WindowsForm
             btnSalir.UseVisualStyleBackColor = true;
             btnSalir.Click += btnSalir_Click;
             // 
-            // tsUsuarios
+            // btnActualizar
             // 
-            tsUsuarios.Dock = DockStyle.None;
-            tsUsuarios.Items.AddRange(new ToolStripItem[] { tsbNuevo });
-            tsUsuarios.Location = new Point(3, 0);
-            tsUsuarios.Name = "tsUsuarios";
-            tsUsuarios.Size = new Size(35, 25);
-            tsUsuarios.TabIndex = 0;
-            // 
-            // tsbNuevo
-            // 
-            tsbNuevo.DisplayStyle = ToolStripItemDisplayStyle.Image;
-            tsbNuevo.ImageTransparentColor = Color.Magenta;
-            tsbNuevo.Name = "tsbNuevo";
-            tsbNuevo.Size = new Size(23, 22);
-            tsbNuevo.Text = "toolStripButton1";
-            tsbNuevo.ToolTipText = "Nuevo";
-            tsbNuevo.Click += tsbNuevo_Click;
+            btnActualizar.Anchor = AnchorStyles.Top | AnchorStyles.Right;
+            btnActualizar.Location = new Point(560, 399);
+            btnActualizar.Name = "btnActualizar";
+            btnActualizar.Size = new Size(75, 23);
+            btnActualizar.TabIndex = 1;
+            btnActualizar.Text = "Actualizar";
+            btnActualizar.UseVisualStyleBackColor = true;
+            btnActualizar.Click += btnActualizar_Click;
             // 
             // btnEliminar
             // 
-            btnEliminar.Location = new Point(3, 399);
+            btnEliminar.Anchor = AnchorStyles.Bottom | AnchorStyles.Right;
+            btnEliminar.Location = new Point(641, 399);
             btnEliminar.Name = "btnEliminar";
             btnEliminar.Size = new Size(75, 23);
             btnEliminar.TabIndex = 3;
             btnEliminar.Text = "Eliminar";
             btnEliminar.UseVisualStyleBackColor = true;
             btnEliminar.Click += btnEliminar_Click;
+            // 
+            // tsUsuarios
+            // 
+            tsUsuarios.Dock = DockStyle.None;
+            tsUsuarios.Items.AddRange(new ToolStripItem[] { tsbNuevo });
+            tsUsuarios.Location = new Point(3, 0);
+            tsUsuarios.Name = "tsUsuarios";
+            tsUsuarios.Size = new Size(58, 25);
+            tsUsuarios.TabIndex = 0;
+            // 
+            // tsbNuevo
+            // 
+            tsbNuevo.DisplayStyle = ToolStripItemDisplayStyle.Text;
+            tsbNuevo.ImageTransparentColor = Color.Magenta;
+            tsbNuevo.Name = "tsbNuevo";
+            tsbNuevo.Size = new Size(46, 22);
+            tsbNuevo.Text = "Nuevo";
+            tsbNuevo.ToolTipText = "Nuevo";
+            tsbNuevo.Click += tsbNuevo_Click;
             // 
             // UsuarioLista
             // 

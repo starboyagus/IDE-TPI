@@ -21,7 +21,6 @@ namespace WindowsForm
 
         private void btnIngresar_Click(object sender, EventArgs e)
         {
-            //la propiedad Text de los TextBox contiene el texto escrito en ellos
             if (this.txtUsuario.Text == "Admin" && this.txtPass.Text == "admin")
             {
                 this.DialogResult = DialogResult.OK;
