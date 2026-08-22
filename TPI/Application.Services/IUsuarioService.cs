@@ -10,5 +10,6 @@ namespace Application.Services
         Task<IEnumerable<UsuarioDTO>> GetAllAsync();
         Task<bool> UpdateAsync(UsuarioDTO dto);
         Task<IEnumerable<UsuarioDTO>> GetByCriteriaAsync(UsuarioCriteriaDTO criteriaDTO);
+        Task<UsuarioDTO?> LoginAsync(LoginDTO loginDTO);
     }
 }

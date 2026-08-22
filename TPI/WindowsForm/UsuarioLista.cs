@@ -9,6 +9,7 @@ using System.Text;
 using System.Text.Json;
 using System.Threading.Tasks;
 using System.Windows.Forms;
+using API.Clients;
 using DTOs;
 
 namespace WindowsForm

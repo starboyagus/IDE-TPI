@@ -31,7 +31,7 @@
             label1 = new Label();
             label2 = new Label();
             label3 = new Label();
-            txtUsuario = new TextBox();
+            txtEmail = new TextBox();
             txtPass = new TextBox();
             btnIngresar = new Button();
             lnkOlvidaPass = new LinkLabel();
@@ -45,7 +45,7 @@
             label1.Name = "label1";
             label1.Size = new Size(150, 21);
             label1.TabIndex = 0;
-            label1.Text = "Nombre de Usuario:";
+            label1.Text = "Email:";
             // 
             // label2
             // 
@@ -68,12 +68,12 @@
             label3.Text = "Iniciar Sesion";
             label3.TextAlign = ContentAlignment.MiddleCenter;
             // 
-            // txtUsuario
-            // 
-            txtUsuario.Location = new Point(461, 222);
-            txtUsuario.Name = "txtUsuario";
-            txtUsuario.Size = new Size(186, 23);
-            txtUsuario.TabIndex = 3;
+            // txtEmail
+            //
+            txtEmail.Location = new Point(461, 222);
+            txtEmail.Name = "txtEmail";
+            txtEmail.Size = new Size(186, 23);
+            txtEmail.TabIndex = 3;
             // 
             // txtPass
             // 
@@ -113,7 +113,7 @@
             Controls.Add(lnkOlvidaPass);
             Controls.Add(btnIngresar);
             Controls.Add(txtPass);
-            Controls.Add(txtUsuario);
+            Controls.Add(txtEmail);
             Controls.Add(label3);
             Controls.Add(label2);
             Controls.Add(label1);
@@ -132,7 +132,7 @@
         private Label label1;
         private Label label2;
         private Label label3;
-        private TextBox txtUsuario;
+        private TextBox txtEmail;
         private TextBox txtPass;
         private Button btnIngresar;
         private LinkLabel lnkOlvidaPass;

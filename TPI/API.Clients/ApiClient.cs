@@ -1,7 +1,7 @@
 using System;
 using System.Net.Http;
 
-namespace WindowsForm
+namespace API.Clients
 {
     public static class ApiClient
     {

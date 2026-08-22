@@ -90,6 +90,22 @@ namespace WebAPI
             .Produces(StatusCodes.Status404NotFound)
             .WithOpenApi();
 
+            app.MapPost("/usuarios/login", async (LoginDTO dto, IUsuarioService usuarioService) =>
+            {
+                UsuarioDTO? usuario = await usuarioService.LoginAsync(dto);
+
+                if (usuario == null)
+                {
+                    return Results.Unauthorized();
+                }
+
+                return Results.Ok(usuario);
+            })
+            .WithName("LoginUsuario")
+            .Produces<UsuarioDTO>(StatusCodes.Status200OK)
+            .Produces(StatusCodes.Status401Unauthorized)
+            .WithOpenApi();
+
             app.MapGet("/usuarios/criteria", async (string texto, IUsuarioService usuarioService) =>
             {
                 try

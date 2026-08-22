@@ -104,6 +104,34 @@ namespace Application.Services
             return await usuarioRepository.UpdateAsync(usuario);
         }
 
+        public async Task<UsuarioDTO?> LoginAsync(LoginDTO loginDTO)
+        {
+            if (string.IsNullOrWhiteSpace(loginDTO.Email) || string.IsNullOrWhiteSpace(loginDTO.Contrasenia))
+                return null;
+
+            string email = loginDTO.Email.Trim();
+
+            // Se reutiliza la búsqueda por criteria, que ya filtra por usuarios activos.
+            var candidatos = await usuarioRepository.GetByCriteriaAsync(new UsuarioCriteria(email));
+            var usuario = candidatos.FirstOrDefault(u => u.Email.Equals(email, StringComparison.OrdinalIgnoreCase));
+
+            // Mismo resultado para email inexistente y contraseña incorrecta: no se le informa al cliente cuál de los dos falló.
+            if (usuario == null || usuario.Contrasenia != loginDTO.Contrasenia)
+                return null;
+
+            return new UsuarioDTO
+            {
+                Id = usuario.Id,
+                Nombre = usuario.Nombre,
+                Apellido = usuario.Apellido,
+                Email = usuario.Email,
+                Telefono = usuario.Telefono,
+                Rol = usuario.Rol,
+                FechaAlta = usuario.FechaAlta,
+                EsActivo = usuario.EsActivo
+            };
+        }
+
         public async Task<IEnumerable<UsuarioDTO>> GetByCriteriaAsync(UsuarioCriteriaDTO criteriaDTO)
         {
             // Mapear DTO a Domain Model
