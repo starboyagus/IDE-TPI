@@ -6,11 +6,6 @@ namespace API.Clients
 {
     public static class UsuarioApiClient
     {
-        /// <summary>
-        /// Valida las credenciales contra la API.
-        /// Devuelve el usuario si son correctas, o null si el email/contraseña no coinciden.
-        /// Lanza excepción si no se pudo contactar a la API.
-        /// </summary>
         public static async Task<UsuarioDTO?> LoginAsync(string email, string contrasenia)
         {
             var credenciales = new LoginDTO { Email = email, Contrasenia = contrasenia };

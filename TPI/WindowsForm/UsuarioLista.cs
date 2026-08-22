@@ -32,6 +32,7 @@ namespace WindowsForm
                 dgvUsuarios.DataSource = listaUsuarios; // Asigna la nueva lista
 
                 dgvUsuarios.Columns["esActivo"].Visible = false;
+                dgvUsuarios.Columns["contrasenia"].Visible = false;
             }
             catch (Exception ex)
             {

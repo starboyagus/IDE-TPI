@@ -41,9 +41,9 @@
             // 
             label1.AutoSize = true;
             label1.Font = new Font("Segoe UI", 12F, FontStyle.Regular, GraphicsUnit.Point, 0);
-            label1.Location = new Point(298, 222);
+            label1.Location = new Point(356, 222);
             label1.Name = "label1";
-            label1.Size = new Size(150, 21);
+            label1.Size = new Size(51, 21);
             label1.TabIndex = 0;
             label1.Text = "Email:";
             // 
@@ -61,7 +61,7 @@
             // 
             label3.AutoSize = true;
             label3.Font = new Font("Segoe UI", 14.25F, FontStyle.Regular, GraphicsUnit.Point, 0);
-            label3.Location = new Point(500, 150);
+            label3.Location = new Point(461, 136);
             label3.Name = "label3";
             label3.Size = new Size(124, 25);
             label3.TabIndex = 2;
@@ -69,9 +69,10 @@
             label3.TextAlign = ContentAlignment.MiddleCenter;
             // 
             // txtEmail
-            //
+            // 
             txtEmail.Location = new Point(461, 222);
             txtEmail.Name = "txtEmail";
+            txtEmail.PlaceholderText = "usuario@gmail.com";
             txtEmail.Size = new Size(186, 23);
             txtEmail.TabIndex = 3;
             // 
