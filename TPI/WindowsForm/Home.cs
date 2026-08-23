@@ -36,5 +36,11 @@ namespace WindowsForm
             UsuarioLista formUsuarios = new UsuarioLista();
             formUsuarios.Show();
         }
+
+        private void productoToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            ProductoLista formProducto = new ProductoLista();
+            formProducto.Show();
+        }
     }
 }
