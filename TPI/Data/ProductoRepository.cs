@@ -56,5 +56,25 @@ namespace Data
             return true;
         }
 
+        public async Task<bool> NombreExistsAsync(string nombre, int? excludeId = null)
+        {
+            var query = _context.Productos.Where(p => p.Nombre.ToLower() == nombre.ToLower());
+            if (excludeId.HasValue)
+            {
+                query = query.Where(p => p.Id != excludeId.Value);
+            }
+            return await query.AnyAsync();
+        }
+
+        public async Task<bool> DescExistsAsync(string desc, int? excludeId = null)
+        {
+            var query = _context.Productos.Where(p => p.Descripcion.ToLower() == desc.ToLower());
+            if (excludeId.HasValue)
+            {
+                query = query.Where(p => p.Id != excludeId.Value);
+            }
+            return await query.AnyAsync();
+        }
+
     }
 }

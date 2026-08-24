@@ -17,7 +17,17 @@ namespace WindowsForm
         public LoginForm()
         {
             InitializeComponent();
+           this.Load += LoginForm_Load; //CUANDO TERMINEMOS HAY QUE BORRARLO
         }
+
+        private void LoginForm_Load(object? sender, EventArgs e) // Hace que el formulario de login empiece con los datos cargados para iniciar sesion
+        {
+            txtEmail.Text = "juan@gmail.com";   
+            txtPass.Text = "usuario123";
+        }   
+        //CUANDO TERMINEMOS HAY QUE BORRARLO
+
+
 
         private async void btnIngresar_Click(object sender, EventArgs e)
         {

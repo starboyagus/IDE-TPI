@@ -15,6 +15,15 @@ namespace Application.Services
 
         public async Task<ProductoDTO> AddAsync(ProductoDTO dto)
         {
+            if (await productoRepository.NombreExistsAsync(dto.Nombre))
+            {
+                throw new ArgumentException($"Ya existe un producto con el Nombre '{dto.Nombre}'.");
+            }
+
+            if (await productoRepository.DescExistsAsync(dto.Descripcion))
+            {
+                throw new ArgumentException($"Ya existe un producto con la Descripcion '{dto.Descripcion}'.");
+            }
 
             var fechaAlta = DateTime.Now;
             Producto producto = new Producto(0, dto.Nombre, dto.Descripcion, dto.Precio, dto.Stock, dto.EsPreVenta, fechaAlta, true);
@@ -72,6 +81,15 @@ namespace Application.Services
 
         public async Task<bool> UpdateAsync(ProductoDTO dto)
         {
+            if (await productoRepository.NombreExistsAsync(dto.Nombre, dto.Id))
+            {
+                throw new ArgumentException($"Ya existe un producto con el Nombre '{dto.Nombre}'.");
+            }
+
+            if (await productoRepository.DescExistsAsync(dto.Descripcion, dto.Id))
+            {
+                throw new ArgumentException($"Ya existe un producto con la Descripcion '{dto.Descripcion}'.");
+            }
             // Obtener el producto existente para preservar FechaAlta
             var existing = await productoRepository.GetAsync(dto.Id);
             if (existing == null)
