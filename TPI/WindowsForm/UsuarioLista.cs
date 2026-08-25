@@ -30,9 +30,11 @@ namespace WindowsForm
 
                 dgvUsuarios.DataSource = null; // Limpia los datos anteriores
                 dgvUsuarios.DataSource = listaUsuarios; // Asigna la nueva lista
-
+                dgvUsuarios.ReadOnly = true;
                 dgvUsuarios.Columns["esActivo"].Visible = false;
                 dgvUsuarios.Columns["contrasenia"].Visible = false;
+
+                dgvUsuarios.AutoResizeColumns(DataGridViewAutoSizeColumnsMode.AllCells);
             }
             catch (Exception ex)
             {

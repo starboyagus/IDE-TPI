@@ -32,8 +32,8 @@ namespace WindowsForm
             tlUsuarios = new TableLayoutPanel();
             dgvUsuarios = new DataGridView();
             btnSalir = new Button();
-            btnActualizar = new Button();
             btnEliminar = new Button();
+            btnActualizar = new Button();
             tsUsuarios = new ToolStrip();
             tsbNuevo = new ToolStripButton();
             tscUsuarios.ContentPanel.SuspendLayout();
@@ -50,11 +50,11 @@ namespace WindowsForm
             // tscUsuarios.ContentPanel
             // 
             tscUsuarios.ContentPanel.Controls.Add(tlUsuarios);
-            tscUsuarios.ContentPanel.Size = new Size(800, 425);
+            tscUsuarios.ContentPanel.Size = new Size(799, 426);
             tscUsuarios.Dock = DockStyle.Fill;
             tscUsuarios.Location = new Point(0, 0);
             tscUsuarios.Name = "tscUsuarios";
-            tscUsuarios.Size = new Size(800, 450);
+            tscUsuarios.Size = new Size(799, 451);
             tscUsuarios.TabIndex = 0;
             tscUsuarios.Text = "toolStripContainer1";
             // 
@@ -78,7 +78,7 @@ namespace WindowsForm
             tlUsuarios.RowCount = 2;
             tlUsuarios.RowStyles.Add(new RowStyle(SizeType.Percent, 100F));
             tlUsuarios.RowStyles.Add(new RowStyle());
-            tlUsuarios.Size = new Size(800, 425);
+            tlUsuarios.Size = new Size(799, 426);
             tlUsuarios.TabIndex = 0;
             // 
             // dgvUsuarios
@@ -90,12 +90,12 @@ namespace WindowsForm
             dgvUsuarios.Location = new Point(3, 3);
             dgvUsuarios.Name = "dgvUsuarios";
             dgvUsuarios.ReadOnly = true;
-            dgvUsuarios.Size = new Size(794, 390);
+            dgvUsuarios.Size = new Size(793, 391);
             dgvUsuarios.TabIndex = 0;
             // 
             // btnSalir
             // 
-            btnSalir.Location = new Point(722, 399);
+            btnSalir.Location = new Point(721, 400);
             btnSalir.Name = "btnSalir";
             btnSalir.Size = new Size(75, 23);
             btnSalir.TabIndex = 2;
@@ -103,27 +103,27 @@ namespace WindowsForm
             btnSalir.UseVisualStyleBackColor = true;
             btnSalir.Click += btnSalir_Click;
             // 
-            // btnActualizar
-            // 
-            btnActualizar.Anchor = AnchorStyles.Top | AnchorStyles.Right;
-            btnActualizar.Location = new Point(560, 399);
-            btnActualizar.Name = "btnActualizar";
-            btnActualizar.Size = new Size(75, 23);
-            btnActualizar.TabIndex = 1;
-            btnActualizar.Text = "Actualizar";
-            btnActualizar.UseVisualStyleBackColor = true;
-            btnActualizar.Click += btnActualizar_Click;
-            // 
             // btnEliminar
             // 
             btnEliminar.Anchor = AnchorStyles.Bottom | AnchorStyles.Right;
-            btnEliminar.Location = new Point(641, 399);
+            btnEliminar.Location = new Point(640, 400);
             btnEliminar.Name = "btnEliminar";
             btnEliminar.Size = new Size(75, 23);
             btnEliminar.TabIndex = 3;
             btnEliminar.Text = "Eliminar";
             btnEliminar.UseVisualStyleBackColor = true;
             btnEliminar.Click += btnEliminar_Click;
+            // 
+            // btnActualizar
+            // 
+            btnActualizar.Anchor = AnchorStyles.Top | AnchorStyles.Right;
+            btnActualizar.Location = new Point(559, 400);
+            btnActualizar.Name = "btnActualizar";
+            btnActualizar.Size = new Size(75, 23);
+            btnActualizar.TabIndex = 1;
+            btnActualizar.Text = "Actualizar";
+            btnActualizar.UseVisualStyleBackColor = true;
+            btnActualizar.Click += btnActualizar_Click;
             // 
             // tsUsuarios
             // 
@@ -148,9 +148,13 @@ namespace WindowsForm
             // 
             AutoScaleDimensions = new SizeF(7F, 15F);
             AutoScaleMode = AutoScaleMode.Font;
-            ClientSize = new Size(800, 450);
+            ClientSize = new Size(799, 451);
             Controls.Add(tscUsuarios);
+            FormBorderStyle = FormBorderStyle.FixedDialog;
+            MaximizeBox = false;
+            MinimizeBox = false;
             Name = "UsuarioLista";
+            StartPosition = FormStartPosition.CenterScreen;
             Text = "Lista Usuarios";
             Load += UsuarioLista_Load;
             tscUsuarios.ContentPanel.ResumeLayout(false);

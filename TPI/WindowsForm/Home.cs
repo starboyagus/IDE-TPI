@@ -34,13 +34,13 @@ namespace WindowsForm
         private void usuariosToolStripMenuItem_Click(object sender, EventArgs e)
         {
             UsuarioLista formUsuarios = new UsuarioLista();
-            formUsuarios.Show();
+            formUsuarios.Show(this);
         }
 
         private void productoToolStripMenuItem_Click(object sender, EventArgs e)
         {
             ProductoLista formProducto = new ProductoLista();
-            formProducto.Show();
+            formProducto.Show(this);
         }
     }
 }

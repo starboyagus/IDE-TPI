@@ -47,29 +47,29 @@
             // idTextBox
             // 
             idTextBox.BackColor = SystemColors.Control;
-            idTextBox.Location = new Point(197, 42);
+            idTextBox.Location = new Point(87, 12);
             idTextBox.Name = "idTextBox";
-            idTextBox.Size = new Size(216, 23);
+            idTextBox.Size = new Size(215, 23);
             idTextBox.TabIndex = 0;
             // 
             // nombreTextBox
             // 
-            nombreTextBox.Location = new Point(197, 83);
+            nombreTextBox.Location = new Point(87, 50);
             nombreTextBox.Name = "nombreTextBox";
-            nombreTextBox.Size = new Size(216, 23);
+            nombreTextBox.Size = new Size(215, 23);
             nombreTextBox.TabIndex = 1;
             // 
             // precioTextBox
             // 
-            precioTextBox.Location = new Point(197, 125);
+            precioTextBox.Location = new Point(87, 88);
             precioTextBox.Name = "precioTextBox";
-            precioTextBox.Size = new Size(216, 23);
+            precioTextBox.Size = new Size(215, 23);
             precioTextBox.TabIndex = 2;
             // 
             // idLabel
             // 
             idLabel.AutoSize = true;
-            idLabel.Location = new Point(108, 50);
+            idLabel.Location = new Point(12, 15);
             idLabel.Name = "idLabel";
             idLabel.Size = new Size(18, 15);
             idLabel.TabIndex = 4;
@@ -78,7 +78,7 @@
             // nombreLabel
             // 
             nombreLabel.AutoSize = true;
-            nombreLabel.Location = new Point(108, 91);
+            nombreLabel.Location = new Point(12, 53);
             nombreLabel.Name = "nombreLabel";
             nombreLabel.Size = new Size(51, 15);
             nombreLabel.TabIndex = 5;
@@ -87,7 +87,7 @@
             // precioLabel
             // 
             precioLabel.AutoSize = true;
-            precioLabel.Location = new Point(108, 133);
+            precioLabel.Location = new Point(12, 91);
             precioLabel.Name = "precioLabel";
             precioLabel.Size = new Size(40, 15);
             precioLabel.TabIndex = 6;
@@ -96,7 +96,7 @@
             // stockLabel
             // 
             stockLabel.AutoSize = true;
-            stockLabel.Location = new Point(108, 173);
+            stockLabel.Location = new Point(12, 129);
             stockLabel.Name = "stockLabel";
             stockLabel.Size = new Size(36, 15);
             stockLabel.TabIndex = 7;
@@ -104,16 +104,16 @@
             // 
             // descTextBox
             // 
-            descTextBox.Location = new Point(197, 207);
+            descTextBox.Location = new Point(87, 165);
             descTextBox.Multiline = true;
             descTextBox.Name = "descTextBox";
-            descTextBox.Size = new Size(216, 94);
+            descTextBox.Size = new Size(215, 95);
             descTextBox.TabIndex = 8;
             // 
             // descLabel
             // 
             descLabel.AutoSize = true;
-            descLabel.Location = new Point(108, 207);
+            descLabel.Location = new Point(12, 165);
             descLabel.Name = "descLabel";
             descLabel.Size = new Size(69, 15);
             descLabel.TabIndex = 9;
@@ -121,15 +121,15 @@
             // 
             // stockTextBox
             // 
-            stockTextBox.Location = new Point(197, 165);
+            stockTextBox.Location = new Point(87, 126);
             stockTextBox.Name = "stockTextBox";
-            stockTextBox.Size = new Size(216, 23);
+            stockTextBox.Size = new Size(215, 23);
             stockTextBox.TabIndex = 10;
             // 
             // preventaLabel
             // 
             preventaLabel.AutoSize = true;
-            preventaLabel.Location = new Point(108, 332);
+            preventaLabel.Location = new Point(12, 277);
             preventaLabel.Name = "preventaLabel";
             preventaLabel.Size = new Size(53, 15);
             preventaLabel.TabIndex = 11;
@@ -138,16 +138,16 @@
             // preventaComboBox
             // 
             preventaComboBox.FormattingEnabled = true;
-            preventaComboBox.Location = new Point(197, 329);
+            preventaComboBox.Location = new Point(87, 274);
             preventaComboBox.Name = "preventaComboBox";
-            preventaComboBox.Size = new Size(216, 23);
+            preventaComboBox.Size = new Size(215, 23);
             preventaComboBox.TabIndex = 12;
             // 
             // aceptarButton
             // 
-            aceptarButton.Location = new Point(447, 402);
+            aceptarButton.Location = new Point(87, 335);
             aceptarButton.Name = "aceptarButton";
-            aceptarButton.Size = new Size(106, 36);
+            aceptarButton.Size = new Size(105, 35);
             aceptarButton.TabIndex = 13;
             aceptarButton.Text = "Aceptar";
             aceptarButton.UseVisualStyleBackColor = true;
@@ -155,9 +155,9 @@
             // 
             // cancelarButton
             // 
-            cancelarButton.Location = new Point(580, 402);
+            cancelarButton.Location = new Point(197, 335);
             cancelarButton.Name = "cancelarButton";
-            cancelarButton.Size = new Size(101, 36);
+            cancelarButton.Size = new Size(105, 35);
             cancelarButton.TabIndex = 14;
             cancelarButton.Text = "Cancelar";
             cancelarButton.UseVisualStyleBackColor = true;
@@ -167,7 +167,7 @@
             // 
             AutoScaleDimensions = new SizeF(7F, 15F);
             AutoScaleMode = AutoScaleMode.Font;
-            ClientSize = new Size(708, 450);
+            ClientSize = new Size(334, 391);
             Controls.Add(cancelarButton);
             Controls.Add(aceptarButton);
             Controls.Add(preventaComboBox);
@@ -182,7 +182,11 @@
             Controls.Add(precioTextBox);
             Controls.Add(nombreTextBox);
             Controls.Add(idTextBox);
+            FormBorderStyle = FormBorderStyle.FixedDialog;
+            MaximizeBox = false;
+            MinimizeBox = false;
             Name = "ProductoDetalle";
+            StartPosition = FormStartPosition.CenterParent;
             Text = "Detalle de Producto";
             ResumeLayout(false);
             PerformLayout();

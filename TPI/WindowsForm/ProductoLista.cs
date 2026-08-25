@@ -30,6 +30,8 @@ namespace WindowsForm
                 dgvProductos.ReadOnly = true;
                 dgvProductos.Columns["esActivo"].Visible = false;
                 dgvProductos.Columns["precio"].DefaultCellStyle.Format = "C2";
+
+                dgvProductos.AutoResizeColumns(DataGridViewAutoSizeColumnsMode.AllCells);
             }
             catch (Exception ex)
             {

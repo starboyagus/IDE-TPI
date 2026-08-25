@@ -50,11 +50,11 @@
             // tscProductos.ContentPanel
             // 
             tscProductos.ContentPanel.Controls.Add(tlProductos);
-            tscProductos.ContentPanel.Size = new Size(800, 425);
+            tscProductos.ContentPanel.Size = new Size(799, 426);
             tscProductos.Dock = DockStyle.Fill;
             tscProductos.Location = new Point(0, 0);
             tscProductos.Name = "tscProductos";
-            tscProductos.Size = new Size(800, 450);
+            tscProductos.Size = new Size(799, 451);
             tscProductos.TabIndex = 0;
             tscProductos.Text = "toolStripContainer1";
             // 
@@ -78,7 +78,7 @@
             tlProductos.RowCount = 2;
             tlProductos.RowStyles.Add(new RowStyle(SizeType.Percent, 100F));
             tlProductos.RowStyles.Add(new RowStyle());
-            tlProductos.Size = new Size(800, 425);
+            tlProductos.Size = new Size(799, 426);
             tlProductos.TabIndex = 0;
             // 
             // dgvProductos
@@ -89,13 +89,13 @@
             dgvProductos.Dock = DockStyle.Fill;
             dgvProductos.Location = new Point(3, 3);
             dgvProductos.Name = "dgvProductos";
-            dgvProductos.Size = new Size(794, 390);
+            dgvProductos.Size = new Size(793, 391);
             dgvProductos.TabIndex = 0;
             // 
             // btnActualizar
             // 
             btnActualizar.Anchor = AnchorStyles.Top | AnchorStyles.Right;
-            btnActualizar.Location = new Point(560, 399);
+            btnActualizar.Location = new Point(559, 400);
             btnActualizar.Name = "btnActualizar";
             btnActualizar.RightToLeft = RightToLeft.No;
             btnActualizar.Size = new Size(75, 23);
@@ -106,7 +106,7 @@
             // 
             // btnEliminar
             // 
-            btnEliminar.Location = new Point(641, 399);
+            btnEliminar.Location = new Point(640, 400);
             btnEliminar.Name = "btnEliminar";
             btnEliminar.Size = new Size(75, 23);
             btnEliminar.TabIndex = 2;
@@ -116,7 +116,7 @@
             // 
             // btnSalir
             // 
-            btnSalir.Location = new Point(722, 399);
+            btnSalir.Location = new Point(721, 400);
             btnSalir.Name = "btnSalir";
             btnSalir.Size = new Size(75, 23);
             btnSalir.TabIndex = 3;
@@ -146,9 +146,13 @@
             // 
             AutoScaleDimensions = new SizeF(7F, 15F);
             AutoScaleMode = AutoScaleMode.Font;
-            ClientSize = new Size(800, 450);
+            ClientSize = new Size(799, 451);
             Controls.Add(tscProductos);
+            FormBorderStyle = FormBorderStyle.FixedDialog;
+            MaximizeBox = false;
+            MinimizeBox = false;
             Name = "ProductoLista";
+            StartPosition = FormStartPosition.CenterScreen;
             Text = "Lista Productos";
             Load += ProductoLista_Load;
             tscProductos.ContentPanel.ResumeLayout(false);

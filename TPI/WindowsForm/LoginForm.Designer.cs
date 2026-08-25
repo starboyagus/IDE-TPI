@@ -41,7 +41,7 @@
             // 
             label1.AutoSize = true;
             label1.Font = new Font("Segoe UI", 12F, FontStyle.Regular, GraphicsUnit.Point, 0);
-            label1.Location = new Point(356, 222);
+            label1.Location = new Point(33, 118);
             label1.Name = "label1";
             label1.Size = new Size(51, 21);
             label1.TabIndex = 0;
@@ -51,7 +51,7 @@
             // 
             label2.AutoSize = true;
             label2.Font = new Font("Segoe UI", 12F, FontStyle.Regular, GraphicsUnit.Point, 0);
-            label2.Location = new Point(356, 261);
+            label2.Location = new Point(33, 157);
             label2.Name = "label2";
             label2.Size = new Size(92, 21);
             label2.TabIndex = 1;
@@ -61,7 +61,7 @@
             // 
             label3.AutoSize = true;
             label3.Font = new Font("Segoe UI", 14.25F, FontStyle.Regular, GraphicsUnit.Point, 0);
-            label3.Location = new Point(461, 136);
+            label3.Location = new Point(138, 32);
             label3.Name = "label3";
             label3.Size = new Size(124, 25);
             label3.TabIndex = 2;
@@ -70,7 +70,7 @@
             // 
             // txtEmail
             // 
-            txtEmail.Location = new Point(461, 222);
+            txtEmail.Location = new Point(138, 118);
             txtEmail.Name = "txtEmail";
             txtEmail.PlaceholderText = "usuario@gmail.com";
             txtEmail.Size = new Size(186, 23);
@@ -78,7 +78,7 @@
             // 
             // txtPass
             // 
-            txtPass.Location = new Point(461, 263);
+            txtPass.Location = new Point(138, 159);
             txtPass.Name = "txtPass";
             txtPass.PasswordChar = '*';
             txtPass.Size = new Size(186, 23);
@@ -86,7 +86,7 @@
             // 
             // btnIngresar
             // 
-            btnIngresar.Location = new Point(523, 321);
+            btnIngresar.Location = new Point(200, 217);
             btnIngresar.Name = "btnIngresar";
             btnIngresar.Size = new Size(124, 44);
             btnIngresar.TabIndex = 5;
@@ -97,7 +97,7 @@
             // lnkOlvidaPass
             // 
             lnkOlvidaPass.AutoSize = true;
-            lnkOlvidaPass.Location = new Point(365, 336);
+            lnkOlvidaPass.Location = new Point(42, 232);
             lnkOlvidaPass.Name = "lnkOlvidaPass";
             lnkOlvidaPass.Size = new Size(119, 15);
             lnkOlvidaPass.TabIndex = 6;
@@ -110,7 +110,7 @@
             AcceptButton = btnIngresar;
             AutoScaleDimensions = new SizeF(7F, 15F);
             AutoScaleMode = AutoScaleMode.Font;
-            ClientSize = new Size(1099, 596);
+            ClientSize = new Size(401, 313);
             Controls.Add(lnkOlvidaPass);
             Controls.Add(btnIngresar);
             Controls.Add(txtPass);
