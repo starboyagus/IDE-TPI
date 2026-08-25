@@ -19,6 +19,8 @@ builder.Services.AddScoped<IUsuarioRepository, UsuarioRepository>();
 builder.Services.AddScoped<IUsuarioService, UsuarioService>();
 builder.Services.AddScoped<IProductoRepository, ProductoRepository>();
 builder.Services.AddScoped<IProductoService, ProductoService>();
+builder.Services.AddScoped<ICategoriaRepository, CategoriaRepository>();
+builder.Services.AddScoped<ICategoriaService, CategoriaService>();
 
 var app = builder.Build();
 
@@ -52,4 +54,5 @@ if (!app.Environment.IsDevelopment())
 // Map endpoints
 app.MapUsuarioEndpoints();
 app.MapProductoEndpoints();
+app.MapCategoriaEndpoints();
 app.Run();

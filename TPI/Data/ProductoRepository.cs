@@ -1,4 +1,4 @@
-﻿using Domain.Model;
+using Domain.Model;
 using Microsoft.EntityFrameworkCore;
 
 namespace Data
@@ -31,12 +31,17 @@ namespace Data
 
         public async Task<Producto?> GetAsync(int id)
         {
-            return await _context.Productos.FindAsync(id);
+            return await _context.Productos
+                .Include(p => p.Categoria) 
+                .FirstOrDefaultAsync(p => p.Id == id);
         }
 
         public async Task<IEnumerable<Producto>> GetAllAsync()
         {
-            return await _context.Productos.Where(p => p.EsActivo).ToListAsync();
+            return await _context.Productos
+                .Include(p => p.Categoria)
+                .Where(p => p.EsActivo)
+                .ToListAsync();
         }
 
         public async Task<bool> UpdateAsync(Producto producto)
@@ -50,6 +55,7 @@ namespace Data
             existing.SetPrecio(producto.Precio);
             existing.SetStock(producto.Stock);
             existing.SetEsPreVenta(producto.EsPreVenta);
+            existing.SetCategoriaId(producto.CategoriaId);
             existing.SetEsActivo(producto.EsActivo);
 
             await _context.SaveChangesAsync();

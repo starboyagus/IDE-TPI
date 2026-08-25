@@ -29,6 +29,7 @@ namespace WindowsForm
                 dgvProductos.DataSource = listaProductos; // Asigna la nueva lista
                 dgvProductos.ReadOnly = true;
                 dgvProductos.Columns["esActivo"].Visible = false;
+                dgvProductos.Columns["categoriaId"].Visible = false;
                 dgvProductos.Columns["precio"].DefaultCellStyle.Format = "C2";
 
                 dgvProductos.AutoResizeColumns(DataGridViewAutoSizeColumnsMode.AllCells);

@@ -50,11 +50,11 @@
             // tscProductos.ContentPanel
             // 
             tscProductos.ContentPanel.Controls.Add(tlProductos);
-            tscProductos.ContentPanel.Size = new Size(799, 426);
+            tscProductos.ContentPanel.Size = new Size(850, 426);
             tscProductos.Dock = DockStyle.Fill;
             tscProductos.Location = new Point(0, 0);
             tscProductos.Name = "tscProductos";
-            tscProductos.Size = new Size(799, 451);
+            tscProductos.Size = new Size(850, 451);
             tscProductos.TabIndex = 0;
             tscProductos.Text = "toolStripContainer1";
             // 
@@ -78,24 +78,29 @@
             tlProductos.RowCount = 2;
             tlProductos.RowStyles.Add(new RowStyle(SizeType.Percent, 100F));
             tlProductos.RowStyles.Add(new RowStyle());
-            tlProductos.Size = new Size(799, 426);
+            tlProductos.Size = new Size(850, 426);
             tlProductos.TabIndex = 0;
             // 
             // dgvProductos
             // 
+            dgvProductos.AllowUserToAddRows = false;
+            dgvProductos.AllowUserToDeleteRows = false;
+            dgvProductos.AllowUserToResizeColumns = false;
+            dgvProductos.AllowUserToResizeRows = false;
             dgvProductos.BackgroundColor = SystemColors.ControlDarkDark;
             dgvProductos.ColumnHeadersHeightSizeMode = DataGridViewColumnHeadersHeightSizeMode.AutoSize;
             tlProductos.SetColumnSpan(dgvProductos, 3);
             dgvProductos.Dock = DockStyle.Fill;
             dgvProductos.Location = new Point(3, 3);
             dgvProductos.Name = "dgvProductos";
-            dgvProductos.Size = new Size(793, 391);
+            dgvProductos.RowHeadersWidthSizeMode = DataGridViewRowHeadersWidthSizeMode.DisableResizing;
+            dgvProductos.Size = new Size(844, 391);
             dgvProductos.TabIndex = 0;
             // 
             // btnActualizar
             // 
             btnActualizar.Anchor = AnchorStyles.Top | AnchorStyles.Right;
-            btnActualizar.Location = new Point(559, 400);
+            btnActualizar.Location = new Point(610, 400);
             btnActualizar.Name = "btnActualizar";
             btnActualizar.RightToLeft = RightToLeft.No;
             btnActualizar.Size = new Size(75, 23);
@@ -106,7 +111,7 @@
             // 
             // btnEliminar
             // 
-            btnEliminar.Location = new Point(640, 400);
+            btnEliminar.Location = new Point(691, 400);
             btnEliminar.Name = "btnEliminar";
             btnEliminar.Size = new Size(75, 23);
             btnEliminar.TabIndex = 2;
@@ -116,7 +121,7 @@
             // 
             // btnSalir
             // 
-            btnSalir.Location = new Point(721, 400);
+            btnSalir.Location = new Point(772, 400);
             btnSalir.Name = "btnSalir";
             btnSalir.Size = new Size(75, 23);
             btnSalir.TabIndex = 3;
@@ -146,7 +151,7 @@
             // 
             AutoScaleDimensions = new SizeF(7F, 15F);
             AutoScaleMode = AutoScaleMode.Font;
-            ClientSize = new Size(799, 451);
+            ClientSize = new Size(850, 451);
             Controls.Add(tscProductos);
             FormBorderStyle = FormBorderStyle.FixedDialog;
             MaximizeBox = false;

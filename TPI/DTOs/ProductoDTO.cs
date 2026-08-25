@@ -10,8 +10,10 @@ namespace DTOs
         public decimal Precio { get; set; }
         public int Stock { get; set; }
         public bool EsPreVenta { get; set; }
+        public int CategoriaId { get; set; }
+        public string? Categoria { get; set; }
         public DateTime FechaAlta { get; set; }
         public bool EsActivo { get; set; }
-
+        
     }
 }

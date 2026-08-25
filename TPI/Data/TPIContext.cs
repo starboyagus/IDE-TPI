@@ -1,6 +1,7 @@
-using Microsoft.EntityFrameworkCore;
 using Domain.Model;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
+using static System.Runtime.InteropServices.JavaScript.JSType;
 
 namespace Data
 {
@@ -8,6 +9,7 @@ namespace Data
     {
         public DbSet<Usuario> Usuarios { get; set; }
         public DbSet<Producto> Productos { get; set; }
+        public DbSet<Categoria> Categorias { get; set; }
 
         public TPIContext(DbContextOptions<TPIContext> options) : base(options)
         {
@@ -82,7 +84,7 @@ namespace Data
                 //Datos inical de prueba
                 entity.HasData(
                     new { Id = 1, Nombre = "Juan", Apellido = "Pérez", Email = "juan@gmail.com", Telefono = "3511234567", Contrasenia = "usuario123", Rol = RolUsuario.Usuario, FechaAlta = DateTime.Now, EsActivo = true });
-                    });
+            });
 
             modelBuilder.Entity<Producto>(entity =>
             {
@@ -110,6 +112,9 @@ namespace Data
                 .IsRequired()
                 .HasColumnType("bit");
 
+                entity.Property(e => e.CategoriaId)
+                    .IsRequired();
+
                 entity.Property(e => e.FechaAlta)
                     .IsRequired();
 
@@ -119,11 +124,48 @@ namespace Data
 
                 // Datos iniciales de prueba
                 entity.HasData(
-                    new { Id = 1, Nombre = "Laptop Dell XPS 13", Descripcion = "Ultrabook de alto rendimiento", Precio = 1200.0m, Stock = 10, EsPreVenta = false, FechaAlta = DateTime.Now, EsActivo = true },
-                    new { Id = 2, Nombre = "Mouse Logitech MX Master 3", Descripcion = "Mouse inalámbrico ergonómico", Precio = 89.9m, Stock = 25, EsPreVenta = false, FechaAlta = DateTime.Now, EsActivo = true },
-                    new { Id = 3, Nombre = "Teclado Mecánico Corsair K70", Descripcion = "Teclado mecánico RGB", Precio = 149.0m, Stock = 15, EsPreVenta = false, FechaAlta = DateTime.Now, EsActivo = true },
-                    new { Id = 4, Nombre = "Monitor Samsung 27 4K", Descripcion = "Monitor 4K de 27 pulgadas", Precio = 349.0m, Stock = 8, EsPreVenta = false, FechaAlta = DateTime.Now, EsActivo = true },
-                    new { Id = 5, Nombre = "Auriculares Sony WH-1000XM4", Descripcion = "Auriculares con cancelación de ruido", Precio = 279.98m, Stock = 20, EsPreVenta = false, FechaAlta = DateTime.Now, EsActivo = true }
+                    new { Id = 1, Nombre = "AMD Ryzen 5 5600", Descripcion = "Procesador AM4 6C 12T", Precio = 1200.0m, Stock = 10, EsPreVenta = false, CategoriaId = 1, FechaAlta = DateTime.Now, EsActivo = true },
+                    new { Id = 2, Nombre = "Mouse Logitech MX Master 3", Descripcion = "Mouse inalámbrico ergonómico", Precio = 89.9m, Stock = 25, EsPreVenta = false, CategoriaId = 5, FechaAlta = DateTime.Now, EsActivo = true },
+                    new { Id = 3, Nombre = "Corsair Vengeance 8gb DDR4", Descripcion = "Memoria RAM DDR4 8GB 3200MHz", Precio = 149.0m, Stock = 15, EsPreVenta = false, CategoriaId = 2, FechaAlta = DateTime.Now, EsActivo = true },
+                    new { Id = 4, Nombre = "NVIDIA RTX 5070", Descripcion = "Placa de video RTX5070 12GB VRAM", Precio = 349.0m, Stock = 8, EsPreVenta = false, CategoriaId = 3, FechaAlta = DateTime.Now, EsActivo = true },
+                    new { Id = 5, Nombre = "Auriculares Sony WH-1000XM4", Descripcion = "Auriculares con cancelación de ruido", Precio = 279.98m, Stock = 20, EsPreVenta = false, CategoriaId = 4, FechaAlta = DateTime.Now, EsActivo = true }
+                );
+            });
+            modelBuilder.Entity<Producto>()
+            .HasOne(p => p.Categoria)
+            .WithMany()
+            .HasForeignKey(p => p.CategoriaId)
+            .OnDelete(DeleteBehavior.Restrict);
+
+            modelBuilder.Entity<Categoria>(entity =>
+            {
+                entity.HasKey(e => e.Id);
+
+                entity.Property(e => e.Id)
+                    .ValueGeneratedOnAdd();
+
+                entity.Property(e => e.Nombre)
+                    .IsRequired()
+                    .HasMaxLength(100);
+
+                entity.Property(e => e.Descripcion)
+                    .IsRequired()
+                    .HasMaxLength(500);
+
+                entity.Property(e => e.FechaAlta)
+                    .IsRequired();
+
+                entity.Property(e => e.EsActivo)
+                    .IsRequired()
+                    .HasColumnType("bit");
+
+                // Datos iniciales de prueba
+                entity.HasData(
+                    new { Id = 1, Nombre = "CPU", Descripcion = "Unidad central de procesamiento", FechaAlta = DateTime.Now, EsActivo = true },
+                    new { Id = 2, Nombre = "RAM", Descripcion = "Memoria de acceso aleatorio", FechaAlta = DateTime.Now, EsActivo = true },
+                    new { Id = 3, Nombre = "GPU", Descripcion = "Unidad de procesamiento de graficos", FechaAlta = DateTime.Now, EsActivo = true },
+                    new { Id = 4, Nombre = "Auricular", Descripcion = "Periferico con parlantes stereo", FechaAlta = DateTime.Now, EsActivo = true },
+                    new { Id = 5, Nombre = "Mouse", Descripcion = "Periferico con sensor optico y click mecanico", FechaAlta = DateTime.Now, EsActivo = true }
                 );
             });
         }

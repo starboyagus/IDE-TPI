@@ -83,6 +83,10 @@ namespace WindowsForm
             // 
             // dgvUsuarios
             // 
+            dgvUsuarios.AllowUserToAddRows = false;
+            dgvUsuarios.AllowUserToDeleteRows = false;
+            dgvUsuarios.AllowUserToResizeColumns = false;
+            dgvUsuarios.AllowUserToResizeRows = false;
             dgvUsuarios.BackgroundColor = SystemColors.ControlDarkDark;
             dgvUsuarios.ColumnHeadersHeightSizeMode = DataGridViewColumnHeadersHeightSizeMode.AutoSize;
             tlUsuarios.SetColumnSpan(dgvUsuarios, 3);
@@ -90,6 +94,7 @@ namespace WindowsForm
             dgvUsuarios.Location = new Point(3, 3);
             dgvUsuarios.Name = "dgvUsuarios";
             dgvUsuarios.ReadOnly = true;
+            dgvUsuarios.RowHeadersWidthSizeMode = DataGridViewRowHeadersWidthSizeMode.DisableResizing;
             dgvUsuarios.Size = new Size(793, 391);
             dgvUsuarios.TabIndex = 0;
             // 

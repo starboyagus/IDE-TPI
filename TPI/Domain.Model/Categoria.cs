@@ -1,36 +1,20 @@
-using System.Text.RegularExpressions;
+﻿using System.Text.RegularExpressions;
 
 namespace Domain.Model
 {
-    public class Producto
+    public class Categoria
     {
         public int Id { get; private set; }
         public string Nombre { get; private set; }
-
         public string Descripcion { get; private set; }
-
-        public decimal Precio { get; private set; }
-
-        public int Stock { get; private set; }
-
-        public bool EsPreVenta { get; private set; }
-
-        public int CategoriaId { get; private set; }
-        public Categoria? Categoria { get; private set; }
-
         public DateTime FechaAlta { get; private set; }
-
         public bool EsActivo { get; private set; }
 
-        public Producto(int id, string nombre, string descripcion, decimal precio, int stock, bool esPreVenta, int categoriaId, DateTime fechaAlta, bool esActivo)
+        public Categoria(int id, string nombre, string descripcion, DateTime fechaAlta, bool esActivo)
         {
             SetId(id);
             SetNombre(nombre);
             SetDescripcion(descripcion);
-            SetPrecio(precio);
-            SetStock(stock);
-            SetEsPreVenta(esPreVenta);
-            SetCategoriaId(categoriaId);
             SetFechaAlta(fechaAlta);
             SetEsActivo(esActivo);
         }
@@ -40,11 +24,6 @@ namespace Domain.Model
             if (id < 0)
                 throw new ArgumentException("El Id debe ser mayor que 0.", nameof(id));
             Id = id;
-        }
-
-        public void SetEsPreVenta(bool esPreVenta)
-        {
-            EsPreVenta = esPreVenta;
         }
 
         public void SetNombre(string nombre)
@@ -61,20 +40,6 @@ namespace Domain.Model
             Descripcion = descripcion;
         }
 
-        public void SetPrecio(decimal precio)
-        {
-            if (precio < 0)
-                throw new ArgumentException("El precio debe ser mayor que 0.", nameof(precio));
-            Precio = precio;
-        }
-
-        public void SetStock(int stock)
-        {
-            if (stock < 0)
-                throw new ArgumentException("El stock no debe ser negativo.", nameof(stock));
-            Stock = stock;
-        }
-
         public void SetFechaAlta(DateTime fechaAlta)
         {
             if (fechaAlta == default)
@@ -85,13 +50,6 @@ namespace Domain.Model
         public void SetEsActivo(bool esActivo)
         {
             EsActivo = esActivo;
-        }
-
-        public void SetCategoriaId(int categoriaId)
-        {
-            if (categoriaId <= 0)
-                throw new ArgumentException("La categoría no puede ser nula.", nameof(categoriaId));
-            CategoriaId = categoriaId;
         }
     }
 }
