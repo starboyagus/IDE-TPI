@@ -11,14 +11,14 @@ namespace Data
         public DbSet<Producto> Productos { get; set; }
         public DbSet<Categoria> Categorias { get; set; }
 
+        // El DbContext se crea una vez por request, así que la base NO se verifica acá:
+        // de eso se encarga el EnsureCreated() del arranque en Program.cs.
         public TPIContext(DbContextOptions<TPIContext> options) : base(options)
         {
-            this.Database.EnsureCreated();
         }
 
         internal TPIContext()
         {
-            this.Database.EnsureCreated();
         }
 
         protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)

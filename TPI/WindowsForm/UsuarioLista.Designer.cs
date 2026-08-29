@@ -93,8 +93,11 @@ namespace WindowsForm
             dgvUsuarios.Dock = DockStyle.Fill;
             dgvUsuarios.Location = new Point(3, 3);
             dgvUsuarios.Name = "dgvUsuarios";
+            dgvUsuarios.MultiSelect = false;
             dgvUsuarios.ReadOnly = true;
             dgvUsuarios.RowHeadersWidthSizeMode = DataGridViewRowHeadersWidthSizeMode.DisableResizing;
+            // Al hacer clic en cualquier celda se selecciona la fila entera.
+            dgvUsuarios.SelectionMode = DataGridViewSelectionMode.FullRowSelect;
             dgvUsuarios.Size = new Size(793, 391);
             dgvUsuarios.TabIndex = 0;
             // 

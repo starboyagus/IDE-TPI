@@ -93,7 +93,10 @@
             dgvProductos.Dock = DockStyle.Fill;
             dgvProductos.Location = new Point(3, 3);
             dgvProductos.Name = "dgvProductos";
+            dgvProductos.MultiSelect = false;
             dgvProductos.RowHeadersWidthSizeMode = DataGridViewRowHeadersWidthSizeMode.DisableResizing;
+            // Al hacer clic en cualquier celda se selecciona la fila entera.
+            dgvProductos.SelectionMode = DataGridViewSelectionMode.FullRowSelect;
             dgvProductos.Size = new Size(844, 391);
             dgvProductos.TabIndex = 0;
             // 

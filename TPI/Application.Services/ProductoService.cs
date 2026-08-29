@@ -7,10 +7,23 @@ namespace Application.Services
     public class ProductoService : IProductoService
     {
         private readonly IProductoRepository productoRepository;
+        private readonly ICategoriaRepository categoriaRepository;
 
-        public ProductoService(IProductoRepository productoRepository)
+        public ProductoService(IProductoRepository productoRepository, ICategoriaRepository categoriaRepository)
         {
             this.productoRepository = productoRepository;
+            this.categoriaRepository = categoriaRepository;
+        }
+
+        // Evita que llegue a la base una CategoriaId inexistente o dada de baja (sería un error de clave foránea).
+        private async Task ValidarCategoriaAsync(int categoriaId)
+        {
+            var categoria = await categoriaRepository.GetAsync(categoriaId);
+
+            if (categoria == null || !categoria.EsActivo)
+            {
+                throw new ArgumentException("La categoría seleccionada no existe o no está activa.");
+            }
         }
 
         public async Task<ProductoDTO> AddAsync(ProductoDTO dto)
@@ -24,6 +37,8 @@ namespace Application.Services
             {
                 throw new ArgumentException($"Ya existe un producto con la Descripcion '{dto.Descripcion}'.");
             }
+
+            await ValidarCategoriaAsync(dto.CategoriaId);
 
             var fechaAlta = DateTime.Now;
             Producto producto = new Producto(0, dto.Nombre, dto.Descripcion, dto.Precio, dto.Stock, dto.EsPreVenta, dto.CategoriaId, fechaAlta, true);
@@ -94,6 +109,9 @@ namespace Application.Services
             {
                 throw new ArgumentException($"Ya existe un producto con la Descripcion '{dto.Descripcion}'.");
             }
+
+            await ValidarCategoriaAsync(dto.CategoriaId);
+
             // Obtener el producto existente para preservar FechaAlta
             var existing = await productoRepository.GetAsync(dto.Id);
             if (existing == null)

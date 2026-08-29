@@ -43,9 +43,36 @@ namespace WindowsForm
 
         private void SetCombos()
         {
+            // DropDownList => el usuario solo puede elegir de la lista, no escribir.
+            preventaComboBox.DropDownStyle = ComboBoxStyle.DropDownList;
             preventaComboBox.Items.Clear();
             preventaComboBox.Items.Add("Si");
             preventaComboBox.Items.Add("No");
+
+            categComboBox.DropDownStyle = ComboBoxStyle.DropDownList;
+        }
+
+        private async Task CargarCategoriasAsync()
+        {
+            var categorias = await CategoriaApiClient.GetAllAsync();
+
+            categComboBox.DataSource = categorias;
+            categComboBox.DisplayMember = nameof(CategoriaDTO.Nombre);
+            categComboBox.ValueMember = nameof(CategoriaDTO.Id);
+            categComboBox.SelectedIndex = -1; // arranca sin selección para que se elija a propósito
+        }
+
+        private void SeleccionarCategoria()
+        {
+            if (this.Producto.CategoriaId > 0)
+            {
+                // Si la categoría del producto fue dada de baja no está en la lista y el combo queda vacío.
+                categComboBox.SelectedValue = this.Producto.CategoriaId;
+            }
+            else
+            {
+                categComboBox.SelectedIndex = -1;
+            }
         }
 
         private void SetProducto()
@@ -81,6 +108,10 @@ namespace WindowsForm
             {
                 this.Mode = mode;
                 this.Producto = producto;
+
+                // Las categorías se piden a la API, así que el combo se llena después de cargar los demás campos.
+                await CargarCategoriasAsync();
+                SeleccionarCategoria();
             }
             catch (Exception ex)
             {
@@ -121,9 +152,9 @@ namespace WindowsForm
                 return false;
             }
 
-            if (this.Mode == FormMode.Update && preventaComboBox.SelectedItem == null)
+            if (categComboBox.SelectedValue == null)
             {
-                MessageBox.Show("Seleccioná la preventa.", "Datos incompletos", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                MessageBox.Show("Seleccioná una categoría.", "Datos incompletos", MessageBoxButtons.OK, MessageBoxIcon.Warning);
                 return false;
             }
 
@@ -154,6 +185,8 @@ namespace WindowsForm
 
             bool esPreVenta = preventaComboBox.SelectedItem?.ToString() == "Si";
             this.Producto.EsPreVenta = esPreVenta;
+
+            this.Producto.CategoriaId = (int)categComboBox.SelectedValue!;
 
             try
             {

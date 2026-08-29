@@ -22,6 +22,10 @@ namespace API.Clients
         {
             var response = await ApiClient.Http.GetAsync($"productos/{id}");
 
+            // El producto ya no existe: se devuelve null para que el form muestre su propio mensaje.
+            if (response.StatusCode == HttpStatusCode.NotFound)
+                return null;
+
             response.EnsureSuccessStatusCode();
 
             return await response.Content.ReadFromJsonAsync<ProductoDTO>();
@@ -40,8 +44,6 @@ namespace API.Clients
         public static async Task<bool> DeleteAsync(int id)
         {
             var response = await ApiClient.Http.DeleteAsync($"productos/{id}");
-
-            response.EnsureSuccessStatusCode();
 
             return response.IsSuccessStatusCode;
         }
