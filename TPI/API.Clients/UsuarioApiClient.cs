@@ -19,5 +19,52 @@ namespace API.Clients
 
             return await response.Content.ReadFromJsonAsync<UsuarioDTO>();
         }
+
+        public static async Task<List<UsuarioDTO>?> GetAllAsync()
+        {
+            var response = await ApiClient.Http.GetAsync("usuarios");
+
+            response.EnsureSuccessStatusCode();
+
+            return await response.Content.ReadFromJsonAsync<List<UsuarioDTO>>() ?? new List<UsuarioDTO>();
+
+        }
+
+        public static async Task<UsuarioDTO?> GetAsync(int id)
+        {
+            var response = await ApiClient.Http.GetAsync($"usuarios/{id}");
+
+            response.EnsureSuccessStatusCode();
+
+            return await response.Content.ReadFromJsonAsync<UsuarioDTO>();
+        }
+
+        public static async Task<HttpResponseMessage?> UpdateAsync(UsuarioDTO usuario)
+        {
+
+            return await ApiClient.Http.PutAsJsonAsync("usuarios", usuario);
+
+            //response.EnsureSuccessStatusCode();
+
+            //return await response.Content.ReadFromJsonAsync<UsuarioDTO>();
+        }
+
+        public static async Task<bool> DeleteAsync(int id)
+        {
+            var response = await ApiClient.Http.DeleteAsync($"usuarios/{id}");
+
+            response.EnsureSuccessStatusCode();
+
+            return response.IsSuccessStatusCode;
+        }
+
+        public static async Task<HttpResponseMessage> AddAsync(UsuarioDTO usuario)
+        {
+            return await ApiClient.Http.PostAsJsonAsync("usuarios", usuario);
+
+            //response.EnsureSuccessStatusCode();
+
+            //return await response.Content.ReadFromJsonAsync<UsuarioDTO>();
+        }
     }
 }

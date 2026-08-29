@@ -1,15 +1,16 @@
-﻿using System;
+﻿using API.Clients;
+using Domain.Model;
+using DTOs;
+using System;
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.Data;
 using System.Drawing;
 using System.Linq;
+using System.Net.Http.Json;
 using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Forms;
-using System.Net.Http.Json;
-using API.Clients;
-using DTOs;
 namespace WindowsForm
 {
     public partial class ProductoLista : Form
@@ -23,8 +24,8 @@ namespace WindowsForm
         {
             try
             {
-                var listaProductos = await ApiClient.Http.GetFromJsonAsync<List<ProductoDTO>>("productos")
-                    ?? new List<ProductoDTO>();
+                var listaProductos = await ProductoApiClient.GetAllAsync();
+
                 dgvProductos.DataSource = null; // Limpia los datos anteriores
                 dgvProductos.DataSource = listaProductos; // Asigna la nueva lista
                 dgvProductos.ReadOnly = true;
@@ -57,7 +58,7 @@ namespace WindowsForm
 
             try
             {
-                ProductoDTO? producto = await ApiClient.Http.GetFromJsonAsync<ProductoDTO>($"productos/{seleccionado.Id}");
+                ProductoDTO? producto = await ProductoApiClient.GetAsync(seleccionado.Id);
                 if (producto == null)
                 {
                     MessageBox.Show("El producto ya no existe.", "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
@@ -115,10 +116,10 @@ namespace WindowsForm
 
             try
             {
-                var response = await ApiClient.Http.DeleteAsync($"productos/{producto.Id}");
-                if (!response.IsSuccessStatusCode)
+                var response = await ProductoApiClient.DeleteAsync(producto.Id);
+                if (!response)
                 {
-                    MessageBox.Show($"No se pudo eliminar el producto ({(int)response.StatusCode} {response.ReasonPhrase}).", "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                    MessageBox.Show($"No se pudo eliminar el producto.", "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
                     return;
                 }
             }

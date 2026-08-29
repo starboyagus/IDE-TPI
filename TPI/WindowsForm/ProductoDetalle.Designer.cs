@@ -42,6 +42,8 @@
             preventaComboBox = new ComboBox();
             aceptarButton = new Button();
             cancelarButton = new Button();
+            txtCategoria = new Label();
+            categComboBox = new ComboBox();
             SuspendLayout();
             // 
             // idTextBox
@@ -145,7 +147,7 @@
             // 
             // aceptarButton
             // 
-            aceptarButton.Location = new Point(87, 335);
+            aceptarButton.Location = new Point(87, 353);
             aceptarButton.Name = "aceptarButton";
             aceptarButton.Size = new Size(105, 35);
             aceptarButton.TabIndex = 13;
@@ -155,7 +157,7 @@
             // 
             // cancelarButton
             // 
-            cancelarButton.Location = new Point(197, 335);
+            cancelarButton.Location = new Point(198, 353);
             cancelarButton.Name = "cancelarButton";
             cancelarButton.Size = new Size(105, 35);
             cancelarButton.TabIndex = 14;
@@ -163,11 +165,30 @@
             cancelarButton.UseVisualStyleBackColor = true;
             cancelarButton.Click += cancelarButton_Click;
             // 
+            // txtCategoria
+            // 
+            txtCategoria.AutoSize = true;
+            txtCategoria.Location = new Point(12, 319);
+            txtCategoria.Name = "txtCategoria";
+            txtCategoria.Size = new Size(58, 15);
+            txtCategoria.TabIndex = 15;
+            txtCategoria.Text = "Categoria";
+            // 
+            // categComboBox
+            // 
+            categComboBox.FormattingEnabled = true;
+            categComboBox.Location = new Point(87, 311);
+            categComboBox.Name = "categComboBox";
+            categComboBox.Size = new Size(216, 23);
+            categComboBox.TabIndex = 16;
+            // 
             // ProductoDetalle
             // 
             AutoScaleDimensions = new SizeF(7F, 15F);
             AutoScaleMode = AutoScaleMode.Font;
-            ClientSize = new Size(334, 391);
+            ClientSize = new Size(334, 400);
+            Controls.Add(categComboBox);
+            Controls.Add(txtCategoria);
             Controls.Add(cancelarButton);
             Controls.Add(aceptarButton);
             Controls.Add(preventaComboBox);
@@ -208,5 +229,7 @@
         private ComboBox preventaComboBox;
         private Button aceptarButton;
         private Button cancelarButton;
+        private Label txtCategoria;
+        private ComboBox categComboBox;
     }
 }

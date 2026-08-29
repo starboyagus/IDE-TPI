@@ -10,4 +10,6 @@ namespace API.Clients
             BaseAddress = new Uri("http://localhost:5183/")
         };
     }
+
+
 }

@@ -25,8 +25,7 @@ namespace WindowsForm
         {
             try
             {
-                var listaUsuarios = await ApiClient.Http.GetFromJsonAsync<List<UsuarioDTO>>("usuarios")
-                    ?? new List<UsuarioDTO>();
+               var listaUsuarios = await UsuarioApiClient.GetAllAsync();
 
                 dgvUsuarios.DataSource = null; // Limpia los datos anteriores
                 dgvUsuarios.DataSource = listaUsuarios; // Asigna la nueva lista
@@ -59,7 +58,7 @@ namespace WindowsForm
 
             try
             {
-                UsuarioDTO? usuario = await ApiClient.Http.GetFromJsonAsync<UsuarioDTO>($"usuarios/{seleccionado.Id}");
+                UsuarioDTO? usuario = await UsuarioApiClient.GetAsync(seleccionado.Id); //dsadsad asdsa
                 if (usuario == null)
                 {
                     MessageBox.Show("El usuario ya no existe.", "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
@@ -117,10 +116,10 @@ namespace WindowsForm
 
             try
             {
-                var response = await ApiClient.Http.DeleteAsync($"usuarios/{usuario.Id}");
-                if (!response.IsSuccessStatusCode)
+                var response = await UsuarioApiClient.DeleteAsync(usuario.Id);
+                if (!response)
                 {
-                    MessageBox.Show($"No se pudo eliminar el usuario ({(int)response.StatusCode} {response.ReasonPhrase}).", "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                    MessageBox.Show($"No se pudo eliminar el usuario.", "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
                     return;
                 }
             }

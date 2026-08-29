@@ -16,7 +16,7 @@ namespace WindowsForm
     {
         public LoginForm()
         {
-            InitializeComponent();
+           InitializeComponent();
            this.Load += LoginForm_Load; //CUANDO TERMINEMOS HAY QUE BORRARLO
         }
 

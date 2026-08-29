@@ -10,6 +10,6 @@ namespace Data
         Task<IEnumerable<Producto>> GetAllAsync();
         Task<bool> UpdateAsync(Producto producto);
         Task<bool> NombreExistsAsync(string nombre, int? excludeId = null);
-        Task<bool> DescExistsAsync(string desc, int? excludeId = null)
-;    }
+        Task<bool> DescExistsAsync(string desc, int? excludeId = null);
+    }
 }

@@ -155,11 +155,11 @@ namespace WindowsForm
                 if (this.Mode == FormMode.Update)
                 {
                     this.Usuario.Rol = (RolUsuario)rolComboBox.SelectedItem!;
-                    response = await ApiClient.Http.PutAsJsonAsync("usuarios", this.Usuario);
+                    response = await UsuarioApiClient.UpdateAsync(this.Usuario);
                 }
                 else
                 {
-                    response = await ApiClient.Http.PostAsJsonAsync("usuarios", this.Usuario);
+                    response = await UsuarioApiClient.AddAsync(this.Usuario);
                 }
 
                 if (!response.IsSuccessStatusCode)

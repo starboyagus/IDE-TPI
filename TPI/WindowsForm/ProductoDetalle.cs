@@ -161,11 +161,11 @@ namespace WindowsForm
 
                 if (this.Mode == FormMode.Update)
                 {
-                    response = await ApiClient.Http.PutAsJsonAsync("productos", this.Producto);
+                    response = await ProductoApiClient.UpdateAsync(this.Producto);
                 }
                 else
                 {
-                    response = await ApiClient.Http.PostAsJsonAsync("productos", this.Producto);
+                    response = await ProductoApiClient.AddAsync(this.Producto);
                 }
 
                 if (!response.IsSuccessStatusCode)
