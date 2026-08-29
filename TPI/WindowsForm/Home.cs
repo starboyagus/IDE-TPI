@@ -42,5 +42,11 @@ namespace WindowsForm
             ProductoLista formProducto = new ProductoLista();
             formProducto.Show(this);
         }
+
+        private void categoriaToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            CategoriaLista formCategoria = new CategoriaLista();
+            formCategoria.Show(this);
+        }
     }
 }
