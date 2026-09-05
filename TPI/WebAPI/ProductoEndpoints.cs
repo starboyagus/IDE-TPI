@@ -21,7 +21,8 @@ namespace WebAPI
             .WithName("GetProducto")
             .Produces<ProductoDTO>(StatusCodes.Status200OK)
             .Produces(StatusCodes.Status404NotFound)
-            .WithOpenApi();
+            .WithOpenApi()
+            .RequireAuthorization("ProductosLeer");
 
             app.MapGet("/productos", async (IProductoService productoService) =>
             {
@@ -31,7 +32,8 @@ namespace WebAPI
             })
             .WithName("GetAllProductos")
             .Produces<List<ProductoDTO>>(StatusCodes.Status200OK)
-            .WithOpenApi();
+            .WithOpenApi()
+            .RequireAuthorization("ProductosLeer");
 
             app.MapPost("/productos", async (ProductoDTO dto, IProductoService productoService) =>
             {
@@ -49,7 +51,8 @@ namespace WebAPI
             .WithName("AddProducto")
             .Produces<ProductoDTO>(StatusCodes.Status201Created)
             .Produces(StatusCodes.Status400BadRequest)
-            .WithOpenApi();
+            .WithOpenApi()
+            .RequireAuthorization("ProductosAgregar");
 
             app.MapPut("/productos", async (ProductoDTO dto, IProductoService productoService) =>
             {
@@ -72,7 +75,8 @@ namespace WebAPI
             .WithName("UpdateProducto")
             .Produces(StatusCodes.Status404NotFound)
             .Produces(StatusCodes.Status400BadRequest)
-            .WithOpenApi();
+            .WithOpenApi()
+            .RequireAuthorization("ProductosActualizar");
 
             app.MapDelete("/productos/{id}", async (int id, IProductoService productoService) =>
             {
@@ -88,7 +92,8 @@ namespace WebAPI
             .WithName("DeleteProducto")
             .Produces(StatusCodes.Status204NoContent)
             .Produces(StatusCodes.Status404NotFound)
-            .WithOpenApi();
+            .WithOpenApi()
+            .RequireAuthorization("ProductosEliminar");
         }
     }
 }
