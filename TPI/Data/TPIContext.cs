@@ -70,6 +70,10 @@ namespace Data
                     .IsRequired()
                     .HasMaxLength(255);
 
+                entity.Property(e => e.Salt)
+                    .IsRequired()
+                    .HasMaxLength(64);
+
                 entity.Property(e => e.Rol)
                     .IsRequired()
                     .HasConversion<int>();
@@ -82,8 +86,11 @@ namespace Data
                     .HasColumnType("bit");
 
                 //Datos inical de prueba
+                // HasData no pasa por el constructor, así que el salt y el hash se calculan acá.
+                var saltSeed = Usuario.GenerateSalt();
+
                 entity.HasData(
-                    new { Id = 1, Nombre = "Juan", Apellido = "Pérez", Email = "juan@gmail.com", Telefono = "3511234567", Contrasenia = "usuario123", Rol = RolUsuario.Usuario, FechaAlta = DateTime.Now, EsActivo = true });
+                    new { Id = 1, Nombre = "Juan", Apellido = "Pérez", Email = "juan@gmail.com", Telefono = "3511234567", Salt = saltSeed, Contrasenia = Usuario.HashPassword("usuario123", saltSeed), Rol = RolUsuario.Usuario, FechaAlta = DateTime.Now, EsActivo = true });
             });
 
             modelBuilder.Entity<Producto>(entity =>

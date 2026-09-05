@@ -48,7 +48,8 @@ namespace Data
             existing.SetApellido(usuario.Apellido);
             existing.SetEmail(usuario.Email);
             existing.SetTelefono(usuario.Telefono);
-            existing.SetContrasenia(usuario.Contrasenia);
+            // El service ya decidió el hash final (el nuevo o el que ya tenía): acá solo se copia.
+            existing.EstablecerContraseniaHasheada(usuario.Contrasenia, usuario.Salt);
             existing.SetRol(usuario.Rol);
             existing.SetEsActivo(usuario.EsActivo);
 
