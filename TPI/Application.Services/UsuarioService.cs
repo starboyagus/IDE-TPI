@@ -1,5 +1,6 @@
-using Domain.Model;
+using Azure.Core;
 using Data;
+using Domain.Model;
 using DTOs;
 
 namespace Application.Services
@@ -98,9 +99,18 @@ namespace Application.Services
             if (existing == null)
                 return false;
 
-            string contrasenia = string.IsNullOrWhiteSpace(dto.Contrasenia) ? existing.Contrasenia : dto.Contrasenia;
+            bool cambiaContrasenia = !string.IsNullOrWhiteSpace(dto.Contrasenia);
 
-            Usuario usuario = new Usuario(dto.Id, dto.Nombre, dto.Apellido, dto.Email, dto.Telefono, contrasenia, dto.Rol, existing.FechaAlta, dto.EsActivo);
+            // Si viene una contraseña nueva, el constructor la hashea. Si no, se construye con
+            // un valor temporal y enseguida se restaura el hash y el salt que ya tenía el usuario.
+            Usuario usuario = new Usuario(dto.Id, dto.Nombre, dto.Apellido, dto.Email, dto.Telefono,
+                cambiaContrasenia ? dto.Contrasenia! : "temporal", dto.Rol, existing.FechaAlta, dto.EsActivo);
+
+            if (!cambiaContrasenia)
+            {
+                usuario.EstablecerContraseniaHasheada(existing.Contrasenia, existing.Salt);
+            }
+
             return await usuarioRepository.UpdateAsync(usuario);
         }
 
@@ -116,7 +126,7 @@ namespace Application.Services
             var usuario = candidatos.FirstOrDefault(u => u.Email.Equals(email, StringComparison.OrdinalIgnoreCase));
 
             // Mismo resultado para email inexistente y contraseña incorrecta: no se le informa al cliente cuál de los dos falló.
-            if (usuario == null || usuario.Contrasenia != loginDTO.Contrasenia)
+            if (usuario == null || !usuario.ValidatePassword(loginDTO.Contrasenia))
                 return null;
 
             return new UsuarioDTO
