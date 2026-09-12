@@ -44,7 +44,19 @@ namespace WindowsForm
 
         private async void ProductoLista_Load(object sender, EventArgs e)
         {
+            ConfigurarBotonesSegunRol();
             await Listar();
+        }
+
+        // Un usuario común solo puede ver la lista: la API le devolvería 403 en cualquier alta, baja o
+        // modificación, así que directamente no se le muestran esos botones. Un Admin ve todo.
+        private void ConfigurarBotonesSegunRol()
+        {
+            bool esAdmin = AuthService.AuthService.IsAdmin;
+
+            tsbNuevo.Visible = esAdmin;
+            btnActualizar.Visible = esAdmin;
+            btnEliminar.Visible = esAdmin;
         }
 
         private async void btnActualizar_Click(object sender, EventArgs e)

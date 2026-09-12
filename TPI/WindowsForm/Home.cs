@@ -28,8 +28,26 @@ namespace WindowsForm
             if (appLogin.ShowDialog() != DialogResult.OK)
             {
                 this.Dispose();
+                return;
             }
 
+            ConfigurarMenuSegunRol();
+        }
+
+        // Usuarios y Categorías son tareas de administración: si el logueado no es Admin, no se muestran.
+        // Productos queda visible para todos; ProductoLista se encarga de ocultar los botones de edición.
+        private void ConfigurarMenuSegunRol()
+        {
+            var usuario = AuthService.AuthService.UsuarioActual;
+            bool esAdmin = AuthService.AuthService.IsAdmin;
+
+            usuariosToolStripMenuItem.Visible = esAdmin;
+            categoriaToolStripMenuItem.Visible = esAdmin;
+
+            if (usuario != null)
+            {
+                this.Text = $"Inicio - {usuario.Nombre} {usuario.Apellido} ({usuario.Rol})";
+            }
         }
         private void usuariosToolStripMenuItem_Click(object sender, EventArgs e)
         {
