@@ -21,7 +21,8 @@ namespace WebAPI
             .WithName("GetUsuario")
             .Produces<UsuarioDTO>(StatusCodes.Status200OK)
             .Produces(StatusCodes.Status404NotFound)
-            .WithOpenApi();
+            .WithOpenApi()
+            .RequireAuthorization("UsuariosLeer");
 
             app.MapGet("/usuarios", async (IUsuarioService usuarioService) =>
             {
@@ -31,7 +32,8 @@ namespace WebAPI
             })
             .WithName("GetAllUsuarios")
             .Produces<List<UsuarioDTO>>(StatusCodes.Status200OK)
-            .WithOpenApi();
+            .WithOpenApi()
+            .RequireAuthorization("UsuariosLeer");
 
             app.MapPost("/usuarios", async (UsuarioDTO dto, IUsuarioService usuarioService) =>
             {
@@ -49,7 +51,8 @@ namespace WebAPI
             .WithName("AddUsuario")
             .Produces<UsuarioDTO>(StatusCodes.Status201Created)
             .Produces(StatusCodes.Status400BadRequest)
-            .WithOpenApi();
+            .WithOpenApi()
+            .RequireAuthorization("UsuariosAgregar");
 
             app.MapPut("/usuarios", async (UsuarioDTO dto, IUsuarioService usuarioService) =>
             {
@@ -72,7 +75,8 @@ namespace WebAPI
             .WithName("UpdateUsuario")
             .Produces(StatusCodes.Status404NotFound)
             .Produces(StatusCodes.Status400BadRequest)
-            .WithOpenApi();
+            .WithOpenApi()
+            .RequireAuthorization("UsuariosActualizar");
 
             app.MapDelete("/usuarios/{id}", async (int id, IUsuarioService usuarioService) =>
             {
@@ -88,9 +92,10 @@ namespace WebAPI
             .WithName("DeleteUsuario")
             .Produces(StatusCodes.Status204NoContent)
             .Produces(StatusCodes.Status404NotFound)
-            .WithOpenApi();
+            .WithOpenApi()
+            .RequireAuthorization("UsuariosEliminar");
 
-            app.MapPost("/usuarios/login", async (LoginDTO dto, IUsuarioService usuarioService) =>
+            app.MapPost("/usuarios/login", async (LoginDTO dto, IUsuarioService usuarioService, IJwtService jwtService) =>
             {
                 UsuarioDTO? usuario = await usuarioService.LoginAsync(dto);
 
@@ -99,12 +104,28 @@ namespace WebAPI
                     return Results.Unauthorized();
                 }
 
-                return Results.Ok(usuario);
+                string token = jwtService.GenerateToken(usuario);
+
+                return Results.Ok(new AuthResponseDTO
+                {
+                    Token = token,
+                    Usuario = new UsuarioAuthDTO
+                    {
+                        Id = usuario.Id,
+                        Nombre = usuario.Nombre,
+                        Apellido = usuario.Apellido,
+                        Email = usuario.Email,
+                        Telefono = usuario.Telefono,
+                        Rol = usuario.Rol
+                    },
+                    Expiration = DateTime.UtcNow.AddHours(1) // Set token expiration time
+                });
             })
-            .WithName("LoginUsuario")
-            .Produces<UsuarioDTO>(StatusCodes.Status200OK)
-            .Produces(StatusCodes.Status401Unauthorized)
-            .WithOpenApi();
+                .WithName("LoginUsuario")
+                .Produces<AuthResponseDTO>(StatusCodes.Status200OK)
+                .Produces(StatusCodes.Status401Unauthorized)
+                .WithOpenApi()
+                .AllowAnonymous();
 
             app.MapGet("/usuarios/criteria", async (string texto, IUsuarioService usuarioService) =>
             {
@@ -120,7 +141,8 @@ namespace WebAPI
                 }
             })
             .WithName("GetUsuariosByCriteria")
-            .WithOpenApi();
+            .WithOpenApi()
+            .RequireAuthorization("UsuariosLeer");
         }
     }
 }

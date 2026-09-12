@@ -6,7 +6,7 @@ namespace API.Clients
 {
     public static class UsuarioApiClient
     {
-        public static async Task<UsuarioDTO?> LoginAsync(string email, string contrasenia)
+        public static async Task<AuthResponseDTO?> LoginAsync(string email, string contrasenia)
         {
             var credenciales = new LoginDTO { Email = email, Contrasenia = contrasenia };
 
@@ -17,7 +17,7 @@ namespace API.Clients
 
             response.EnsureSuccessStatusCode();
 
-            return await response.Content.ReadFromJsonAsync<UsuarioDTO>();
+            return await response.Content.ReadFromJsonAsync<AuthResponseDTO>();
         }
 
         public static async Task<List<UsuarioDTO>?> GetAllAsync()

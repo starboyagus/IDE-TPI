@@ -21,7 +21,8 @@ namespace WebAPI
             .WithName("GetCategoria")
             .Produces<CategoriaDTO>(StatusCodes.Status200OK)
             .Produces(StatusCodes.Status404NotFound)
-            .WithOpenApi();
+            .WithOpenApi()
+            .RequireAuthorization("CategoriasLeer");
 
             app.MapGet("/categorias", async (ICategoriaService categoriaService) =>
             {
@@ -31,7 +32,8 @@ namespace WebAPI
             })
             .WithName("GetAllCategorias")
             .Produces<List<CategoriaDTO>>(StatusCodes.Status200OK)
-            .WithOpenApi();
+            .WithOpenApi()
+            .RequireAuthorization("CategoriasLeer");
 
             app.MapPost("/categorias", async (CategoriaDTO dto, ICategoriaService categoriaService) =>
             {
@@ -49,7 +51,8 @@ namespace WebAPI
             .WithName("AddCategoria")
             .Produces<CategoriaDTO>(StatusCodes.Status201Created)
             .Produces(StatusCodes.Status400BadRequest)
-            .WithOpenApi();
+            .WithOpenApi()
+            .RequireAuthorization("CategoriasAgregar");
 
             app.MapPut("/categorias", async (CategoriaDTO dto, ICategoriaService categoriaService) =>
             {
@@ -72,7 +75,8 @@ namespace WebAPI
             .WithName("CategoriaProducto")
             .Produces(StatusCodes.Status404NotFound)
             .Produces(StatusCodes.Status400BadRequest)
-            .WithOpenApi();
+            .WithOpenApi()
+            .RequireAuthorization("CategoriasActualizar");
 
             app.MapDelete("/categorias/{id}", async (int id, ICategoriaService categoriaService) =>
             {
@@ -88,7 +92,8 @@ namespace WebAPI
             .WithName("DeleteCategoria")
             .Produces(StatusCodes.Status204NoContent)
             .Produces(StatusCodes.Status404NotFound)
-            .WithOpenApi();
+            .WithOpenApi()
+            .RequireAuthorization("CategoriasEliminar");
         }
     }
 }

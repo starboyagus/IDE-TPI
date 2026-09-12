@@ -1,16 +1,13 @@
 <Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
-    <OutputType>WinExe</OutputType>
-    <TargetFramework>net8.0-windows</TargetFramework>
-    <Nullable>enable</Nullable>
-    <UseWindowsForms>true</UseWindowsForms>
+    <TargetFramework>net8.0</TargetFramework>
     <ImplicitUsings>enable</ImplicitUsings>
+    <Nullable>enable</Nullable>
   </PropertyGroup>
 
   <ItemGroup>
     <ProjectReference Include="..\API.Clients\API.Clients.csproj" />
-    <ProjectReference Include="..\AuthService\AuthService.csproj" />
     <ProjectReference Include="..\Domain.Model\Domain.Model.csproj" />
     <ProjectReference Include="..\DTOs\DTOs.csproj" />
   </ItemGroup>
