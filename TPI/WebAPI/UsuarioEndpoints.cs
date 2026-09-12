@@ -95,7 +95,7 @@ namespace WebAPI
             .WithOpenApi()
             .RequireAuthorization("UsuariosEliminar");
 
-            app.MapPost("/usuarios/login", async (LoginDTO dto, IUsuarioService usuarioService) =>
+            app.MapPost("/usuarios/login", async (LoginDTO dto, IUsuarioService usuarioService, IJwtService jwtService) =>
             {
                 UsuarioDTO? usuario = await usuarioService.LoginAsync(dto);
 
@@ -104,13 +104,28 @@ namespace WebAPI
                     return Results.Unauthorized();
                 }
 
-                return Results.Ok(usuario);
+                string token = jwtService.GenerateToken(usuario);
+
+                return Results.Ok(new AuthResponseDTO
+                {
+                    Token = token,
+                    Usuario = new UsuarioAuthDTO
+                    {
+                        Id = usuario.Id,
+                        Nombre = usuario.Nombre,
+                        Apellido = usuario.Apellido,
+                        Email = usuario.Email,
+                        Telefono = usuario.Telefono,
+                        Rol = usuario.Rol
+                    },
+                    Expiration = DateTime.UtcNow.AddHours(1) // Set token expiration time
+                });
             })
-            .WithName("LoginUsuario")
-            .Produces<UsuarioDTO>(StatusCodes.Status200OK)
-            .Produces(StatusCodes.Status401Unauthorized)
-            .WithOpenApi()
-            .AllowAnonymous();
+                .WithName("LoginUsuario")
+                .Produces<AuthResponseDTO>(StatusCodes.Status200OK)
+                .Produces(StatusCodes.Status401Unauthorized)
+                .WithOpenApi()
+                .AllowAnonymous();
 
             app.MapGet("/usuarios/criteria", async (string texto, IUsuarioService usuarioService) =>
             {

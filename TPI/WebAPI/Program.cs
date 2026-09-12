@@ -1,4 +1,4 @@
-﻿using System.Text;
+using System.Text;
 using Application.Services;
 using Data;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
@@ -49,8 +49,9 @@ builder.Services.AddScoped<IProductoService, ProductoService>();
 builder.Services.AddScoped<ICategoriaRepository, CategoriaRepository>();
 builder.Services.AddScoped<ICategoriaService, CategoriaService>();
 
-// Agregar autenticacion JWT
+builder.Services.AddScoped<IJwtService, JwtService>();
 
+// Agregar autenticacion JWT
 var jwtSettings = builder.Configuration.GetSection("JwtSettings");
 var secretKey = jwtSettings["SecretKey"];
 var issuer = jwtSettings["Issuer"];

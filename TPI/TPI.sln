@@ -17,6 +17,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "WindowsForm", "WindowsForm\
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "API.Clients", "API.Clients\API.Clients.csproj", "{3194F08C-DEA2-45DA-B8AD-37E79A9BAEC8}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "AuthService", "AuthService\AuthService.csproj", "{7A46862F-067F-4ED3-88D7-9F4A7659BC0D}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -111,6 +113,18 @@ Global
 		{3194F08C-DEA2-45DA-B8AD-37E79A9BAEC8}.Release|x64.Build.0 = Release|Any CPU
 		{3194F08C-DEA2-45DA-B8AD-37E79A9BAEC8}.Release|x86.ActiveCfg = Release|Any CPU
 		{3194F08C-DEA2-45DA-B8AD-37E79A9BAEC8}.Release|x86.Build.0 = Release|Any CPU
+		{7A46862F-067F-4ED3-88D7-9F4A7659BC0D}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{7A46862F-067F-4ED3-88D7-9F4A7659BC0D}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{7A46862F-067F-4ED3-88D7-9F4A7659BC0D}.Debug|x64.ActiveCfg = Debug|Any CPU
+		{7A46862F-067F-4ED3-88D7-9F4A7659BC0D}.Debug|x64.Build.0 = Debug|Any CPU
+		{7A46862F-067F-4ED3-88D7-9F4A7659BC0D}.Debug|x86.ActiveCfg = Debug|Any CPU
+		{7A46862F-067F-4ED3-88D7-9F4A7659BC0D}.Debug|x86.Build.0 = Debug|Any CPU
+		{7A46862F-067F-4ED3-88D7-9F4A7659BC0D}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{7A46862F-067F-4ED3-88D7-9F4A7659BC0D}.Release|Any CPU.Build.0 = Release|Any CPU
+		{7A46862F-067F-4ED3-88D7-9F4A7659BC0D}.Release|x64.ActiveCfg = Release|Any CPU
+		{7A46862F-067F-4ED3-88D7-9F4A7659BC0D}.Release|x64.Build.0 = Release|Any CPU
+		{7A46862F-067F-4ED3-88D7-9F4A7659BC0D}.Release|x86.ActiveCfg = Release|Any CPU
+		{7A46862F-067F-4ED3-88D7-9F4A7659BC0D}.Release|x86.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

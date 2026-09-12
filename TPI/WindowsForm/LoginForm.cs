@@ -42,9 +42,9 @@ namespace WindowsForm
 
             try
             {
-                UsuarioDTO? usuario = await UsuarioApiClient.LoginAsync(txtEmail.Text.Trim(), txtPass.Text);
+                var authResult = await AuthService.AuthService.LoginAsync(txtEmail.Text.Trim(), txtPass.Text);
 
-                if (usuario == null)
+                if (authResult == null)
                 {
                     MessageBox.Show("Email y/o contraseña incorrectos", "Login",
                         MessageBoxButtons.OK, MessageBoxIcon.Error);
