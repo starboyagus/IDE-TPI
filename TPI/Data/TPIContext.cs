@@ -90,7 +90,7 @@ namespace Data
                 var saltSeed = Usuario.GenerateSalt();
 
                 entity.HasData(
-                    new { Id = 1, Nombre = "Juan", Apellido = "Pérez", Email = "juan@gmail.com", Telefono = "3511234567", Salt = saltSeed, Contrasenia = Usuario.HashPassword("usuario123", saltSeed), Rol = RolUsuario.Usuario, FechaAlta = DateTime.Now, EsActivo = true });
+                    new { Id = 1, Nombre = "Juan", Apellido = "Pérez", Email = "juan@gmail.com", Telefono = "3511234567", Salt = saltSeed, Contrasenia = Usuario.HashPassword("usuario123", saltSeed), Rol = RolUsuario.Admin, FechaAlta = DateTime.Now, EsActivo = true });
             });
 
             modelBuilder.Entity<Producto>(entity =>
