@@ -17,12 +17,13 @@ namespace Domain.Model
 
         public int CategoriaId { get; private set; }
         public Categoria? Categoria { get; private set; }
-
+        public int MarcaId { get; private set; }
+        public Marca? Marca { get; private set; }
         public DateTime FechaAlta { get; private set; }
 
         public bool EsActivo { get; private set; }
 
-        public Producto(int id, string nombre, string descripcion, decimal precio, int stock, bool esPreVenta, int categoriaId, DateTime fechaAlta, bool esActivo)
+        public Producto(int id, string nombre, string descripcion, decimal precio, int stock, bool esPreVenta, int categoriaId, int marcaId, DateTime fechaAlta, bool esActivo)
         {
             SetId(id);
             SetNombre(nombre);
@@ -31,6 +32,7 @@ namespace Domain.Model
             SetStock(stock);
             SetEsPreVenta(esPreVenta);
             SetCategoriaId(categoriaId);
+            SetMarcaId(marcaId);
             SetFechaAlta(fechaAlta);
             SetEsActivo(esActivo);
         }
@@ -92,6 +94,12 @@ namespace Domain.Model
             if (categoriaId <= 0)
                 throw new ArgumentException("La categoría no puede ser nula.", nameof(categoriaId));
             CategoriaId = categoriaId;
+        }
+        public void SetMarcaId(int marcaId)
+        {
+            if (marcaId <= 0)
+                throw new ArgumentException("La categoría no puede ser nula.", nameof(marcaId));
+            CategoriaId = marcaId;
         }
     }
 }

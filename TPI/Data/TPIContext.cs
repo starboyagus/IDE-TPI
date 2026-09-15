@@ -10,6 +10,9 @@ namespace Data
         public DbSet<Usuario> Usuarios { get; set; }
         public DbSet<Producto> Productos { get; set; }
         public DbSet<Categoria> Categorias { get; set; }
+        public DbSet<Especificacion> Especificaciones { get; set; }
+        public DbSet<Marca> Marcas { get; set; }
+        public DbSet<Orden> Ordenes { get; set; }
 
         // El DbContext se crea una vez por request, así que la base NO se verifica acá:
         // de eso se encarga el EnsureCreated() del arranque en Program.cs.
@@ -144,6 +147,12 @@ namespace Data
             .HasForeignKey(p => p.CategoriaId)
             .OnDelete(DeleteBehavior.Restrict);
 
+            modelBuilder.Entity<Producto>()
+            .HasOne(p => p.Marca)
+            .WithMany()
+            .HasForeignKey(p => p.MarcaId)
+            .OnDelete(DeleteBehavior.Restrict);
+
             modelBuilder.Entity<Categoria>(entity =>
             {
                 entity.HasKey(e => e.Id);
@@ -175,6 +184,69 @@ namespace Data
                     new { Id = 5, Nombre = "Mouse", Descripcion = "Periferico con sensor optico y click mecanico", FechaAlta = DateTime.Now, EsActivo = true }
                 );
             });
+            modelBuilder.Entity<Especificacion>(entity =>
+            {
+                entity.HasKey(e => e.Id);
+
+                entity.Property(e => e.Id)
+                    .ValueGeneratedOnAdd();
+
+                entity.Property(e => e.Clave)
+                    .IsRequired()
+                    .HasMaxLength(500);
+
+                entity.Property(e => e.Valor)
+                    .IsRequired()
+                    .HasMaxLength(100);
+
+                entity.Property(e => e.Unidad)
+                    .HasMaxLength(100);
+
+                entity.Property(e => e.FechaAlta)
+                    .IsRequired();
+
+                entity.Property(e => e.EsActivo)
+                    .IsRequired()
+                    .HasColumnType("bit");
+            });
+
+            modelBuilder.Entity<Especificacion>()
+            .HasOne(e => e.Producto)
+            .WithMany()
+            .HasForeignKey(e => e.ProductoId)
+            .OnDelete(DeleteBehavior.Cascade);
+
+            modelBuilder.Entity<Marca>(entity =>
+            {
+                entity.HasKey(e => e.Id);
+
+                entity.Property(e => e.Id)
+                    .ValueGeneratedOnAdd();
+
+                entity.Property(e => e.Nombre)
+                    .IsRequired()
+                    .HasMaxLength(100);
+
+                entity.Property(e => e.PaisOrigen)
+                    .IsRequired()
+                    .HasMaxLength(500);
+
+                entity.Property(e => e.FechaAlta)
+                    .IsRequired();
+
+                entity.Property(e => e.EsActivo)
+                    .IsRequired()
+                    .HasColumnType("bit");
+
+                entity.HasData(
+                    new { Id = 1, Nombre = "Nvidia", Descripcion = "Unidad central de procesamiento", FechaAlta = DateTime.Now, EsActivo = true },
+                    new { Id = 2, Nombre = "RAM", Descripcion = "Memoria de acceso aleatorio", FechaAlta = DateTime.Now, EsActivo = true },
+                    new { Id = 3, Nombre = "GPU", Descripcion = "Unidad de procesamiento de graficos", FechaAlta = DateTime.Now, EsActivo = true },
+                    new { Id = 4, Nombre = "Auricular", Descripcion = "Periferico con parlantes stereo", FechaAlta = DateTime.Now, EsActivo = true },
+                    new { Id = 5, Nombre = "Mouse", Descripcion = "Periferico con sensor optico y click mecanico", FechaAlta = DateTime.Now, EsActivo = true }
+                );
+            });
         }
+
     }
 }
