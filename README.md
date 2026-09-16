@@ -12,6 +12,8 @@ Proyecto Integrador — Tecnologias de Desarrollo de Software IDE
 
 ---
 
+![Foto](docs/sddefault.png)
+
 ## 📋 Descripción
 
 El sistema consiste en el desarrollo de una plataforma de e-commerce especializada en hardware para computadoras, que combina la venta al público con la gestión interna del negocio (clientes, productos y órdenes de compra). Desde el lado del cliente, los usuarios pueden navegar el catálogo mediante búsqueda y filtros por categoría, marca, precio y compatibilidad, con tres niveles de acceso diferenciados: usuario normal (navegación y compra) y administrador (gestión completa del catálogo, clientes y órdenes).
