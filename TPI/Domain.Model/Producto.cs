@@ -6,22 +6,17 @@ namespace Domain.Model
     {
         public int Id { get; private set; }
         public string Nombre { get; private set; }
-
         public string Descripcion { get; private set; }
-
         public decimal Precio { get; private set; }
-
         public int Stock { get; private set; }
-
         public bool EsPreVenta { get; private set; }
-
         public int CategoriaId { get; private set; }
         public Categoria? Categoria { get; private set; }
         public int MarcaId { get; private set; }
         public Marca? Marca { get; private set; }
         public DateTime FechaAlta { get; private set; }
-
         public bool EsActivo { get; private set; }
+        public ICollection<Especificacion> Especificaciones { get; private set; } = new List<Especificacion>();
 
         public Producto(int id, string nombre, string descripcion, decimal precio, int stock, bool esPreVenta, int categoriaId, int marcaId, DateTime fechaAlta, bool esActivo)
         {
@@ -99,7 +94,7 @@ namespace Domain.Model
         {
             if (marcaId <= 0)
                 throw new ArgumentException("La categoría no puede ser nula.", nameof(marcaId));
-            CategoriaId = marcaId;
+            MarcaId = marcaId;
         }
     }
 }

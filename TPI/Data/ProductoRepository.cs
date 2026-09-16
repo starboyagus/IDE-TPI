@@ -33,6 +33,8 @@ namespace Data
         {
             return await _context.Productos
                 .Include(p => p.Categoria) 
+                .Include(p => p.Marca)
+                .Include(p => p.Especificaciones)
                 .FirstOrDefaultAsync(p => p.Id == id);
         }
 
@@ -40,6 +42,8 @@ namespace Data
         {
             return await _context.Productos
                 .Include(p => p.Categoria)
+                .Include(p => p.Marca)
+                .Include(p => p.Especificaciones)
                 .Where(p => p.EsActivo)
                 .ToListAsync();
         }
@@ -56,6 +60,7 @@ namespace Data
             existing.SetStock(producto.Stock);
             existing.SetEsPreVenta(producto.EsPreVenta);
             existing.SetCategoriaId(producto.CategoriaId);
+            existing.SetMarcaId(producto.MarcaId);
             existing.SetEsActivo(producto.EsActivo);
 
             await _context.SaveChangesAsync();

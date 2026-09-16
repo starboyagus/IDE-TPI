@@ -48,6 +48,10 @@ builder.Services.AddScoped<IProductoRepository, ProductoRepository>();
 builder.Services.AddScoped<IProductoService, ProductoService>();
 builder.Services.AddScoped<ICategoriaRepository, CategoriaRepository>();
 builder.Services.AddScoped<ICategoriaService, CategoriaService>();
+builder.Services.AddScoped<IMarcaRepository, MarcaRepository>();
+builder.Services.AddScoped<IMarcaService, MarcaService>();
+builder.Services.AddScoped<IEspecificacionRepository, EspecificacionRepository>();
+builder.Services.AddScoped<IEspecificacionService, EspecificacionService>();
 
 builder.Services.AddScoped<IJwtService, JwtService>();
 
@@ -94,6 +98,18 @@ builder.Services.AddAuthorization(options =>
     options.AddPolicy("CategoriasActualizar", policy => policy.RequireClaim("permission", "categorias.actualizar"));
     options.AddPolicy("CategoriasEliminar", policy => policy.RequireClaim("permission", "categorias.eliminar"));
 
+    // Políticas para Marcas
+    options.AddPolicy("MarcasLeer", policy => policy.RequireClaim("permission", "marcas.leer"));
+    options.AddPolicy("MarcasAgregar", policy => policy.RequireClaim("permission", "marcas.agregar"));
+    options.AddPolicy("MarcasActualizar", policy => policy.RequireClaim("permission", "marcas.actualizar"));
+    options.AddPolicy("MarcasEliminar", policy => policy.RequireClaim("permission", "marcas.eliminar"));
+
+    // Políticas para Especificaciones
+    options.AddPolicy("EspecificacionesLeer", policy => policy.RequireClaim("permission", "especificaciones.leer"));
+    options.AddPolicy("EspecificacionesAgregar", policy => policy.RequireClaim("permission", "especificaciones.agregar"));
+    options.AddPolicy("EspecificacionesActualizar", policy => policy.RequireClaim("permission", "especificaciones.actualizar"));
+    options.AddPolicy("EspecificacionesEliminar", policy => policy.RequireClaim("permission", "especificaciones.eliminar"));
+
     // Fallback: Requerir autenticación para endpoints no especificados
     options.FallbackPolicy = options.DefaultPolicy;
 });
@@ -134,4 +150,6 @@ app.UseAuthorization();
 app.MapUsuarioEndpoints();
 app.MapProductoEndpoints();
 app.MapCategoriaEndpoints();
+app.MapMarcaEndpoints();
+app.MapEspecificacionEndpoints();
 app.Run();

@@ -54,6 +54,16 @@ namespace WebAPI
                 claims.Add(new Claim("permission", "categorias.agregar"));
                 claims.Add(new Claim("permission", "categorias.actualizar"));
                 claims.Add(new Claim("permission", "categorias.eliminar"));
+
+                claims.Add(new Claim("permission", "marcas.leer"));
+                claims.Add(new Claim("permission", "marcas.agregar"));
+                claims.Add(new Claim("permission", "marcas.actualizar"));
+                claims.Add(new Claim("permission", "marcas.eliminar"));
+
+                claims.Add(new Claim("permission", "especificaciones.leer"));
+                claims.Add(new Claim("permission", "especificaciones.agregar"));
+                claims.Add(new Claim("permission", "especificaciones.actualizar"));
+                claims.Add(new Claim("permission", "especificaciones.eliminar"));
             }
             else
             {

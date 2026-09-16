@@ -12,7 +12,7 @@ namespace Data
         public DbSet<Categoria> Categorias { get; set; }
         public DbSet<Especificacion> Especificaciones { get; set; }
         public DbSet<Marca> Marcas { get; set; }
-        public DbSet<Orden> Ordenes { get; set; }
+        //public DbSet<Orden> Ordenes { get; set; }
 
         // El DbContext se crea una vez por request, así que la base NO se verifica acá:
         // de eso se encarga el EnsureCreated() del arranque en Program.cs.
@@ -135,11 +135,11 @@ namespace Data
 
                 // Datos iniciales de prueba
                 entity.HasData(
-                    new { Id = 1, Nombre = "AMD Ryzen 5 5600", Descripcion = "Procesador AM4 6C 12T", Precio = 1200.0m, Stock = 10, EsPreVenta = false, CategoriaId = 1, FechaAlta = DateTime.Now, EsActivo = true },
-                    new { Id = 2, Nombre = "Mouse Logitech MX Master 3", Descripcion = "Mouse inalámbrico ergonómico", Precio = 89.9m, Stock = 25, EsPreVenta = false, CategoriaId = 5, FechaAlta = DateTime.Now, EsActivo = true },
-                    new { Id = 3, Nombre = "Corsair Vengeance 8gb DDR4", Descripcion = "Memoria RAM DDR4 8GB 3200MHz", Precio = 149.0m, Stock = 15, EsPreVenta = false, CategoriaId = 2, FechaAlta = DateTime.Now, EsActivo = true },
-                    new { Id = 4, Nombre = "NVIDIA RTX 5070", Descripcion = "Placa de video RTX5070 12GB VRAM", Precio = 349.0m, Stock = 8, EsPreVenta = false, CategoriaId = 3, FechaAlta = DateTime.Now, EsActivo = true },
-                    new { Id = 5, Nombre = "Auriculares Sony WH-1000XM4", Descripcion = "Auriculares con cancelación de ruido", Precio = 279.98m, Stock = 20, EsPreVenta = false, CategoriaId = 4, FechaAlta = DateTime.Now, EsActivo = true }
+                    new { Id = 1, Nombre = "AMD Ryzen 5 5600", Descripcion = "Procesador AM4 6C 12T", Precio = 1200.0m, Stock = 10, EsPreVenta = false, CategoriaId = 1, MarcaId = 2, FechaAlta = DateTime.Now, EsActivo = true },
+                    new { Id = 2, Nombre = "Mouse Logitech MX Master 3", Descripcion = "Mouse inalámbrico ergonómico", Precio = 89.9m, Stock = 25, EsPreVenta = false, CategoriaId = 5, MarcaId = 3, FechaAlta = DateTime.Now, EsActivo = true },
+                    new { Id = 3, Nombre = "Corsair Vengeance 8gb DDR4", Descripcion = "Memoria RAM DDR4 8GB 3200MHz", Precio = 149.0m, Stock = 15, EsPreVenta = false, CategoriaId = 2, MarcaId = 4, FechaAlta = DateTime.Now, EsActivo = true },
+                    new { Id = 4, Nombre = "NVIDIA RTX 5070", Descripcion = "Placa de video RTX5070 12GB VRAM", Precio = 349.0m, Stock = 8, EsPreVenta = false, CategoriaId = 3, MarcaId = 1, FechaAlta = DateTime.Now, EsActivo = true },
+                    new { Id = 5, Nombre = "Auriculares Sony WH-1000XM4", Descripcion = "Auriculares con cancelación de ruido", Precio = 279.98m, Stock = 20, EsPreVenta = false, CategoriaId = 4, MarcaId = 5, FechaAlta = DateTime.Now, EsActivo = true }
                 );
             });
             modelBuilder.Entity<Producto>()
@@ -213,7 +213,7 @@ namespace Data
 
             modelBuilder.Entity<Especificacion>()
             .HasOne(e => e.Producto)
-            .WithMany()
+            .WithMany(p => p.Especificaciones)
             .HasForeignKey(e => e.ProductoId)
             .OnDelete(DeleteBehavior.Cascade);
 
@@ -240,11 +240,11 @@ namespace Data
                     .HasColumnType("bit");
 
                 entity.HasData(
-                    new { Id = 1, Nombre = "Nvidia", Descripcion = "Unidad central de procesamiento", FechaAlta = DateTime.Now, EsActivo = true },
-                    new { Id = 2, Nombre = "RAM", Descripcion = "Memoria de acceso aleatorio", FechaAlta = DateTime.Now, EsActivo = true },
-                    new { Id = 3, Nombre = "GPU", Descripcion = "Unidad de procesamiento de graficos", FechaAlta = DateTime.Now, EsActivo = true },
-                    new { Id = 4, Nombre = "Auricular", Descripcion = "Periferico con parlantes stereo", FechaAlta = DateTime.Now, EsActivo = true },
-                    new { Id = 5, Nombre = "Mouse", Descripcion = "Periferico con sensor optico y click mecanico", FechaAlta = DateTime.Now, EsActivo = true }
+                    new { Id = 1, Nombre = "Nvidia", PaisOrigen = "USA", FechaAlta = DateTime.Now, EsActivo = true },
+                    new { Id = 2, Nombre = "AMD", PaisOrigen = "USA", FechaAlta = DateTime.Now, EsActivo = true },
+                    new { Id = 3, Nombre = "Logitech", PaisOrigen = "USA", FechaAlta = DateTime.Now, EsActivo = true },
+                    new { Id = 4, Nombre = "Corsair", PaisOrigen = "USA", FechaAlta = DateTime.Now, EsActivo = true },
+                    new { Id = 5, Nombre = "Sony", PaisOrigen = "Japon", FechaAlta = DateTime.Now, EsActivo = true }
                 );
             });
         }

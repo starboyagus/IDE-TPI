@@ -12,6 +12,7 @@ namespace DTOs
         public bool EsPreVenta { get; set; }
         public int CategoriaId { get; set; }
         public string? Categoria { get; set; }
+        public string? Especificaciones { get; set; }
         public int MarcaId { get; set; }
         public string? Marca { get; set; }
         public DateTime FechaAlta { get; set; }

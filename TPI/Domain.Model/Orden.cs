@@ -6,15 +6,15 @@ namespace Domain.Model
 {
     public class Orden
     {
-        public int Id { get; set; }
-        public DateTime Fecha { get; set; }
-        public EstadoOrden Estado { get; set; }
-        public decimal Total{ get; set; }
-        public int UsuarioId { get; set; }
-        public Usuario? Usuario { get; set; }
-        public string DireccionEnvio { get; set; }
-        public DateTime FechaAlta { get; set; }
-        public bool EsActivo { get; set; }
+        public int Id { get; private set; }
+        public DateTime Fecha { get; private set; }
+        public EstadoOrden Estado { get; private set; }
+        public decimal Total{ get; private set; }
+        public int UsuarioId { get; private set; }
+        public Usuario? Usuario { get; private set; }
+        public string DireccionEnvio { get; private set; }
+        public DateTime FechaAlta { get; private set; }
+        public bool EsActivo { get; private set; }
 
         public Orden(int id, DateTime fecha, EstadoOrden estado, decimal total, int usuarioId, string direccionEnvio, DateTime fechaAlta, bool esActivo)
         {

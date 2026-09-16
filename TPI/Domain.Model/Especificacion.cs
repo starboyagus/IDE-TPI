@@ -5,14 +5,14 @@ namespace Domain.Model
 {
     public class Especificacion
     {
-        public int Id { get; set; }
-        public string Clave { get; set; }
-        public string Valor { get; set; }
-        public string? Unidad { get; set; }
-        public int ProductoId { get; set; }
-        public Producto? Producto { get; set; }
-        public DateTime FechaAlta { get; set; }
-        public bool EsActivo { get; set; }
+        public int Id { get; private set; }
+        public string Clave { get; private set; }
+        public string Valor { get; private set; }
+        public string? Unidad { get; private set; }
+        public int ProductoId { get; private set; }
+        public Producto? Producto { get; private set; }
+        public DateTime FechaAlta { get; private set; }
+        public bool EsActivo { get; private set; }  
 
         public Especificacion(int id, string clave, string valor, string? unidad, int productoId, DateTime fechaAlta, bool esActivo)
         {
