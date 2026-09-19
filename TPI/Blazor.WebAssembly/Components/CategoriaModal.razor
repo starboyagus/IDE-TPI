@@ -1,0 +1,200 @@
+﻿@inject IJSRuntime JSRuntime
+@using System.Text.Json
+
+@if (showModal)
+{
+    <div class="modal fade show d-block" tabindex="-1" style="background-color: rgba(0,0,0,0.5);">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title">
+                        @if (mode == FormMode.Add)
+                        {
+                            <text>Agregar</text>
+                        }
+                        else
+                        {
+                            <text>Editar</text>
+                        }
+                    </h5>
+                    <button type="button" class="btn-close" @onclick="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <EditForm Model="currentCategoria" OnValidSubmit="HandleValidSubmit">
+                        <DataAnnotationsValidator />
+
+
+                        <div class="mb-3">
+                            <label class="form-label">Nombre *</label>
+                            <InputText @bind-Value="currentCategoria.Nombre" class="form-control" />
+                            @if (validationErrors.ContainsKey("Nombre"))
+                            {
+                                <div class="text-danger small">@validationErrors["Nombre"]</div>
+                            }
+                        </div>
+
+                        <div class="mb-3">
+                            <label class="form-label">Descripcion *</label>
+                            <InputText @bind-Value="currentCategoria.Descripcion" class="form-control" />
+                            @if (validationErrors.ContainsKey("Descripcion"))
+                            {
+                                <div class="text-danger small">@validationErrors["Descripcion"]</div>
+                            }
+                        </div>
+
+
+                        @if (mode == FormMode.Update)
+                        {
+                            <div class="mb-3">
+                                <label class="form-label">Fecha Alta</label>
+                                <input type="text" class="form-control" value="@currentCategoria.FechaAlta.ToString("dd/MM/yyyy HH:mm")" readonly />
+                            </div>
+                        }
+
+                        @if (!string.IsNullOrEmpty(errorMessage))
+                        {
+                            <div class="alert alert-danger">
+                                @errorMessage
+                            </div>
+                        }
+
+                        <div class="modal-footer">
+                            <button type="button" class="btn btn-secondary" @onclick="Close">Cancelar</button>
+                            <button type="submit" class="btn btn-primary" disabled="@saving">
+                                @if (saving)
+                                {
+                                    <span class="spinner-border spinner-border-sm me-2"></span>
+                                }
+                                @(mode == FormMode.Add ? "Agregar" : "Actualizar")
+                            </button>
+                        </div>
+                    </EditForm>
+                </div>
+            </div>
+        </div>
+    </div>
+}
+
+@code {
+    [Parameter] public EventCallback OnCategoriaChanged { get; set; }
+
+    private bool showModal = false;
+    private FormMode mode = FormMode.Add;
+    private CategoriaDTO currentCategoria = new CategoriaDTO();
+    private bool saving = false;
+    private string errorMessage = string.Empty;
+    private Dictionary<string, string> validationErrors = new Dictionary<string, string>();
+
+    public enum FormMode
+    {
+        Add,
+        Update
+    }
+
+    public void ShowAddModal()
+    {
+        mode = FormMode.Add;
+        currentCategoria = new CategoriaDTO();
+        ClearValidationErrors();
+        showModal = true;
+        StateHasChanged();
+    }
+
+    public void ShowEditModal(CategoriaDTO categoria)
+    {
+        mode = FormMode.Update;
+        currentCategoria = new CategoriaDTO
+        {
+            Id = categoria.Id,
+            Nombre = categoria.Nombre,
+            Descripcion = categoria.Descripcion,
+            FechaAlta = categoria.FechaAlta,
+            EsActivo = categoria.EsActivo
+        };
+        ClearValidationErrors();
+        showModal = true;
+        StateHasChanged();
+    }
+
+    private static async Task<string> ExtraerMensajeError(HttpResponseMessage response)
+    {
+        try
+        {
+            var body = await response.Content.ReadFromJsonAsync<JsonElement>();
+            if (body.ValueKind == JsonValueKind.Object && body.TryGetProperty("error", out var errorProp))
+            {
+                return errorProp.GetString() ?? "Ocurrió un error al guardar la categoría.";
+            }
+        }
+        catch
+        {
+        }
+
+        return $"Ocurrió un error al guardar la categoría ({(int)response.StatusCode} {response.ReasonPhrase}).";
+    }
+
+    private async Task HandleValidSubmit()
+    {
+        if (!ValidateCategoria())
+            return;
+
+        try
+        {
+            saving = true; errorMessage = string.Empty;
+            var response = mode == FormMode.Add
+                ? await CategoriaApiClient.AddAsync(currentCategoria)
+                : await CategoriaApiClient.UpdateAsync(currentCategoria);
+
+            if (!response.IsSuccessStatusCode)
+            {
+                errorMessage = await ExtraerMensajeError(response);
+                return;
+            }
+
+            await OnCategoriaChanged.InvokeAsync();
+            Close();
+        }
+        catch (Exception ex)
+        {
+            errorMessage = ex.Message;
+        }
+        finally
+        {
+            saving = false;
+        }
+    }
+
+    private bool ValidateCategoria()
+    {
+        ClearValidationErrors();
+        bool isValid = true;
+
+        if (string.IsNullOrWhiteSpace(currentCategoria.Nombre))
+        {
+            validationErrors["Nombre"] = "El Nombre es requerido";
+            isValid = false;
+        }
+
+        if (string.IsNullOrWhiteSpace(currentCategoria.Descripcion))
+        {
+            validationErrors["Descripcion"] = "La Descripción es requerida";
+            isValid = false;
+        }
+
+        StateHasChanged();
+        return isValid;
+    }
+
+    private void ClearValidationErrors()
+    {
+        validationErrors.Clear();
+        errorMessage = string.Empty;
+    }
+
+    private void Close()
+    {
+        showModal = false;
+        ClearValidationErrors();
+        StateHasChanged();
+    }
+}

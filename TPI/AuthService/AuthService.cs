@@ -14,6 +14,8 @@ namespace AuthService
         public static bool IsAuthenticated => !string.IsNullOrEmpty(Token) && UsuarioActual != null;
         public static bool IsAdmin => UsuarioActual?.Rol == RolUsuario.Admin;
 
+        public static event Action? SesionCambio;
+
         public static async Task<AuthResponseDTO?> LoginAsync(string email, string contrasenia)
         {
             var authResult = await UsuarioApiClient.LoginAsync(email, contrasenia);
@@ -24,6 +26,7 @@ namespace AuthService
                 UsuarioActual = authResult.Usuario;
                 Expiration = authResult.Expiration;
                 ApiClient.SetAuthToken(authResult.Token);
+                SesionCambio?.Invoke();
             }
 
             return authResult;
@@ -35,6 +38,7 @@ namespace AuthService
             UsuarioActual = null;
             Expiration = null;
             ApiClient.ClearAuthToken();
+            SesionCambio?.Invoke();
         }
     }
 }

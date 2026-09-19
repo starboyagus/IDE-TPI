@@ -19,6 +19,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "API.Clients", "API.Clients\
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "AuthService", "AuthService\AuthService.csproj", "{7A46862F-067F-4ED3-88D7-9F4A7659BC0D}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Blazor.WebAssembly", "Blazor.WebAssembly\Blazor.WebAssembly.csproj", "{C6E74B2E-99C8-446C-8066-2EA9A02FEFEA}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -125,6 +127,18 @@ Global
 		{7A46862F-067F-4ED3-88D7-9F4A7659BC0D}.Release|x64.Build.0 = Release|Any CPU
 		{7A46862F-067F-4ED3-88D7-9F4A7659BC0D}.Release|x86.ActiveCfg = Release|Any CPU
 		{7A46862F-067F-4ED3-88D7-9F4A7659BC0D}.Release|x86.Build.0 = Release|Any CPU
+		{C6E74B2E-99C8-446C-8066-2EA9A02FEFEA}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{C6E74B2E-99C8-446C-8066-2EA9A02FEFEA}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{C6E74B2E-99C8-446C-8066-2EA9A02FEFEA}.Debug|x64.ActiveCfg = Debug|Any CPU
+		{C6E74B2E-99C8-446C-8066-2EA9A02FEFEA}.Debug|x64.Build.0 = Debug|Any CPU
+		{C6E74B2E-99C8-446C-8066-2EA9A02FEFEA}.Debug|x86.ActiveCfg = Debug|Any CPU
+		{C6E74B2E-99C8-446C-8066-2EA9A02FEFEA}.Debug|x86.Build.0 = Debug|Any CPU
+		{C6E74B2E-99C8-446C-8066-2EA9A02FEFEA}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{C6E74B2E-99C8-446C-8066-2EA9A02FEFEA}.Release|Any CPU.Build.0 = Release|Any CPU
+		{C6E74B2E-99C8-446C-8066-2EA9A02FEFEA}.Release|x64.ActiveCfg = Release|Any CPU
+		{C6E74B2E-99C8-446C-8066-2EA9A02FEFEA}.Release|x64.Build.0 = Release|Any CPU
+		{C6E74B2E-99C8-446C-8066-2EA9A02FEFEA}.Release|x86.ActiveCfg = Release|Any CPU
+		{C6E74B2E-99C8-446C-8066-2EA9A02FEFEA}.Release|x86.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

@@ -1,0 +1,166 @@
+﻿@page "/categorias"
+@inject IJSRuntime JSRuntime
+@inject NavigationManager Navigation
+
+<PageTitle>Categorias</PageTitle>
+
+<div class="container-fluid">
+    <div class="row">
+        <div class="col-12">
+            <h3>Categorias</h3>
+            
+            @if (!string.IsNullOrEmpty(errorMessage))
+            {
+                <div class="alert alert-danger alert-dismissible fade show" role="alert">
+                    @errorMessage
+                    <button type="button" class="btn-close" @onclick="() => errorMessage = string.Empty"></button>
+                </div>
+            }
+            
+            @if (!string.IsNullOrEmpty(successMessage))
+            {
+                <div class="alert alert-success alert-dismissible fade show" role="alert">
+                    @successMessage
+                    <button type="button" class="btn-close" @onclick="() => successMessage = string.Empty"></button>
+                </div>
+            }
+
+            @if (esAdmin)
+            {
+                <div class="mb-3">
+                    <button class="btn btn-primary" @onclick="OpenAddModal">
+                        <i class="fas fa-plus"></i> Agregar
+                    </button>
+                </div>
+            }
+
+            @if (loading)
+            {
+                <div class="d-flex justify-content-center">
+                    <div class="spinner-border" role="status">
+                        <span class="visually-hidden">Cargando...</span>
+                    </div>
+                </div>
+            }
+            else
+            {
+                <div class="table-responsive">
+                    <table class="table table-striped table-hover">
+                        <thead class="table-dark">
+                            <tr>
+                                <th>Id</th>
+                                <th>Nombre</th>
+                                <th>Descripcion</th>
+                                <th>Fecha Alta</th>
+                                <th></th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            @if (categorias != null && categorias.Any())
+                            {
+                                @foreach (var categoria in categorias)
+                                {
+                                    <tr>
+                                        <td>@categoria.Id</td>
+                                        <td>@categoria.Nombre</td>
+                                        <td>@categoria.Descripcion</td>
+                                        <td>@categoria.FechaAlta.ToString("dd/MM/yyyy HH:mm:ss")</td>
+                                        <td>
+                                            @if (esAdmin)
+                                            {
+                                                <button class="btn btn-sm btn-outline-primary me-1" @onclick="() => OpenEditModal(categoria)">
+                                                    <i class="fas fa-edit"></i> Editar
+                                                </button>
+                                                <button class="btn btn-sm btn-outline-danger" @onclick="() => ConfirmDelete(categoria)">
+                                                    <i class="fas fa-trash"></i> Eliminar
+                                                </button>
+                                            }
+                                        </td>
+                                    </tr>
+                                }
+                            }
+                        </tbody>
+                    </table>
+                </div>
+            }
+        </div>
+    </div>
+</div>
+
+<CategoriaModal @ref="categoriaModal" OnCategoriaChanged="LoadCategorias" />
+
+@code {
+    private List<CategoriaDTO>? categorias;
+    private bool loading = true;
+    private string errorMessage = string.Empty;
+    private string successMessage = string.Empty;
+    private CategoriaModal categoriaModal = null!;
+    private bool esAdmin = AuthService.IsAdmin;
+    
+
+    protected override async Task OnInitializedAsync()
+    {
+        if (!AuthService.IsAdmin)
+        {
+            Navigation.NavigateTo("/");
+            return;
+        }
+
+        await LoadCategorias();
+    }
+
+    private async Task LoadCategorias()
+    {
+        try
+        {
+            loading = true;
+            categorias = (await CategoriaApiClient.GetAllAsync())?.ToList();
+            successMessage = string.Empty; // Clear success message when reloading
+        }
+        catch (Exception ex)
+        {
+            errorMessage = $"Error al cargar categorias: {ex.Message}";
+        }
+        finally
+        {
+            loading = false;
+        }
+    }
+
+    private void OpenAddModal()
+    {
+        categoriaModal.ShowAddModal();
+    }
+
+    private void OpenEditModal(CategoriaDTO categoria)
+    {
+        categoriaModal.ShowEditModal(categoria);
+    }
+
+    private async Task ConfirmDelete(CategoriaDTO categoria)
+    {
+        var confirm = await JSRuntime.InvokeAsync<bool>("confirm", 
+            $"¿Está seguro que desea eliminar la categoria {categoria.Nombre}?");
+        
+        if (confirm)
+        {
+            await DeleteCategoria(categoria.Id);
+        }
+    }
+
+    private async Task DeleteCategoria(int id)
+    {
+        try
+        {
+            if (await CategoriaApiClient.DeleteAsync(id))
+                successMessage = "Categoría eliminada.";
+            else
+                errorMessage = "No se pudo eliminar la categoría.";
+            await LoadCategorias();
+        }
+        catch (Exception ex)
+        {
+            errorMessage = $"Error al eliminar categoria: {ex.Message}";
+        }
+    }
+}

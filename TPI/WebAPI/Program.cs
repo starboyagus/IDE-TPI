@@ -114,7 +114,21 @@ builder.Services.AddAuthorization(options =>
     options.FallbackPolicy = options.DefaultPolicy;
 });
 
+// CORS: permite que Blazor (otro origen/puerto) llame a esta API desde el navegador
+builder.Services.AddCors(options =>
+{
+    options.AddPolicy("AllowBlazorWasm", policy =>
+    {
+        policy.AllowAnyOrigin()
+              .AllowAnyHeader()
+              .AllowAnyMethod();
+    });
+});
+
 var app = builder.Build();
+
+app.UseCors("AllowBlazorWasm");
+
 
 // Verificar conexión y crear la base de datos si no existe
 using (var scope = app.Services.CreateScope())

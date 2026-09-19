@@ -1,0 +1,27 @@
+﻿@page "/"
+@inject NavigationManager Navigation
+
+<PageTitle>Home</PageTitle>
+
+@if (isAuthenticated)
+{
+    <p>Usuario: @username</p>
+}
+
+@code {
+    private bool isAuthenticated = false;
+    private string username = "";
+
+    protected override void OnInitialized()
+    {
+        isAuthenticated = AuthService.IsAuthenticated;
+        username = isAuthenticated ? AuthService.UsuarioActual?.Nombre ?? "" : "";
+
+        if (!isAuthenticated)
+        {
+            Navigation.NavigateTo("/login");
+            return;
+        }
+
+    }
+}

@@ -1,0 +1,41 @@
+﻿@inherits LayoutComponentBase
+@inject NavigationManager Navigation
+@implements IDisposable
+
+<div class="page">
+    <div class="sidebar">
+        <NavMenu />
+    </div>
+
+    <main>
+        <div class="top-row px-4 d-flex justify-content-end">
+            @if (AuthService.IsAuthenticated)
+            {
+                <span class="me-3">@AuthService.UsuarioActual!.Nombre (@AuthService.UsuarioActual.Rol)</span>
+                <button class="btn btn-primary btn-sm" @onclick="Logout">Cerrar Sesión</button>
+            }
+        </div>
+
+        <article class="content px-4">
+            @Body
+        </article>
+    </main>
+</div>
+
+@code {
+    protected override void OnInitialized()
+    {
+        AuthService.SesionCambio += StateHasChanged;
+    }
+
+    private void Logout()
+    {
+        AuthService.Logout();
+        Navigation.NavigateTo("/login");
+    }
+
+    public void Dispose()
+    {
+        AuthService.SesionCambio -= StateHasChanged;
+    }
+}
