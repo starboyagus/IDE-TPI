@@ -1,4 +1,4 @@
-﻿namespace WindowsForm
+namespace WindowsForm
 {
     partial class ProductoLista
     {
@@ -31,6 +31,7 @@
             tscProductos = new ToolStripContainer();
             tlProductos = new TableLayoutPanel();
             dgvProductos = new DataGridView();
+            btnVerEspecificaciones = new Button();
             btnActualizar = new Button();
             btnEliminar = new Button();
             btnSalir = new Button();
@@ -64,14 +65,16 @@
             // 
             // tlProductos
             // 
-            tlProductos.ColumnCount = 3;
+            tlProductos.ColumnCount = 4;
             tlProductos.ColumnStyles.Add(new ColumnStyle(SizeType.Percent, 100F));
             tlProductos.ColumnStyles.Add(new ColumnStyle());
             tlProductos.ColumnStyles.Add(new ColumnStyle());
+            tlProductos.ColumnStyles.Add(new ColumnStyle());
             tlProductos.Controls.Add(dgvProductos, 0, 0);
-            tlProductos.Controls.Add(btnActualizar, 0, 1);
-            tlProductos.Controls.Add(btnEliminar, 1, 1);
-            tlProductos.Controls.Add(btnSalir, 2, 1);
+            tlProductos.Controls.Add(btnVerEspecificaciones, 0, 1);
+            tlProductos.Controls.Add(btnActualizar, 1, 1);
+            tlProductos.Controls.Add(btnEliminar, 2, 1);
+            tlProductos.Controls.Add(btnSalir, 3, 1);
             tlProductos.Dock = DockStyle.Fill;
             tlProductos.Location = new Point(0, 0);
             tlProductos.Name = "tlProductos";
@@ -89,16 +92,26 @@
             dgvProductos.AllowUserToResizeRows = false;
             dgvProductos.BackgroundColor = SystemColors.ControlDarkDark;
             dgvProductos.ColumnHeadersHeightSizeMode = DataGridViewColumnHeadersHeightSizeMode.AutoSize;
-            tlProductos.SetColumnSpan(dgvProductos, 3);
+            tlProductos.SetColumnSpan(dgvProductos, 4);
             dgvProductos.Dock = DockStyle.Fill;
             dgvProductos.Location = new Point(3, 3);
-            dgvProductos.Name = "dgvProductos";
             dgvProductos.MultiSelect = false;
+            dgvProductos.Name = "dgvProductos";
             dgvProductos.RowHeadersWidthSizeMode = DataGridViewRowHeadersWidthSizeMode.DisableResizing;
-            // Al hacer clic en cualquier celda se selecciona la fila entera.
             dgvProductos.SelectionMode = DataGridViewSelectionMode.FullRowSelect;
             dgvProductos.Size = new Size(844, 391);
             dgvProductos.TabIndex = 0;
+            // 
+            // btnVerEspecificaciones
+            // 
+            btnVerEspecificaciones.Anchor = AnchorStyles.Top | AnchorStyles.Right;
+            btnVerEspecificaciones.Location = new Point(480, 400);
+            btnVerEspecificaciones.Name = "btnVerEspecificaciones";
+            btnVerEspecificaciones.Size = new Size(124, 23);
+            btnVerEspecificaciones.TabIndex = 4;
+            btnVerEspecificaciones.Text = "Ver Especificaciones";
+            btnVerEspecificaciones.UseVisualStyleBackColor = true;
+            btnVerEspecificaciones.Click += btnVerEspecificaciones_Click;
             // 
             // btnActualizar
             // 
@@ -181,6 +194,7 @@
         private ToolStrip tsProductos;
         private TableLayoutPanel tlProductos;
         private DataGridView dgvProductos;
+        private Button btnVerEspecificaciones;
         private Button btnActualizar;
         private Button btnEliminar;
         private Button btnSalir;

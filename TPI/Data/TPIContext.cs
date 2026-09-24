@@ -209,6 +209,24 @@ namespace Data
                 entity.Property(e => e.EsActivo)
                     .IsRequired()
                     .HasColumnType("bit");
+
+                // Datos iniciales de prueba
+                entity.HasData(
+                    // Especificaciones del AMD Ryzen 5 5600 (ProductoId = 1)
+                    new { Id = 1, Clave = "Cores", Valor = "6", Unidad = (string?)null, ProductoId = 1, FechaAlta = DateTime.Now, EsActivo = true },
+                    new { Id = 2, Clave = "Threads", Valor = "12", Unidad = (string?)null, ProductoId = 1, FechaAlta = DateTime.Now, EsActivo = true },
+                    new { Id = 3, Clave = "Frecuencia Base", Valor = "3.5", Unidad = "GHz", ProductoId = 1, FechaAlta = DateTime.Now, EsActivo = true },
+                    new { Id = 4, Clave = "TDP", Valor = "65", Unidad = "W", ProductoId = 1, FechaAlta = DateTime.Now, EsActivo = true },
+                    new { Id = 5, Clave = "Socket", Valor = "AM4", Unidad = (string?)null, ProductoId = 1, FechaAlta = DateTime.Now, EsActivo = true },
+                    // Especificaciones del Corsair Vengeance 8gb DDR4 (ProductoId = 3)
+                    new { Id = 6, Clave = "Capacidad", Valor = "8", Unidad = "GB", ProductoId = 3, FechaAlta = DateTime.Now, EsActivo = true },
+                    new { Id = 7, Clave = "Tipo", Valor = "DDR4", Unidad = (string?)null, ProductoId = 3, FechaAlta = DateTime.Now, EsActivo = true },
+                    new { Id = 8, Clave = "Frecuencia", Valor = "3200", Unidad = "MHz", ProductoId = 3, FechaAlta = DateTime.Now, EsActivo = true },
+                    // Especificaciones de la NVIDIA RTX 5070 (ProductoId = 4)
+                    new { Id = 9, Clave = "VRAM", Valor = "12", Unidad = "GB", ProductoId = 4, FechaAlta = DateTime.Now, EsActivo = true },
+                    new { Id = 10, Clave = "Tipo Memoria", Valor = "GDDR7", Unidad = (string?)null, ProductoId = 4, FechaAlta = DateTime.Now, EsActivo = true },
+                    new { Id = 11, Clave = "TDP", Valor = "250", Unidad = "W", ProductoId = 4, FechaAlta = DateTime.Now, EsActivo = true }
+                );
             });
 
             modelBuilder.Entity<Especificacion>()

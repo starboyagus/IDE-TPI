@@ -1,4 +1,4 @@
-﻿using API.Clients;
+using API.Clients;
 using Domain.Model;
 using DTOs;
 using System;
@@ -92,6 +92,33 @@ namespace WindowsForm
         private void btnSalir_Click(object sender, EventArgs e)
         {
             this.Close();
+        }
+
+        private async void btnVerEspecificaciones_Click(object sender, EventArgs e)
+        {
+            var seleccionado = this.SelectedItem();
+            if (seleccionado == null)
+            {
+                MessageBox.Show("Seleccioná un producto de la lista primero.", "Sin selección", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                return;
+            }
+
+            try
+            {
+                ProductoDTO? producto = await ProductoApiClient.GetAsync(seleccionado.Id);
+                if (producto == null)
+                {
+                    MessageBox.Show("El producto ya no existe.", "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                    return;
+                }
+
+                ProductoEspecificaciones formEspecificaciones = new ProductoEspecificaciones(producto);
+                formEspecificaciones.ShowDialog();
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show($"Error al cargar las especificaciones: {ex.Message}", "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+            }
         }
 
         private ProductoDTO? SelectedItem()

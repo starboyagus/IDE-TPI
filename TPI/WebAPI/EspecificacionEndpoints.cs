@@ -1,4 +1,4 @@
-﻿using Application.Services;
+using Application.Services;
 using DTOs;
 
 namespace WebAPI
@@ -21,6 +21,17 @@ namespace WebAPI
             .WithName("GetEspecificacion")
             .Produces<EspecificacionDTO>(StatusCodes.Status200OK)
             .Produces(StatusCodes.Status404NotFound)
+            .WithOpenApi()
+            .RequireAuthorization("EspecificacionesLeer");
+
+            app.MapGet("/especificaciones/producto/{productoId}", async (int productoId, IEspecificacionService especificacionService) =>
+            {
+                var dtos = await especificacionService.GetByProductoAsync(productoId);
+
+                return Results.Ok(dtos);
+            })
+            .WithName("GetEspecificacionesByProducto")
+            .Produces<List<EspecificacionDTO>>(StatusCodes.Status200OK)
             .WithOpenApi()
             .RequireAuthorization("EspecificacionesLeer");
 

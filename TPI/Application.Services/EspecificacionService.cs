@@ -1,4 +1,4 @@
-﻿using Domain.Model;
+using Domain.Model;
 using Data;
 using DTOs;
 
@@ -105,6 +105,23 @@ namespace Application.Services
 
             Especificacion especificacion = new Especificacion(dto.Id, dto.Clave, dto.Valor, dto.Unidad, existing.ProductoId, existing.FechaAlta, dto.EsActivo);
             return await especificacionRepository.UpdateAsync(especificacion);
+        }
+
+        public async Task<IEnumerable<EspecificacionDTO>> GetByProductoAsync(int productoId)
+        {
+            var especificaciones = await especificacionRepository.GetByProductoAsync(productoId);
+
+            return especificaciones.Select(especificacion => new EspecificacionDTO
+            {
+                Id = especificacion.Id,
+                Clave = especificacion.Clave,
+                Valor = especificacion.Valor,
+                Unidad = especificacion.Unidad,
+                ProductoId = especificacion.ProductoId,
+                Producto = especificacion.Producto?.Nombre,
+                FechaAlta = especificacion.FechaAlta,
+                EsActivo = especificacion.EsActivo
+            }).ToList();
         }
     }
 }

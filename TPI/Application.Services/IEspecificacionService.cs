@@ -1,4 +1,4 @@
-﻿using DTOs;
+using DTOs;
 
 namespace Application.Services
 {
@@ -9,5 +9,6 @@ namespace Application.Services
         Task<EspecificacionDTO?> GetAsync(int id);
         Task<IEnumerable<EspecificacionDTO>> GetAllAsync();
         Task<bool> UpdateAsync(EspecificacionDTO dto);
+        Task<IEnumerable<EspecificacionDTO>> GetByProductoAsync(int productoId);
     }
 }

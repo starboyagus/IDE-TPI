@@ -1,4 +1,4 @@
-﻿using System.Net;
+using System.Net;
 using System.Net.Http.Json;
 using DTOs;
 
@@ -54,6 +54,15 @@ namespace API.Clients
             //response.EnsureSuccessStatusCode();
 
             //return await response.Content.ReadFromJsonAsync<EspecificacionDTO>();
+        }
+
+        public static async Task<List<EspecificacionDTO>?> GetByProductoAsync(int productoId)
+        {
+            var response = await ApiClient.Http.GetAsync($"especificaciones/producto/{productoId}");
+
+            response.EnsureSuccessStatusCode();
+
+            return await response.Content.ReadFromJsonAsync<List<EspecificacionDTO>>() ?? new List<EspecificacionDTO>();
         }
     }
 }

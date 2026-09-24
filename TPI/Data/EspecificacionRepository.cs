@@ -72,5 +72,13 @@ namespace Data
             return await query.AnyAsync();
         }
 
+        public async Task<IEnumerable<Especificacion>> GetByProductoAsync(int productoId)
+        {
+            return await _context.Especificaciones
+                .Include(e => e.Producto)
+                .Where(e => e.ProductoId == productoId && e.EsActivo)
+                .ToListAsync();
+        }
+
     }
 }

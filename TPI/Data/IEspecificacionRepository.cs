@@ -1,4 +1,4 @@
-﻿using Domain.Model;
+using Domain.Model;
 
 namespace Data
 {
@@ -10,5 +10,6 @@ namespace Data
         Task<IEnumerable<Especificacion>> GetAllAsync();
         Task<bool> UpdateAsync(Especificacion especificacion);
         Task<bool> ClaveExistsEnProductoAsync(int productoId, string clave, int? excludeId = null);
+        Task<IEnumerable<Especificacion>> GetByProductoAsync(int productoId);
     }
 }
