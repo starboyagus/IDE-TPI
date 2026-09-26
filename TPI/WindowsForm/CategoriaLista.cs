@@ -17,6 +17,49 @@ namespace WindowsForm
         public CategoriaLista()
         {
             InitializeComponent();
+            ConfigurarColumnas();
+        }
+
+        // Las columnas se definen a mano para mostrar solo lo que le interesa al usuario y con el
+        // encabezado en castellano. AutoGenerateColumns = false evita que se agreguen las del DTO
+        // (EsActivo, por ejemplo) y tiene que asignarse antes que el DataSource.
+        private void ConfigurarColumnas()
+        {
+            dgvCategorias.AutoGenerateColumns = false;
+
+            // FillWeight es la proporción con la que cada columna se reparte el ancho de la grilla.
+            dgvCategorias.Columns.Add(new DataGridViewTextBoxColumn
+            {
+                Name = "Id",
+                HeaderText = "Id",
+                DataPropertyName = nameof(CategoriaDTO.Id),
+                FillWeight = 30
+            });
+
+            dgvCategorias.Columns.Add(new DataGridViewTextBoxColumn
+            {
+                Name = "Nombre",
+                HeaderText = "Nombre",
+                DataPropertyName = nameof(CategoriaDTO.Nombre),
+                FillWeight = 80
+            });
+
+            dgvCategorias.Columns.Add(new DataGridViewTextBoxColumn
+            {
+                Name = "Descripcion",
+                HeaderText = "Descripción",
+                DataPropertyName = nameof(CategoriaDTO.Descripcion),
+                FillWeight = 190
+            });
+
+            dgvCategorias.Columns.Add(new DataGridViewTextBoxColumn
+            {
+                Name = "FechaAlta",
+                HeaderText = "Fecha Alta",
+                DataPropertyName = nameof(CategoriaDTO.FechaAlta),
+                FillWeight = 80,
+                DefaultCellStyle = { Format = "dd/MM/yyyy HH:mm" }
+            });
         }
 
         public async Task Listar()
@@ -28,13 +71,6 @@ namespace WindowsForm
                 dgvCategorias.DataSource = null; // Limpia los datos anteriores
                 dgvCategorias.DataSource = listaCategorias; // Asigna la nueva lista
                 dgvCategorias.ReadOnly = true;
-                dgvCategorias.Columns["esActivo"].Visible = false;
-
-                // Proporción con la que cada columna se reparte el ancho de la grilla.
-                dgvCategorias.Columns["id"].FillWeight = 30;
-                dgvCategorias.Columns["nombre"].FillWeight = 80;
-                dgvCategorias.Columns["descripcion"].FillWeight = 190;
-                dgvCategorias.Columns["fechaAlta"].FillWeight = 80;
             }
             catch (Exception ex)
             {

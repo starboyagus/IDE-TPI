@@ -30,6 +30,7 @@
         {
             mnsPrincipal = new MenuStrip();
             mnuOpciones = new ToolStripMenuItem();
+            mnuCerrarSesion = new ToolStripMenuItem();
             mnuSalir = new ToolStripMenuItem();
             usuariosToolStripMenuItem = new ToolStripMenuItem();
             productoToolStripMenuItem = new ToolStripMenuItem();
@@ -48,13 +49,20 @@
             // 
             // mnuOpciones
             // 
-            mnuOpciones.DropDownItems.AddRange(new ToolStripItem[] { mnuSalir });
+            mnuOpciones.DropDownItems.AddRange(new ToolStripItem[] { mnuCerrarSesion, mnuSalir });
             mnuOpciones.Name = "mnuOpciones";
             mnuOpciones.Size = new Size(69, 20);
             mnuOpciones.Text = "Opciones";
-            // 
+            //
+            // mnuCerrarSesion
+            //
+            mnuCerrarSesion.Name = "mnuCerrarSesion";
+            mnuCerrarSesion.Size = new Size(96, 22);
+            mnuCerrarSesion.Text = "Cerrar sesión";
+            mnuCerrarSesion.Click += mnuCerrarSesion_Click;
+            //
             // mnuSalir
-            // 
+            //
             mnuSalir.Name = "mnuSalir";
             mnuSalir.Size = new Size(96, 22);
             mnuSalir.Text = "Salir";
@@ -103,6 +111,7 @@
 
         private MenuStrip mnsPrincipal;
         private ToolStripMenuItem mnuOpciones;
+        private ToolStripMenuItem mnuCerrarSesion;
         private ToolStripMenuItem mnuSalir;
         private ToolStripMenuItem usuariosToolStripMenuItem;
         private ToolStripMenuItem productoToolStripMenuItem;

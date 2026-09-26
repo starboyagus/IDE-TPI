@@ -24,6 +24,13 @@ namespace WindowsForm
 
         private void Home_Shown(object sender, EventArgs e)
         {
+            IniciarSesion();
+        }
+
+        // Pide las credenciales y deja el menú acorde al rol de quien entró.
+        // Se usa tanto al arrancar como al volver del logout, porque puede entrar otro usuario con otro rol.
+        private void IniciarSesion()
+        {
             LoginForm appLogin = new LoginForm();
             if (appLogin.ShowDialog() != DialogResult.OK)
             {
@@ -32,6 +39,19 @@ namespace WindowsForm
             }
 
             ConfigurarMenuSegunRol();
+        }
+
+        private void mnuCerrarSesion_Click(object sender, EventArgs e)
+        {
+            // Las ventanas abiertas quedaron con los datos del usuario anterior: se cierran antes de salir.
+            foreach (Form hijo in this.MdiChildren)
+            {
+                hijo.Close();
+            }
+
+            AuthService.AuthService.Logout();
+
+            IniciarSesion();
         }
 
         // Usuarios y Categorías son tareas de administración: si el logueado no es Admin, no se muestran.
@@ -52,19 +72,22 @@ namespace WindowsForm
         private void usuariosToolStripMenuItem_Click(object sender, EventArgs e)
         {
             UsuarioLista formUsuarios = new UsuarioLista();
-            formUsuarios.Show(this);
+            formUsuarios.MdiParent = this;
+            formUsuarios.Show();
         }
 
         private void productoToolStripMenuItem_Click(object sender, EventArgs e)
         {
             ProductoLista formProducto = new ProductoLista();
-            formProducto.Show(this);
+            formProducto.MdiParent = this;
+            formProducto.Show();
         }
 
         private void categoriaToolStripMenuItem_Click(object sender, EventArgs e)
         {
             CategoriaLista formCategoria = new CategoriaLista();
-            formCategoria.Show(this);
+            formCategoria.MdiParent = this;
+            formCategoria.Show();
         }
     }
 }

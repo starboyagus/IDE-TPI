@@ -18,6 +18,83 @@ namespace WindowsForm
         public ProductoLista()
         {
             InitializeComponent();
+            ConfigurarColumnas();
+        }
+
+        // Las columnas se definen a mano para mostrar solo lo que le interesa al usuario y con el
+        // encabezado en castellano. AutoGenerateColumns = false evita que se agreguen las del DTO
+        // (EsActivo, CategoriaId y MarcaId, por ejemplo) y tiene que asignarse antes que el DataSource.
+        private void ConfigurarColumnas()
+        {
+            dgvProductos.AutoGenerateColumns = false;
+
+            // FillWeight es la proporción con la que cada columna se reparte el ancho de la grilla.
+            dgvProductos.Columns.Add(new DataGridViewTextBoxColumn
+            {
+                Name = "Id",
+                HeaderText = "Id",
+                DataPropertyName = nameof(ProductoDTO.Id),
+                FillWeight = 25
+            });
+
+            dgvProductos.Columns.Add(new DataGridViewTextBoxColumn
+            {
+                Name = "Nombre",
+                HeaderText = "Nombre",
+                DataPropertyName = nameof(ProductoDTO.Nombre),
+                FillWeight = 110
+            });
+
+            dgvProductos.Columns.Add(new DataGridViewTextBoxColumn
+            {
+                Name = "Descripcion",
+                HeaderText = "Descripción",
+                DataPropertyName = nameof(ProductoDTO.Descripcion),
+                FillWeight = 130
+            });
+
+            dgvProductos.Columns.Add(new DataGridViewTextBoxColumn
+            {
+                Name = "Precio",
+                HeaderText = "Precio",
+                DataPropertyName = nameof(ProductoDTO.Precio),
+                FillWeight = 55,
+                DefaultCellStyle = { Format = "C2" }
+            });
+
+            dgvProductos.Columns.Add(new DataGridViewTextBoxColumn
+            {
+                Name = "Stock",
+                HeaderText = "Stock",
+                DataPropertyName = nameof(ProductoDTO.Stock),
+                FillWeight = 40
+            });
+
+            // Se muestra el nombre de la categoría, no el CategoriaId.
+            dgvProductos.Columns.Add(new DataGridViewTextBoxColumn
+            {
+                Name = "Categoria",
+                HeaderText = "Categoría",
+                DataPropertyName = nameof(ProductoDTO.Categoria),
+                FillWeight = 70
+            });
+
+            dgvProductos.Columns.Add(new DataGridViewTextBoxColumn
+            {
+                Name = "Marca",
+                HeaderText = "Marca",
+                DataPropertyName = nameof(ProductoDTO.Marca),
+                FillWeight = 70
+            });
+
+            dgvProductos.Columns.Add(new DataGridViewTextBoxColumn
+            {
+                Name = "FechaAlta",
+                HeaderText = "Fecha Alta",
+                DataPropertyName = nameof(ProductoDTO.FechaAlta),
+                FillWeight = 80,
+                DefaultCellStyle = { Format = "dd/MM/yyyy HH:mm" }
+            });
         }
 
         public async Task Listar()
@@ -29,11 +106,6 @@ namespace WindowsForm
                 dgvProductos.DataSource = null; // Limpia los datos anteriores
                 dgvProductos.DataSource = listaProductos; // Asigna la nueva lista
                 dgvProductos.ReadOnly = true;
-                dgvProductos.Columns["esActivo"].Visible = false;
-                dgvProductos.Columns["categoriaId"].Visible = false;
-                dgvProductos.Columns["precio"].DefaultCellStyle.Format = "C2";
-
-                dgvProductos.AutoResizeColumns(DataGridViewAutoSizeColumnsMode.AllCells);
             }
             catch (Exception ex)
             {
