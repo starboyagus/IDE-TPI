@@ -15,6 +15,7 @@ namespace Domain.Model
         public string DireccionEnvio { get; private set; }
         public DateTime FechaAlta { get; private set; }
         public bool EsActivo { get; private set; }
+        public ICollection<OrdenItem> Items { get; private set; } = new List<OrdenItem>();
 
         public Orden(int id, DateTime fecha, EstadoOrden estado, decimal total, int usuarioId, string direccionEnvio, DateTime fechaAlta, bool esActivo)
         {
@@ -38,7 +39,7 @@ namespace Domain.Model
         public void SetFecha(DateTime fecha)
         {
             if (fecha == default)
-                throw new ArgumentException("La fecha de alta no puede ser nula.", nameof(fecha));
+                throw new ArgumentException("La fecha no puede ser nula.", nameof(fecha));
             Fecha = fecha;
         }
 

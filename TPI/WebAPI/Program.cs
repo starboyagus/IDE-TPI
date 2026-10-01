@@ -52,6 +52,8 @@ builder.Services.AddScoped<IMarcaRepository, MarcaRepository>();
 builder.Services.AddScoped<IMarcaService, MarcaService>();
 builder.Services.AddScoped<IEspecificacionRepository, EspecificacionRepository>();
 builder.Services.AddScoped<IEspecificacionService, EspecificacionService>();
+builder.Services.AddScoped<IOrdenRepository, OrdenRepository>();
+builder.Services.AddScoped<IOrdenService, OrdenService>();
 
 builder.Services.AddScoped<IJwtService, JwtService>();
 
@@ -109,7 +111,13 @@ builder.Services.AddAuthorization(options =>
     options.AddPolicy("EspecificacionesAgregar", policy => policy.RequireClaim("permission", "especificaciones.agregar"));
     options.AddPolicy("EspecificacionesActualizar", policy => policy.RequireClaim("permission", "especificaciones.actualizar"));
     options.AddPolicy("EspecificacionesEliminar", policy => policy.RequireClaim("permission", "especificaciones.eliminar"));
-
+    
+    // Políticas para Órdenes
+    options.AddPolicy("OrdenesLeer", policy => policy.RequireClaim("permission", "ordenes.leer"));
+    options.AddPolicy("OrdenesAgregar", policy => policy.RequireClaim("permission", "ordenes.agregar"));
+    options.AddPolicy("OrdenesActualizar", policy => policy.RequireClaim("permission", "ordenes.actualizar"));
+    options.AddPolicy("OrdenesEliminar", policy => policy.RequireClaim("permission", "ordenes.eliminar"));
+    
     // Fallback: Requerir autenticación para endpoints no especificados
     options.FallbackPolicy = options.DefaultPolicy;
 });
@@ -166,4 +174,5 @@ app.MapProductoEndpoints();
 app.MapCategoriaEndpoints();
 app.MapMarcaEndpoints();
 app.MapEspecificacionEndpoints();
+app.MapOrdenEndpoints();
 app.Run();

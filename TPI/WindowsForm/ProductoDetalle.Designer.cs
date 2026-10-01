@@ -1,4 +1,4 @@
-﻿namespace WindowsForm
+namespace WindowsForm
 {
     partial class ProductoDetalle
     {
@@ -44,6 +44,8 @@
             cancelarButton = new Button();
             txtCategoria = new Label();
             categComboBox = new ComboBox();
+            txtMarca = new Label();
+            marcaComboBox = new ComboBox();
             SuspendLayout();
             // 
             // idTextBox
@@ -147,20 +149,20 @@
             // 
             // aceptarButton
             // 
-            aceptarButton.Location = new Point(87, 353);
+            aceptarButton.Location = new Point(87, 390);
             aceptarButton.Name = "aceptarButton";
             aceptarButton.Size = new Size(105, 35);
-            aceptarButton.TabIndex = 13;
+            aceptarButton.TabIndex = 15;
             aceptarButton.Text = "Aceptar";
             aceptarButton.UseVisualStyleBackColor = true;
             aceptarButton.Click += aceptarButton_Click;
             // 
             // cancelarButton
             // 
-            cancelarButton.Location = new Point(198, 353);
+            cancelarButton.Location = new Point(198, 390);
             cancelarButton.Name = "cancelarButton";
             cancelarButton.Size = new Size(105, 35);
-            cancelarButton.TabIndex = 14;
+            cancelarButton.TabIndex = 16;
             cancelarButton.Text = "Cancelar";
             cancelarButton.UseVisualStyleBackColor = true;
             cancelarButton.Click += cancelarButton_Click;
@@ -171,7 +173,7 @@
             txtCategoria.Location = new Point(12, 319);
             txtCategoria.Name = "txtCategoria";
             txtCategoria.Size = new Size(58, 15);
-            txtCategoria.TabIndex = 15;
+            txtCategoria.TabIndex = 17;
             txtCategoria.Text = "Categoria";
             // 
             // categComboBox
@@ -180,13 +182,32 @@
             categComboBox.Location = new Point(87, 311);
             categComboBox.Name = "categComboBox";
             categComboBox.Size = new Size(216, 23);
-            categComboBox.TabIndex = 16;
+            categComboBox.TabIndex = 13;
+            // 
+            // txtMarca
+            // 
+            txtMarca.AutoSize = true;
+            txtMarca.Location = new Point(12, 355);
+            txtMarca.Name = "txtMarca";
+            txtMarca.Size = new Size(40, 15);
+            txtMarca.TabIndex = 18;
+            txtMarca.Text = "Marca";
+            // 
+            // marcaComboBox
+            // 
+            marcaComboBox.FormattingEnabled = true;
+            marcaComboBox.Location = new Point(87, 347);
+            marcaComboBox.Name = "marcaComboBox";
+            marcaComboBox.Size = new Size(216, 23);
+            marcaComboBox.TabIndex = 14;
             // 
             // ProductoDetalle
             // 
             AutoScaleDimensions = new SizeF(7F, 15F);
             AutoScaleMode = AutoScaleMode.Font;
-            ClientSize = new Size(334, 400);
+            ClientSize = new Size(334, 440);
+            Controls.Add(marcaComboBox);
+            Controls.Add(txtMarca);
             Controls.Add(categComboBox);
             Controls.Add(txtCategoria);
             Controls.Add(cancelarButton);
@@ -231,5 +252,7 @@
         private Button cancelarButton;
         private Label txtCategoria;
         private ComboBox categComboBox;
+        private Label txtMarca;
+        private ComboBox marcaComboBox;
     }
 }

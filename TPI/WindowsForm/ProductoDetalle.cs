@@ -1,4 +1,4 @@
-﻿using API.Clients;
+using API.Clients;
 using Domain.Model;
 using DTOs;
 using System;
@@ -50,6 +50,7 @@ namespace WindowsForm
             preventaComboBox.Items.Add("No");
 
             categComboBox.DropDownStyle = ComboBoxStyle.DropDownList;
+            marcaComboBox.DropDownStyle = ComboBoxStyle.DropDownList;
         }
 
         private async Task CargarCategoriasAsync()
@@ -72,6 +73,28 @@ namespace WindowsForm
             else
             {
                 categComboBox.SelectedIndex = -1;
+            }
+        }
+
+        private async Task CargarMarcasAsync()
+        {
+            var marcas = await MarcaApiClient.GetAllAsync();
+
+            marcaComboBox.DataSource = marcas;
+            marcaComboBox.DisplayMember = nameof(MarcaDTO.Nombre);
+            marcaComboBox.ValueMember = nameof(MarcaDTO.Id);
+            marcaComboBox.SelectedIndex = -1;
+        }
+
+        private void SeleccionarMarca()
+        {
+            if (this.Producto.MarcaId > 0)
+            {
+                marcaComboBox.SelectedValue = this.Producto.MarcaId;
+            }
+            else
+            {
+                marcaComboBox.SelectedIndex = -1;
             }
         }
 
@@ -109,9 +132,11 @@ namespace WindowsForm
                 this.Mode = mode;
                 this.Producto = producto;
 
-                // Las categorías se piden a la API, así que el combo se llena después de cargar los demás campos.
+                // Las categorías y marcas se piden a la API, así que los combos se llenan después de cargar los demás campos.
                 await CargarCategoriasAsync();
                 SeleccionarCategoria();
+                await CargarMarcasAsync();
+                SeleccionarMarca();
             }
             catch (Exception ex)
             {
@@ -158,6 +183,12 @@ namespace WindowsForm
                 return false;
             }
 
+            if (marcaComboBox.SelectedValue == null)
+            {
+                MessageBox.Show("Seleccioná una marca.", "Datos incompletos", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                return false;
+            }
+
             return true;
         }
 
@@ -187,6 +218,7 @@ namespace WindowsForm
             this.Producto.EsPreVenta = esPreVenta;
 
             this.Producto.CategoriaId = (int)categComboBox.SelectedValue!;
+            this.Producto.MarcaId = (int)marcaComboBox.SelectedValue!;
 
             try
             {

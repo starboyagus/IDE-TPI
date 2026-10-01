@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.Data;
@@ -63,6 +63,8 @@ namespace WindowsForm
 
             usuariosToolStripMenuItem.Visible = esAdmin;
             categoriaToolStripMenuItem.Visible = esAdmin;
+            marcaToolStripMenuItem.Visible = esAdmin;
+            ordenesToolStripMenuItem.Visible = true;
 
             if (usuario != null)
             {
@@ -88,6 +90,20 @@ namespace WindowsForm
             CategoriaLista formCategoria = new CategoriaLista();
             formCategoria.MdiParent = this;
             formCategoria.Show();
+        }
+
+        private void marcaToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            MarcaLista formMarca = new MarcaLista();
+            formMarca.MdiParent = this;
+            formMarca.Show();
+        }
+
+        private void ordenesToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            OrdenLista formOrdenes = new OrdenLista();
+            formOrdenes.MdiParent = this;
+            formOrdenes.Show();
         }
     }
 }

@@ -12,7 +12,8 @@ namespace Data
         public DbSet<Categoria> Categorias { get; set; }
         public DbSet<Especificacion> Especificaciones { get; set; }
         public DbSet<Marca> Marcas { get; set; }
-        //public DbSet<Orden> Ordenes { get; set; }
+        public DbSet<Orden> Ordenes { get; set; }
+        public DbSet<OrdenItem> OrdenItems { get; set; }
 
         // El DbContext se crea una vez por request, así que la base NO se verifica acá:
         // de eso se encarga el EnsureCreated() del arranque en Program.cs.
@@ -264,6 +265,65 @@ namespace Data
                     new { Id = 4, Nombre = "Corsair", PaisOrigen = "USA", FechaAlta = DateTime.Now, EsActivo = true },
                     new { Id = 5, Nombre = "Sony", PaisOrigen = "Japon", FechaAlta = DateTime.Now, EsActivo = true }
                 );
+            });
+            modelBuilder.Entity<Orden>(entity =>
+            {
+                entity.HasKey(e => e.Id);
+                entity.Property(e => e.Id)
+                    .ValueGeneratedOnAdd();
+                entity.Property(e => e.Fecha)
+                    .IsRequired();
+                entity.Property(e => e.Estado)
+                    .IsRequired()
+                    .HasConversion<int>();
+                entity.Property(e => e.Total)
+                    .IsRequired()
+                    .HasColumnType("decimal(18,2)");
+                entity.Property(e => e.UsuarioId)
+                    .IsRequired();
+                entity.Property(e => e.DireccionEnvio)
+                    .IsRequired()
+                    .HasMaxLength(255);
+                entity.Property(e => e.FechaAlta)
+                    .IsRequired();
+                entity.Property(e => e.EsActivo)
+                    .IsRequired()
+                    .HasColumnType("bit");
+                // Relaciones
+                entity.HasOne(o => o.Usuario)
+                      .WithMany()
+                      .HasForeignKey(o => o.UsuarioId)
+                      .OnDelete(DeleteBehavior.Restrict);
+            });
+
+            modelBuilder.Entity<OrdenItem>(entity =>
+            {
+                entity.HasKey(e => e.Id);
+                entity.Property(e => e.Id)
+                    .ValueGeneratedOnAdd();
+                entity.Property(e => e.OrdenId)
+                    .IsRequired();
+                entity.Property(e => e.ProductoId)
+                    .IsRequired();
+                entity.Property(e => e.Cantidad)
+                    .IsRequired();
+                entity.Property(e => e.PrecioUnitario)
+                    .IsRequired()
+                    .HasColumnType("decimal(18,2)");
+                /*entity.Property(e => e.FechaAlta)
+                    .IsRequired();
+                entity.Property(e => e.EsActivo)
+                    .IsRequired()
+                    .HasColumnType("bit");*/
+                // Relaciones
+                entity.HasOne(oi => oi.Orden)
+                      .WithMany(o => o.Items)
+                      .HasForeignKey(oi => oi.OrdenId)
+                      .OnDelete(DeleteBehavior.Cascade);
+                entity.HasOne(oi => oi.Producto)
+                      .WithMany()
+                      .HasForeignKey(oi => oi.ProductoId)
+                      .OnDelete(DeleteBehavior.Restrict);
             });
         }
 
