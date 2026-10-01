@@ -64,6 +64,11 @@ namespace WebAPI
                 claims.Add(new Claim("permission", "especificaciones.agregar"));
                 claims.Add(new Claim("permission", "especificaciones.actualizar"));
                 claims.Add(new Claim("permission", "especificaciones.eliminar"));
+
+                claims.Add(new Claim("permission", "ordenes.leer"));
+                claims.Add(new Claim("permission", "ordenes.agregar"));
+                claims.Add(new Claim("permission", "ordenes.actualizar"));
+                claims.Add(new Claim("permission", "ordenes.eliminar"));
             }
             else
             {
@@ -71,6 +76,9 @@ namespace WebAPI
                 claims.Add(new Claim("permission", "productos.leer"));
                 claims.Add(new Claim("permission", "categorias.leer"));
                 claims.Add(new Claim("permission", "usuarios.leer"));
+                claims.Add(new Claim("permission", "ordenes.leer"));
+                claims.Add(new Claim("permission", "ordenes.agregar"));
+
             }
 
             var key = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(secretKey));

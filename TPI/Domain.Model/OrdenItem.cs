@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -15,7 +15,6 @@ namespace Domain.Model
         public Producto? Producto { get; private set; }
         public int Cantidad { get; private set; }
         public decimal PrecioUnitario { get; private set; }
-        public ICollection<OrdenItem> Items { get; private set; } = new List<OrdenItem>();
         public OrdenItem(int id, int ordenId, int productoId, int cantidad, decimal precioUnitario)
         {
             SetId(id);
@@ -32,7 +31,7 @@ namespace Domain.Model
         }
         public void SetOrdenId(int ordenId)
         {
-            if (ordenId <= 0)
+            if (ordenId < 0)
                 throw new ArgumentException("El Id de la orden debe ser mayor que 0.", nameof(ordenId));
             OrdenId = ordenId;
         }

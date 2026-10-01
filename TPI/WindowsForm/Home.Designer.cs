@@ -1,4 +1,4 @@
-﻿namespace WindowsForm
+namespace WindowsForm
 {
     partial class Home
     {
@@ -35,12 +35,14 @@
             usuariosToolStripMenuItem = new ToolStripMenuItem();
             productoToolStripMenuItem = new ToolStripMenuItem();
             categoriaToolStripMenuItem = new ToolStripMenuItem();
+            marcaToolStripMenuItem = new ToolStripMenuItem();
+            ordenesToolStripMenuItem = new ToolStripMenuItem();
             mnsPrincipal.SuspendLayout();
             SuspendLayout();
             //
             // mnsPrincipal
             //
-            mnsPrincipal.Items.AddRange(new ToolStripItem[] { mnuOpciones, usuariosToolStripMenuItem, productoToolStripMenuItem, categoriaToolStripMenuItem });
+            mnsPrincipal.Items.AddRange(new ToolStripItem[] { mnuOpciones, usuariosToolStripMenuItem, productoToolStripMenuItem, categoriaToolStripMenuItem, marcaToolStripMenuItem, ordenesToolStripMenuItem });
             mnsPrincipal.Location = new Point(0, 0);
             mnsPrincipal.Name = "mnsPrincipal";
             mnsPrincipal.Size = new Size(1108, 24);
@@ -88,6 +90,20 @@
             categoriaToolStripMenuItem.Size = new Size(72, 20);
             categoriaToolStripMenuItem.Text = "Categorias";
             categoriaToolStripMenuItem.Click += categoriaToolStripMenuItem_Click;
+            // 
+            // marcaToolStripMenuItem
+            // 
+            marcaToolStripMenuItem.Name = "marcaToolStripMenuItem";
+            marcaToolStripMenuItem.Size = new Size(57, 20);
+            marcaToolStripMenuItem.Text = "Marcas";
+            marcaToolStripMenuItem.Click += marcaToolStripMenuItem_Click;
+            // 
+            // ordenesToolStripMenuItem
+            // 
+            ordenesToolStripMenuItem.Name = "ordenesToolStripMenuItem";
+            ordenesToolStripMenuItem.Size = new Size(64, 20);
+            ordenesToolStripMenuItem.Text = "Órdenes";
+            ordenesToolStripMenuItem.Click += ordenesToolStripMenuItem_Click;
             //
             // Home
             //
@@ -116,5 +132,7 @@
         private ToolStripMenuItem usuariosToolStripMenuItem;
         private ToolStripMenuItem productoToolStripMenuItem;
         private ToolStripMenuItem categoriaToolStripMenuItem;
+        private ToolStripMenuItem marcaToolStripMenuItem;
+        private ToolStripMenuItem ordenesToolStripMenuItem;
     }
 }
