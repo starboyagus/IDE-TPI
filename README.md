@@ -12,7 +12,6 @@ Proyecto Integrador — Tecnologias de Desarrollo de Software IDE
 
 ---
 
-![Foto](docs/sddefault.png)
 
 ## 📋 Descripción
 
