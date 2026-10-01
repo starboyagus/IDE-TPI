@@ -87,6 +87,8 @@ namespace WindowsForm
             dgvUsuarios.AllowUserToDeleteRows = false;
             dgvUsuarios.AllowUserToResizeColumns = false;
             dgvUsuarios.AllowUserToResizeRows = false;
+            // Las columnas se reparten todo el ancho según el FillWeight de cada una.
+            dgvUsuarios.AutoSizeColumnsMode = DataGridViewAutoSizeColumnsMode.Fill;
             dgvUsuarios.BackgroundColor = SystemColors.ControlDarkDark;
             dgvUsuarios.ColumnHeadersHeightSizeMode = DataGridViewColumnHeadersHeightSizeMode.AutoSize;
             tlUsuarios.SetColumnSpan(dgvUsuarios, 3);

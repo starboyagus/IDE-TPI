@@ -19,6 +19,73 @@ namespace WindowsForm
         public UsuarioLista()
         {
             InitializeComponent();
+            ConfigurarColumnas();
+        }
+
+        // Las columnas se definen a mano para mostrar solo lo que le interesa al usuario y con el
+        // encabezado en castellano. AutoGenerateColumns = false evita que se agreguen las del DTO
+        // (EsActivo y Contrasenia, por ejemplo) y tiene que asignarse antes que el DataSource.
+        private void ConfigurarColumnas()
+        {
+            dgvUsuarios.AutoGenerateColumns = false;
+
+            // FillWeight es la proporción con la que cada columna se reparte el ancho de la grilla.
+            dgvUsuarios.Columns.Add(new DataGridViewTextBoxColumn
+            {
+                Name = "Id",
+                HeaderText = "Id",
+                DataPropertyName = nameof(UsuarioDTO.Id),
+                FillWeight = 25
+            });
+
+            dgvUsuarios.Columns.Add(new DataGridViewTextBoxColumn
+            {
+                Name = "Nombre",
+                HeaderText = "Nombre",
+                DataPropertyName = nameof(UsuarioDTO.Nombre),
+                FillWeight = 70
+            });
+
+            dgvUsuarios.Columns.Add(new DataGridViewTextBoxColumn
+            {
+                Name = "Apellido",
+                HeaderText = "Apellido",
+                DataPropertyName = nameof(UsuarioDTO.Apellido),
+                FillWeight = 70
+            });
+
+            dgvUsuarios.Columns.Add(new DataGridViewTextBoxColumn
+            {
+                Name = "Email",
+                HeaderText = "Email",
+                DataPropertyName = nameof(UsuarioDTO.Email),
+                FillWeight = 110
+            });
+
+            dgvUsuarios.Columns.Add(new DataGridViewTextBoxColumn
+            {
+                Name = "Telefono",
+                HeaderText = "Teléfono",
+                DataPropertyName = nameof(UsuarioDTO.Telefono),
+                FillWeight = 70
+            });
+
+            dgvUsuarios.Columns.Add(new DataGridViewTextBoxColumn
+            {
+                Name = "Rol",
+                HeaderText = "Rol",
+                DataPropertyName = nameof(UsuarioDTO.Rol),
+                FillWeight = 50
+            });
+
+            dgvUsuarios.Columns.Add(new DataGridViewTextBoxColumn
+            {
+                Name = "FechaAlta",
+                HeaderText = "Fecha Alta",
+                DataPropertyName = nameof(UsuarioDTO.FechaAlta),
+                FillWeight = 80,
+                DefaultCellStyle = { Format = "dd/MM/yyyy HH:mm" }
+            });
         }
 
         public async Task Listar()
@@ -30,10 +97,6 @@ namespace WindowsForm
                 dgvUsuarios.DataSource = null; // Limpia los datos anteriores
                 dgvUsuarios.DataSource = listaUsuarios; // Asigna la nueva lista
                 dgvUsuarios.ReadOnly = true;
-                dgvUsuarios.Columns["esActivo"].Visible = false;
-                dgvUsuarios.Columns["contrasenia"].Visible = false;
-
-                dgvUsuarios.AutoResizeColumns(DataGridViewAutoSizeColumnsMode.AllCells);
             }
             catch (Exception ex)
             {
