@@ -17,6 +17,9 @@
             </NavLink>
             @if (AuthService.IsAdmin)
             {
+                <NavLink class="nav-link" href="usuarios" Match="NavLinkMatch.All">
+                    <span class="bi-plus-square-fill-nav-menu" aria-hidden="true"></span> Usuarios
+                </NavLink>
                 <NavLink class="nav-link" href="categorias" Match="NavLinkMatch.All">
                     <span class="bi-plus-square-fill-nav-menu" aria-hidden="true"></span> Categorias
                 </NavLink>

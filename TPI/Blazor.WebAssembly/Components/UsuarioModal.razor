@@ -1,0 +1,265 @@
+@inject IJSRuntime JSRuntime
+@using System.Text.Json
+
+@if (showModal)
+{
+    <div class="modal fade show d-block" tabindex="-1" style="background-color: rgba(0,0,0,0.5);">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title">
+                        @if (mode == FormMode.Add)
+                        {
+                            <text>Agregar</text>
+                        }
+                        else
+                        {
+                            <text>Editar</text>
+                        }
+                    </h5>
+                    <button type="button" class="btn-close" @onclick="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <EditForm Model="currentUsuario" OnValidSubmit="HandleValidSubmit">
+                        <DataAnnotationsValidator />
+
+
+                        <div class="mb-3">
+                            <label class="form-label">Nombre *</label>
+                            <InputText @bind-Value="currentUsuario.Nombre" class="form-control" />
+                            @if (validationErrors.ContainsKey("Nombre"))
+                            {
+                                <div class="text-danger small">@validationErrors["Nombre"]</div>
+                            }
+                        </div>
+
+                        <div class="mb-3">
+                            <label class="form-label">Apellido *</label>
+                            <InputText @bind-Value="currentUsuario.Apellido" class="form-control" />
+                            @if (validationErrors.ContainsKey("Apellido"))
+                            {
+                                <div class="text-danger small">@validationErrors["Apellido"]</div>
+                            }
+                        </div>
+
+                        <div class="mb-3">
+                            <label class="form-label">Email *</label>
+                            <InputText @bind-Value="currentUsuario.Email" class="form-control" />
+                            @if (validationErrors.ContainsKey("Email"))
+                            {
+                                <div class="text-danger small">@validationErrors["Email"]</div>
+                            }
+                        </div>
+
+                        <div class="mb-3">
+                            <label class="form-label">Teléfono *</label>
+                            <InputText @bind-Value="currentUsuario.Telefono" class="form-control" />
+                            @if (validationErrors.ContainsKey("Telefono"))
+                            {
+                                <div class="text-danger small">@validationErrors["Telefono"]</div>
+                            }
+                        </div>
+
+                        <div class="mb-3">
+                            <label class="form-label">@(mode == FormMode.Add ? "Contraseña *" : "Nueva contraseña (opcional)")</label>
+                            <InputText type="password" @bind-Value="currentUsuario.Contrasenia" class="form-control" />
+                            @if (validationErrors.ContainsKey("Contrasenia"))
+                            {
+                                <div class="text-danger small">@validationErrors["Contrasenia"]</div>
+                            }
+                        </div>
+
+
+                        @if (mode == FormMode.Update)
+                        {
+                            @* Todo usuario nuevo se crea con Rol = Usuario: el rol solo se puede cambiar al editar. *@
+                            <div class="mb-3">
+                                <label class="form-label">Rol *</label>
+                                <InputSelect @bind-Value="currentUsuario.Rol" class="form-select">
+                                    @foreach (var rol in Enum.GetValues<RolUsuario>())
+                                    {
+                                        <option value="@rol">@rol</option>
+                                    }
+                                </InputSelect>
+                            </div>
+
+                            <div class="mb-3">
+                                <label class="form-label">Fecha Alta</label>
+                                <input type="text" class="form-control" value="@currentUsuario.FechaAlta.ToString("dd/MM/yyyy HH:mm")" readonly />
+                            </div>
+                        }
+
+                        @if (!string.IsNullOrEmpty(errorMessage))
+                        {
+                            <div class="alert alert-danger">
+                                @errorMessage
+                            </div>
+                        }
+
+                        <div class="modal-footer">
+                            <button type="button" class="btn btn-secondary" @onclick="Close">Cancelar</button>
+                            <button type="submit" class="btn btn-primary" disabled="@saving">
+                                @if (saving)
+                                {
+                                    <span class="spinner-border spinner-border-sm me-2"></span>
+                                }
+                                @(mode == FormMode.Add ? "Agregar" : "Actualizar")
+                            </button>
+                        </div>
+                    </EditForm>
+                </div>
+            </div>
+        </div>
+    </div>
+}
+
+@code {
+    [Parameter] public EventCallback OnUsuarioChanged { get; set; }
+
+    private bool showModal = false;
+    private FormMode mode = FormMode.Add;
+    private UsuarioDTO currentUsuario = new UsuarioDTO();
+    private bool saving = false;
+    private string errorMessage = string.Empty;
+    private Dictionary<string, string> validationErrors = new Dictionary<string, string>();
+
+    public enum FormMode
+    {
+        Add,
+        Update
+    }
+
+    public void ShowAddModal()
+    {
+        mode = FormMode.Add;
+        currentUsuario = new UsuarioDTO();
+        ClearValidationErrors();
+        showModal = true;
+        StateHasChanged();
+    }
+
+    public void ShowEditModal(UsuarioDTO usuario)
+    {
+        mode = FormMode.Update;
+        // La contraseña no se copia: la API nunca la devuelve, y vacía significa "no cambiarla".
+        currentUsuario = new UsuarioDTO
+        {
+            Id = usuario.Id,
+            Nombre = usuario.Nombre,
+            Apellido = usuario.Apellido,
+            Email = usuario.Email,
+            Telefono = usuario.Telefono,
+            Rol = usuario.Rol,
+            FechaAlta = usuario.FechaAlta,
+            EsActivo = usuario.EsActivo
+        };
+        ClearValidationErrors();
+        showModal = true;
+        StateHasChanged();
+    }
+
+    private static async Task<string> ExtraerMensajeError(HttpResponseMessage response)
+    {
+        try
+        {
+            var body = await response.Content.ReadFromJsonAsync<JsonElement>();
+            if (body.ValueKind == JsonValueKind.Object && body.TryGetProperty("error", out var errorProp))
+            {
+                return errorProp.GetString() ?? "Ocurrió un error al guardar el usuario.";
+            }
+        }
+        catch
+        {
+        }
+
+        return $"Ocurrió un error al guardar el usuario ({(int)response.StatusCode} {response.ReasonPhrase}).";
+    }
+
+    private async Task HandleValidSubmit()
+    {
+        if (!ValidateUsuario())
+            return;
+
+        // Vacío = no cambiar la contraseña (el servidor conserva la actual cuando llega null).
+        if (string.IsNullOrWhiteSpace(currentUsuario.Contrasenia))
+            currentUsuario.Contrasenia = null;
+
+        try
+        {
+            saving = true; errorMessage = string.Empty;
+            var response = mode == FormMode.Add
+                ? await UsuarioApiClient.AddAsync(currentUsuario)
+                : await UsuarioApiClient.UpdateAsync(currentUsuario);
+
+            if (response == null || !response.IsSuccessStatusCode)
+            {
+                errorMessage = response != null ? await ExtraerMensajeError(response) : "No se obtuvo respuesta del servidor.";
+                return;
+            }
+
+            await OnUsuarioChanged.InvokeAsync();
+            Close();
+        }
+        catch (Exception ex)
+        {
+            errorMessage = ex.Message;
+        }
+        finally
+        {
+            saving = false;
+        }
+    }
+
+    private bool ValidateUsuario()
+    {
+        ClearValidationErrors();
+        bool isValid = true;
+
+        if (string.IsNullOrWhiteSpace(currentUsuario.Nombre))
+        {
+            validationErrors["Nombre"] = "El Nombre es requerido";
+            isValid = false;
+        }
+
+        if (string.IsNullOrWhiteSpace(currentUsuario.Apellido))
+        {
+            validationErrors["Apellido"] = "El Apellido es requerido";
+            isValid = false;
+        }
+
+        if (string.IsNullOrWhiteSpace(currentUsuario.Email))
+        {
+            validationErrors["Email"] = "El Email es requerido";
+            isValid = false;
+        }
+
+        if (string.IsNullOrWhiteSpace(currentUsuario.Telefono))
+        {
+            validationErrors["Telefono"] = "El Teléfono es requerido";
+            isValid = false;
+        }
+
+        // En Add la contraseña es obligatoria; en Update se puede dejar vacía para no cambiarla.
+        if (mode == FormMode.Add && string.IsNullOrWhiteSpace(currentUsuario.Contrasenia))
+        {
+            validationErrors["Contrasenia"] = "La Contraseña es requerida";
+            isValid = false;
+        }
+
+        StateHasChanged();
+        return isValid;
+    }
+
+    private void ClearValidationErrors()
+    {
+        validationErrors.Clear();
+        errorMessage = string.Empty;
+    }
+
+    private void Close()
+    {
+        showModal = false;
+        ClearValidationErrors();
+        StateHasChanged();
+    }
+}
