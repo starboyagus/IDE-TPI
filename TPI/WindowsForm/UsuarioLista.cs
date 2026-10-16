@@ -100,6 +100,7 @@ namespace WindowsForm
             }
             catch (Exception ex)
             {
+                if (ApiClient.SesionVencida) return; // Home ya avisa y vuelve al login
                 MessageBox.Show($"No se pudo conectar a la API ({ApiClient.Http.BaseAddress}):\n{ex.Message}",
                     "Error de conexión", MessageBoxButtons.OK, MessageBoxIcon.Error);
             }
@@ -129,13 +130,14 @@ namespace WindowsForm
                 }
 
                 UsuarioDetalle usuarioDetalle = new UsuarioDetalle(FormMode.Update, usuario);
-                usuarioDetalle.ShowDialog();
+                usuarioDetalle.ShowDialog(this);
 
                 await Listar();
 
             }
             catch (Exception ex)
             {
+                if (ApiClient.SesionVencida) return; // Home ya avisa y vuelve al login
                 MessageBox.Show($"Error al actualizar el usuario: {ex.Message}", "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
             }
         }
@@ -157,7 +159,7 @@ namespace WindowsForm
         {
             UsuarioDTO usuarioNuevo = new UsuarioDTO();
             UsuarioDetalle formUsuariosDetalle = new UsuarioDetalle(FormMode.Add, usuarioNuevo);
-            formUsuariosDetalle.ShowDialog();
+            formUsuariosDetalle.ShowDialog(this);
 
             await Listar();
 
@@ -182,12 +184,14 @@ namespace WindowsForm
                 var response = await UsuarioApiClient.DeleteAsync(usuario.Id);
                 if (!response)
                 {
+                    if (ApiClient.SesionVencida) return; // Home ya avisa y vuelve al login
                     MessageBox.Show($"No se pudo eliminar el usuario.", "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
                     return;
                 }
             }
             catch (Exception ex)
             {
+                if (ApiClient.SesionVencida) return; // Home ya avisa y vuelve al login
                 MessageBox.Show($"Error al eliminar el usuario: {ex.Message}", "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
                 return;
             }

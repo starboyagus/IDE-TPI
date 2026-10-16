@@ -51,7 +51,7 @@ namespace Application.Services
                 var producto = await productoRepository.GetAsync(i.ProductoId);
                 if(producto == null || producto.EsActivo == false)
                 {
-                    throw new ArgumentException($"El producto {producto?.Nombre} no existe o no esta activo");
+                    throw new ArgumentException($"El producto con Id {i.ProductoId} no existe o no esta activo");
                 }
                 if (!producto.EsPreVenta)
                 {
@@ -86,7 +86,6 @@ namespace Application.Services
                 if (!producto.EsPreVenta)
                 {
                     producto.SetStock(producto.Stock - i.Cantidad);
-                    await productoRepository.UpdateAsync(producto);
                 }
                 orden.Items.Add(new OrdenItem(0, 0, i.ProductoId, i.Cantidad, i.PrecioUnitario));
             }
@@ -173,7 +172,7 @@ namespace Application.Services
                 return false;
             }
 
-            Orden orden = new Orden(dto.Id, dto.Fecha, dto.Estado, dto.Total, dto.UsuarioId, dto.DireccionEnvio, existing.FechaAlta, existing.EsActivo);
+            Orden orden = new Orden(dto.Id, dto.Fecha, dto.Estado, existing.Total, dto.UsuarioId, dto.DireccionEnvio, existing.FechaAlta, existing.EsActivo);
             return await ordenRepository.UpdateAsync(orden);
         }
     }

@@ -9,7 +9,7 @@ namespace WebAPI
 {
     public interface IJwtService
     {
-        string GenerateToken(UsuarioDTO usuario);
+        (string Token, DateTime Expiration) GenerateToken(UsuarioDTO usuario);
     }
 
     public class JwtService : IJwtService
@@ -21,7 +21,7 @@ namespace WebAPI
             _config = config;
         }
 
-        public string GenerateToken(UsuarioDTO usuario)
+        public (string Token, DateTime Expiration) GenerateToken(UsuarioDTO usuario)
         {
             var jwtSettings = _config.GetSection("JwtSettings");
             var secretKey = jwtSettings["SecretKey"]!;
@@ -83,16 +83,17 @@ namespace WebAPI
 
             var key = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(secretKey));
             var creds = new SigningCredentials(key, SecurityAlgorithms.HmacSha256);
+            var expiration = DateTime.UtcNow.AddMinutes(expirationMinutes);
 
             var token = new JwtSecurityToken(
                 issuer: issuer,
                 audience: audience,
                 claims: claims,
-                expires: DateTime.UtcNow.AddMinutes(expirationMinutes),
+                expires: expiration,
                 signingCredentials: creds
             );
 
-            return new JwtSecurityTokenHandler().WriteToken(token);
+            return (new JwtSecurityTokenHandler().WriteToken(token), expiration);
         }
     }
 }

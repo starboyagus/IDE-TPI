@@ -109,6 +109,7 @@ namespace WindowsForm
             }
             catch (Exception ex)
             {
+                if (ApiClient.SesionVencida) return; // Home ya avisa y vuelve al login
                 MessageBox.Show($"No se pudo conectar a la API ({ApiClient.Http.BaseAddress}):\n{ex.Message}",
                     "Error de conexión", MessageBoxButtons.OK, MessageBoxIcon.Error);
             }
@@ -150,13 +151,14 @@ namespace WindowsForm
                 }
 
                 ProductoDetalle productoDetalle= new ProductoDetalle(FormMode.Update, producto);
-                productoDetalle.ShowDialog();
+                productoDetalle.ShowDialog(this);
 
                 await Listar();
 
             }
             catch (Exception ex)
             {
+                if (ApiClient.SesionVencida) return; // Home ya avisa y vuelve al login
                 MessageBox.Show($"Error al actualizar el producto: {ex.Message}", "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
             }
         }
@@ -185,10 +187,11 @@ namespace WindowsForm
                 }
 
                 ProductoEspecificaciones formEspecificaciones = new ProductoEspecificaciones(producto);
-                formEspecificaciones.ShowDialog();
+                formEspecificaciones.ShowDialog(this);
             }
             catch (Exception ex)
             {
+                if (ApiClient.SesionVencida) return; // Home ya avisa y vuelve al login
                 MessageBox.Show($"Error al cargar las especificaciones: {ex.Message}", "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
             }
         }
@@ -205,7 +208,7 @@ namespace WindowsForm
         {
             ProductoDTO prodNuevo= new ProductoDTO();
             ProductoDetalle formProductosDetalle = new ProductoDetalle(FormMode.Add, prodNuevo);
-            formProductosDetalle.ShowDialog();
+            formProductosDetalle.ShowDialog(this);
 
             await Listar();
 
@@ -230,12 +233,14 @@ namespace WindowsForm
                 var response = await ProductoApiClient.DeleteAsync(producto.Id);
                 if (!response)
                 {
+                    if (ApiClient.SesionVencida) return; // Home ya avisa y vuelve al login
                     MessageBox.Show($"No se pudo eliminar el producto.", "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
                     return;
                 }
             }
             catch (Exception ex)
             {
+                if (ApiClient.SesionVencida) return; // Home ya avisa y vuelve al login
                 MessageBox.Show($"Error al eliminar el producto: {ex.Message}", "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
                 return;
             }

@@ -58,6 +58,7 @@ namespace WindowsForm
             }
             catch (Exception ex)
             {
+                if (ApiClient.SesionVencida) return; // Home ya avisa y vuelve al login
                 MessageBox.Show($"No se pudieron cargar las especificaciones:\n{ex.Message}",
                     "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
             }

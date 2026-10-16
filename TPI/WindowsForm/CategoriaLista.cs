@@ -74,6 +74,7 @@ namespace WindowsForm
             }
             catch (Exception ex)
             {
+                if (ApiClient.SesionVencida) return; // Home ya avisa y vuelve al login
                 MessageBox.Show($"No se pudo conectar a la API ({ApiClient.Http.BaseAddress}):\n{ex.Message}",
                     "Error de conexión", MessageBoxButtons.OK, MessageBoxIcon.Error);
             }
@@ -103,13 +104,14 @@ namespace WindowsForm
                 }
 
                 CategoriaDetalle categoriaDetalle = new CategoriaDetalle(FormMode.Update, categoria);
-                categoriaDetalle.ShowDialog();
+                categoriaDetalle.ShowDialog(this);
 
                 await Listar();
 
             }
             catch (Exception ex)
             {
+                if (ApiClient.SesionVencida) return; // Home ya avisa y vuelve al login
                 MessageBox.Show($"Error al actualizar la categoría: {ex.Message}", "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
             }
         }
@@ -131,7 +133,7 @@ namespace WindowsForm
         {
             CategoriaDTO categoriaNueva = new CategoriaDTO();
             CategoriaDetalle formCategoriasDetalle = new CategoriaDetalle(FormMode.Add, categoriaNueva);
-            formCategoriasDetalle.ShowDialog();
+            formCategoriasDetalle.ShowDialog(this);
 
             await Listar();
 
@@ -156,12 +158,14 @@ namespace WindowsForm
                 var response = await CategoriaApiClient.DeleteAsync(categoria.Id);
                 if (!response)
                 {
+                    if (ApiClient.SesionVencida) return; // Home ya avisa y vuelve al login
                     MessageBox.Show($"No se pudo eliminar la categoría.", "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
                     return;
                 }
             }
             catch (Exception ex)
             {
+                if (ApiClient.SesionVencida) return; // Home ya avisa y vuelve al login
                 MessageBox.Show($"Error al eliminar la categoría: {ex.Message}", "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
                 return;
             }

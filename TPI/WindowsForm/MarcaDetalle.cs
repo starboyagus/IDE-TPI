@@ -116,6 +116,7 @@ namespace WindowsForm
 
                 if (response == null || !response.IsSuccessStatusCode)
                 {
+                    if (ApiClient.SesionVencida) return; // Home ya avisa y vuelve al login
                     string mensaje = response != null ? await ExtraerMensajeError(response) : "No se obtuvo respuesta del servidor.";
                     MessageBox.Show(mensaje, "No se pudo guardar", MessageBoxButtons.OK, MessageBoxIcon.Error);
                     return;
@@ -125,6 +126,7 @@ namespace WindowsForm
             }
             catch (Exception ex)
             {
+                if (ApiClient.SesionVencida) return; // Home ya avisa y vuelve al login
                 MessageBox.Show($"Error al guardar la marca: {ex.Message}", "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
             }
         }

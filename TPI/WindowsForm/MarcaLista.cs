@@ -64,6 +64,7 @@ namespace WindowsForm
             }
             catch (Exception ex)
             {
+                if (ApiClient.SesionVencida) return; // Home ya avisa y vuelve al login
                 MessageBox.Show($"No se pudo conectar a la API ({ApiClient.Http.BaseAddress}):\n{ex.Message}",
                     "Error de conexión", MessageBoxButtons.OK, MessageBoxIcon.Error);
             }
@@ -93,12 +94,13 @@ namespace WindowsForm
                 }
 
                 MarcaDetalle marcaDetalle = new MarcaDetalle(FormMode.Update, marca);
-                marcaDetalle.ShowDialog();
+                marcaDetalle.ShowDialog(this);
 
                 await Listar();
             }
             catch (Exception ex)
             {
+                if (ApiClient.SesionVencida) return; // Home ya avisa y vuelve al login
                 MessageBox.Show($"Error al actualizar la marca: {ex.Message}", "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
             }
         }
@@ -120,7 +122,7 @@ namespace WindowsForm
         {
             MarcaDTO marcaNueva = new MarcaDTO();
             MarcaDetalle formMarcaDetalle = new MarcaDetalle(FormMode.Add, marcaNueva);
-            formMarcaDetalle.ShowDialog();
+            formMarcaDetalle.ShowDialog(this);
 
             await Listar();
         }
@@ -144,12 +146,14 @@ namespace WindowsForm
                 var response = await MarcaApiClient.DeleteAsync(marca.Id);
                 if (!response)
                 {
+                    if (ApiClient.SesionVencida) return; // Home ya avisa y vuelve al login
                     MessageBox.Show($"No se pudo eliminar la marca.", "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
                     return;
                 }
             }
             catch (Exception ex)
             {
+                if (ApiClient.SesionVencida) return; // Home ya avisa y vuelve al login
                 MessageBox.Show($"Error al eliminar la marca: {ex.Message}", "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
                 return;
             }

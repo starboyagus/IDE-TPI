@@ -58,9 +58,7 @@ namespace Data
             var existing = await _context.Ordenes.FindAsync(orden.Id);
             if (existing == null)
                 return false;
-
             existing.SetEstado(orden.Estado);
-            existing.SetTotal(orden.Total);
             existing.SetDireccionEnvio(orden.DireccionEnvio);
             await _context.SaveChangesAsync();
             return true;

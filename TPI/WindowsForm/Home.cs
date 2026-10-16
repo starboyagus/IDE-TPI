@@ -1,3 +1,4 @@
+using API.Clients;
 using System;
 using System.Collections.Generic;
 using System.ComponentModel;
@@ -15,6 +16,32 @@ namespace WindowsForm
         public Home()
         {
             InitializeComponent();
+            ApiClient.SesionExpirada += OnSesionExpirada;
+        }
+
+        private void OnSesionExpirada()
+        {
+            if (InvokeRequired)
+            {
+                BeginInvoke(new Action(OnSesionExpirada));
+                return;
+            }
+
+            // Se cierra todo lo abierto: hijos MDI y también los detalles abiertos con ShowDialog.
+            foreach (Form form in Application.OpenForms.Cast<Form>().Where(f => f != this).ToList())
+            {
+                form.Close();
+            }
+
+            AuthService.AuthService.Logout();
+
+            // El aviso y el login se encolan para que primero terminen de cerrarse los formularios.
+            BeginInvoke(new Action(() =>
+            {
+                MessageBox.Show("Tu sesión venció. Volvé a iniciar sesión.", "Sesión vencida",
+                    MessageBoxButtons.OK, MessageBoxIcon.Information);
+                IniciarSesion();
+            }));
         }
 
         private void mnuSalir_Click(object sender, EventArgs e)
@@ -32,7 +59,7 @@ namespace WindowsForm
         private void IniciarSesion()
         {
             LoginForm appLogin = new LoginForm();
-            if (appLogin.ShowDialog() != DialogResult.OK)
+            if (appLogin.ShowDialog(this) != DialogResult.OK)
             {
                 this.Dispose();
                 return;
@@ -71,39 +98,46 @@ namespace WindowsForm
                 this.Text = $"Inicio - {usuario.Nombre} {usuario.Apellido} ({usuario.Rol})";
             }
         }
+        private void AbrirHijo<T>() where T : Form, new()
+        {
+            T? abierto = this.MdiChildren.OfType<T>().FirstOrDefault();
+            if (abierto != null)
+            {
+                if (abierto.WindowState == FormWindowState.Minimized)
+                    abierto.WindowState = FormWindowState.Normal;
+
+                abierto.Activate();
+                return;
+            }
+
+            T form = new T();
+            form.MdiParent = this;
+            form.Show();
+        }
+
         private void usuariosToolStripMenuItem_Click(object sender, EventArgs e)
         {
-            UsuarioLista formUsuarios = new UsuarioLista();
-            formUsuarios.MdiParent = this;
-            formUsuarios.Show();
+            AbrirHijo<UsuarioLista>();
         }
 
         private void productoToolStripMenuItem_Click(object sender, EventArgs e)
         {
-            ProductoLista formProducto = new ProductoLista();
-            formProducto.MdiParent = this;
-            formProducto.Show();
+            AbrirHijo<ProductoLista>();
         }
 
         private void categoriaToolStripMenuItem_Click(object sender, EventArgs e)
         {
-            CategoriaLista formCategoria = new CategoriaLista();
-            formCategoria.MdiParent = this;
-            formCategoria.Show();
+            AbrirHijo<CategoriaLista>();
         }
 
         private void marcaToolStripMenuItem_Click(object sender, EventArgs e)
         {
-            MarcaLista formMarca = new MarcaLista();
-            formMarca.MdiParent = this;
-            formMarca.Show();
+            AbrirHijo<MarcaLista>();
         }
 
         private void ordenesToolStripMenuItem_Click(object sender, EventArgs e)
         {
-            OrdenLista formOrdenes = new OrdenLista();
-            formOrdenes.MdiParent = this;
-            formOrdenes.Show();
+            AbrirHijo<OrdenLista>();
         }
     }
 }

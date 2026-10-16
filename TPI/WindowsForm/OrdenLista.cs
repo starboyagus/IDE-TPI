@@ -81,6 +81,7 @@ namespace WindowsForm
             }
             catch (Exception ex)
             {
+                if (ApiClient.SesionVencida) return; // Home ya avisa y vuelve al login
                 MessageBox.Show($"No se pudo conectar a la API ({ApiClient.Http.BaseAddress}):\n{ex.Message}",
                     "Error de conexión", MessageBoxButtons.OK, MessageBoxIcon.Error);
             }
@@ -110,12 +111,13 @@ namespace WindowsForm
                 }
 
                 OrdenDetalle ordenDetalle = new OrdenDetalle(FormMode.Update, orden);
-                ordenDetalle.ShowDialog();
+                ordenDetalle.ShowDialog(this);
 
                 await Listar();
             }
             catch (Exception ex)
             {
+                if (ApiClient.SesionVencida) return; // Home ya avisa y vuelve al login
                 MessageBox.Show($"Error al actualizar la orden: {ex.Message}", "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
             }
         }
@@ -137,7 +139,7 @@ namespace WindowsForm
         {
             OrdenDTO ordenNueva = new OrdenDTO();
             OrdenDetalle formOrdenDetalle = new OrdenDetalle(FormMode.Add, ordenNueva);
-            formOrdenDetalle.ShowDialog();
+            formOrdenDetalle.ShowDialog(this);
 
             await Listar();
         }
@@ -161,12 +163,14 @@ namespace WindowsForm
                 var response = await OrdenApiClient.DeleteAsync(orden.Id);
                 if (!response)
                 {
+                    if (ApiClient.SesionVencida) return; // Home ya avisa y vuelve al login
                     MessageBox.Show($"No se pudo eliminar la orden.", "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
                     return;
                 }
             }
             catch (Exception ex)
             {
+                if (ApiClient.SesionVencida) return; // Home ya avisa y vuelve al login
                 MessageBox.Show($"Error al eliminar la orden: {ex.Message}", "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
                 return;
             }

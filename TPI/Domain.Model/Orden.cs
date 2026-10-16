@@ -46,19 +46,19 @@ namespace Domain.Model
         public void SetEstado(EstadoOrden estado)
         {
             if (!Enum.IsDefined(typeof(EstadoOrden), estado))
-                throw new ArgumentException("El rol no es válido.", nameof(estado));
+                throw new ArgumentException("El estado no es válido.", nameof(estado));
             Estado = estado;
         }
         public void SetTotal(decimal total)
         {
             if (total < 0)
-                throw new ArgumentException("El precio debe ser mayor que 0.", nameof(total));
+                throw new ArgumentException("El total no puede ser negativo.", nameof(total));
             Total = total;
         }
         public void SetUsuarioId(int usuarioId)
         {
             if (usuarioId <= 0)
-                throw new ArgumentException("La categoría no puede ser nula.", nameof(usuarioId));
+                throw new ArgumentException("El usuario es obligatorio.", nameof(usuarioId));
             UsuarioId = usuarioId;
         }
 

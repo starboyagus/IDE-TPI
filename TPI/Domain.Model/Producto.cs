@@ -93,7 +93,7 @@ namespace Domain.Model
         public void SetMarcaId(int marcaId)
         {
             if (marcaId <= 0)
-                throw new ArgumentException("La categoría no puede ser nula.", nameof(marcaId));
+                throw new ArgumentException("La marca no puede ser nula.", nameof(marcaId));
             MarcaId = marcaId;
         }
     }

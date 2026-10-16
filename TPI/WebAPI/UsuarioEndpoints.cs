@@ -104,7 +104,7 @@ namespace WebAPI
                     return Results.Unauthorized();
                 }
 
-                string token = jwtService.GenerateToken(usuario);
+                var (token, expiration) = jwtService.GenerateToken(usuario);
 
                 return Results.Ok(new AuthResponseDTO
                 {
@@ -118,7 +118,7 @@ namespace WebAPI
                         Telefono = usuario.Telefono,
                         Rol = usuario.Rol
                     },
-                    Expiration = DateTime.UtcNow.AddHours(1) // Set token expiration time
+                    Expiration = expiration
                 });
             })
                 .WithName("LoginUsuario")
