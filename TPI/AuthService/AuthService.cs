@@ -13,6 +13,7 @@ namespace AuthService
 
         public static bool IsAuthenticated => !string.IsNullOrEmpty(Token) && UsuarioActual != null;
         public static bool IsAdmin => UsuarioActual?.Rol == RolUsuario.Admin;
+        public static bool IsUser => UsuarioActual?.Rol == RolUsuario.Usuario;
 
         public static event Action? SesionCambio;
 

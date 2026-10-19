@@ -1,4 +1,4 @@
-﻿@implements IDisposable
+@implements IDisposable
 
 <div class="top-row ps-3 navbar navbar-dark">
     <div class="container-fluid">
@@ -17,9 +17,18 @@
             </NavLink>
             @if (AuthService.IsAuthenticated)
             {
-                <NavLink class="nav-link" href="productos" Match="NavLinkMatch.All">
-                    <span class="bi-plus-square-fill-nav-menu" aria-hidden="true"></span> Productos
-                </NavLink>
+                @if (AuthService.IsAdmin)
+                {
+                    <NavLink class="nav-link" href="productos" Match="NavLinkMatch.All">
+                        <span class="bi-plus-square-fill-nav-menu" aria-hidden="true"></span> Productos
+                    </NavLink>
+                }
+                else
+                {
+                    <NavLink class="nav-link" href="productos-user" Match="NavLinkMatch.All">
+                        <span class="bi-plus-square-fill-nav-menu" aria-hidden="true"></span> Productos
+                    </NavLink>
+                }
             }
             @if (AuthService.IsAdmin)
             {

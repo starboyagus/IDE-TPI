@@ -1,4 +1,4 @@
-﻿@page "/"
+@page "/"
 @inject NavigationManager Navigation
 
 <PageTitle>Home</PageTitle>
@@ -23,5 +23,10 @@
             return;
         }
 
+        if (!AuthService.IsAdmin)
+        {
+            Navigation.NavigateTo("/productos-user");
+            return;
+        }
     }
 }

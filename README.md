@@ -398,6 +398,59 @@ IDE-TPI/
 
 ---
 
+## 📌 Tareas Pendientes (To-Do List)
+
+Lista de tareas y mejoras planificadas para las siguientes etapas del proyecto:
+
+### 🌐 Blazor Web
+- [ ] **Crear una orden (`usuario only`)**:
+  - Implementar flujo de carrito de compras o checkout directo desde el catálogo de productos.
+  - Selección de cantidades, cálculo de subtotal y total en tiempo real, e ingreso de dirección de envío.
+  - Envío del payload a la API (`POST /ordenes`) asociando el `UsuarioId` del cliente autenticado.
+- [ ] **CRUD de órdenes (`admin only`)**:
+  - Vista administrativa de todas las órdenes registradas en el sistema.
+  - Edición del estado de la orden (`Pendiente`, `Procesando`, `Enviado`, `Entregado`, `Cancelado`).
+  - Modificación de dirección de envío y cancelación / baja lógica de órdenes.
+- [ ] **Ver mis órdenes (`usuario only`)**:
+  - Pantalla de historial de pedidos exclusiva para el cliente autenticado (`GET /ordenes` filtrado por su `UsuarioId`).
+  - Visualización del detalle de ítems comprados, precio histórico, total y estado de entrega.
+
+### 🖥️ Windows Forms
+- [ ] **Pantalla de inicio / Dashboard (`Home`)**:
+  - *Estado actual*: Formulario base vacío tras iniciar sesión.
+  - *Propuesta de implementación*:
+    - **Panel de bienvenida**: Saludo personalizado con nombre, apellido, email y badge del rol (`Administrador` o `Usuario`).
+    - **Métricas rápidas (KPIs)**: Tarjetas con contadores clave (total de productos en catálogo, órdenes pendientes de despacho, productos con stock crítico/en preventa, usuarios registrados).
+    - **Accesos directos**: Botones rápidos hacia "Nuevo Producto", "Nueva Orden", "Gestión de Stock" y "Ver Clientes".
+    - **Alertas de inventario**: Grilla compacta con los productos próximos a agotar existencias.
+
+### 📊 Reportes (Windows Forms y Blazor Web)
+- [ ] **Módulo de Reportes con ADO.NET y Motor de Reportes**:
+  - Implementar consultas analíticas directas con **ADO.NET** (`SqlConnection`, `SqlCommand`, `SqlDataReader` o `DataTable`) para optimizar rendimiento y demostrar consultas SQL avanzadas (joins, agregaciones, agrupaciones y filtros parametrizados).
+  - Integrar un motor de reportes moderno para .NET 8:
+    - **Opción recomendada (PDF multiplataforma)**: **QuestPDF** — generación de reportes y facturas mediante código C# fluido, exportable a PDF y consumible tanto en Web (Blazor/API) como en escritorio (WinForms).
+    - **Opción para WinForms / Web**: **FastReport Open Source** — reportes visuales con diseñador y visor integrado.
+    - **Opción clásica**: **Microsoft Reporting Services / RDLC (ReportViewer)** — tradicional para Windows Forms en entornos académicos.
+
+---
+
+### 💡 Análisis y Ranking de Reportes para el Proyecto
+
+Evaluando el modelo de dominio del e-commerce (Productos, Categorías, Marcas, Especificaciones, Órdenes, Detalle y Usuarios), se detallan los reportes sugeridos ordenados por **cuál aportaría mayor valor y relevancia al TP**:
+
+| Prioridad | Reporte | Descripción y Justificación para el TP | Justificación Técnica (ADO.NET) |
+|:---:|---|---|---|
+| 🥇 **1** | **Ventas por Período y Estado de Órdenes** | **El reporte principal de cualquier e-commerce.** Permite filtrar por rango de fechas (desde/hasta) y estado (`Entregado`, `Pendiente`, etc.). Muestra total facturado, ticket promedio y cantidad de órdenes. Indispensable para la toma de decisiones. | Consulta con `JOIN` entre `Ordenes` y `Usuarios`, filtro `WHERE Fecha BETWEEN @Desde AND @Hasta`, `GROUP BY` por estado/mes y agregaciones `COUNT()` y `SUM(Total)`. |
+| 🥈 **2** | **Top Productos Más Vendidos y Facturación por Categoría/Marca** | **Excelente para análisis comercial del catálogo.** Permite ver qué componentes tienen mayor rotación (unidades vendidas) y qué marcas/categorías generan más ingresos (ej. placas de video vs procesadores, Nvidia vs AMD). | Query con `JOIN` entre `OrdenItems`, `Productos`, `Categorias` y `Marcas`, agrupando por producto con `SUM(Cantidad)` y ordenando descendentemente. |
+| 🥉 **3** | **Comprobante / Factura de Orden de Compra** | **Gran utilidad práctica y visual.** Permite generar la factura o remito imprimible/PDF de una orden específica con datos del cliente, dirección de entrega, detalle de ítems, precio unitario y total final. | Consulta parametrizada por `@OrdenId` combinando cabecera de orden (`Orden` + `Usuario`) con líneas de detalle (`OrdenItems` + `Producto`). |
+| 4 | **Stock Crítico y Alerta de Reposición (con Pre-Ventas)** | **Ideal para la gestión de inventario en Windows Forms.** Muestra productos cuyo stock es inferior a un umbral mínimo o que están configurados en preventa (`EsPreVenta = 1`), agrupados por marca para reposición a proveedores. | Query con filtros condicionales: `WHERE (Stock <= @UmbralMinimo OR EsPreVenta = 1) AND EsActivo = 1 ORDER BY CategoriaId, Stock ASC`. |
+| 5 | **Ranking de Clientes con Mayor Actividad / Compras** | Identifica a los clientes más recurrentes o con mayor volumen de compra acumulado. Útil para promociones o estadísticas de clientes. | `JOIN` entre `Usuarios` y `Ordenes`, con `COUNT(o.Id)` y `SUM(o.Total)` agrupado por cliente. |
+
+> [!TIP]
+> **Recomendación para la entrega:** Implementar el **Reporte 1 (Ventas por Período)** junto con el **Reporte 2 (Top Productos/Marcas)** o el **Reporte 3 (Factura de Compra)**. Esta combinación cubre de manera óptima las expectativas de la cátedra para consultas complejas en ADO.NET y visualización de datos.
+
+---
+
 ## 🚀 Guía de Instalación y Ejecución
 
 ### Prerrequisitos

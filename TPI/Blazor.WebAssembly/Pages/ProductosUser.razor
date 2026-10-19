@@ -1,0 +1,217 @@
+@page "/productos-user"
+@inject NavigationManager Navigation
+
+<PageTitle>Productos</PageTitle>
+
+<div class="container-fluid py-2">
+    <div class="row mb-3">
+        <div class="col-12">
+            <h3>Productos</h3>
+        </div>
+    </div>
+
+    @if (!string.IsNullOrEmpty(errorMessage))
+    {
+        <div class="alert alert-danger alert-dismissible fade show" role="alert">
+            @errorMessage
+            <button type="button" class="btn-close" @onclick="() => errorMessage = string.Empty"></button>
+        </div>
+    }
+
+    @if (loading)
+    {
+        <div class="d-flex justify-content-center my-5">
+            <div class="spinner-border text-primary" role="status">
+                <span class="visually-hidden">Cargando...</span>
+            </div>
+        </div>
+    }
+    else if (productos == null || !productos.Any())
+    {
+        <div class="alert alert-info" role="alert">
+            No hay productos activos disponibles para mostrar.
+        </div>
+    }
+    else
+    {
+        <div class="productos-grid">
+            @foreach (var producto in productos)
+            {
+                <div class="producto-card">
+                    <div class="producto-info">
+                        <div class="producto-nombre">@producto.Nombre</div>
+                        <div class="producto-subtitulo">
+                            @(string.IsNullOrWhiteSpace(producto.Categoria) ? "-" : producto.Categoria) - @(string.IsNullOrWhiteSpace(producto.Marca) ? "-" : producto.Marca)
+                        </div>
+                        <div class="producto-descripcion">
+                            @(string.IsNullOrWhiteSpace(producto.Descripcion) ? "-" : producto.Descripcion)
+                        </div>
+                        @if (producto.EsPreVenta)
+                        {
+                            <div class="producto-badge-container">
+                                <span class="badge-preventa">PreVenta</span>
+                            </div>
+                        }
+                    </div>
+                    <div class="producto-precio-box">
+                        <div class="producto-precio-texto">
+                            $ @producto.Precio.ToString("N2")
+                        </div>
+                    </div>
+                </div>
+            }
+        </div>
+    }
+</div>
+
+<style>
+    .productos-grid {
+        display: grid;
+        grid-template-columns: repeat(3, 1fr);
+        gap: 16px;
+    }
+
+    @@media (max-width: 1200px) {
+        .productos-grid {
+            grid-template-columns: repeat(2, 1fr);
+        }
+    }
+
+    @@media (max-width: 768px) {
+        .productos-grid {
+            grid-template-columns: 1fr;
+        }
+    }
+
+    .producto-card {
+        display: flex;
+        flex-direction: row;
+        background-color: #dcdcdc;
+        border-radius: 14px;
+        overflow: hidden;
+        min-height: 120px;
+        box-shadow: 0 2px 4px rgba(0, 0, 0, 0.08);
+        transition: transform 0.15s ease, box-shadow 0.15s ease;
+    }
+
+    .producto-card:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 4px 8px rgba(0, 0, 0, 0.12);
+    }
+
+    .producto-info {
+        flex: 1 1 auto;
+        padding: 12px 14px;
+        display: flex;
+        flex-direction: column;
+        justify-content: flex-start;
+        background-color: #dcdcdc;
+    }
+
+    .producto-nombre {
+        font-weight: 700;
+        font-size: 0.92rem;
+        text-transform: uppercase;
+        color: #1a1a1a;
+        line-height: 1.25;
+        margin-bottom: 3px;
+        word-break: break-word;
+    }
+
+    .producto-subtitulo {
+        font-size: 0.8rem;
+        color: #4a4a4a;
+        margin-bottom: 4px;
+        line-height: 1.2;
+    }
+
+    .producto-descripcion {
+        font-size: 0.78rem;
+        color: #555555;
+        margin-bottom: 8px;
+        line-height: 1.25;
+        display: -webkit-box;
+        -webkit-line-clamp: 2;
+        -webkit-box-orient: vertical;
+        overflow: hidden;
+        word-break: break-word;
+    }
+
+    .producto-badge-container {
+        margin-top: auto;
+    }
+
+    .badge-preventa {
+        background-color: #00e676;
+        color: #050505;
+        font-weight: 700;
+        font-size: 0.72rem;
+        padding: 3px 10px;
+        border-radius: 4px;
+        display: inline-block;
+        letter-spacing: 0.3px;
+    }
+
+    .producto-precio-box {
+        flex: 0 0 38%;
+        min-width: 110px;
+        background-color: #5a5a5a;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        text-align: center;
+        padding: 10px 8px;
+    }
+
+    .producto-precio-texto {
+        font-weight: 800;
+        font-size: 1.25rem;
+        color: #111111;
+        letter-spacing: -0.5px;
+        word-break: break-word;
+    }
+</style>
+
+@code {
+    private List<ProductoDTO>? productos;
+    private bool loading = true;
+    private string errorMessage = string.Empty;
+
+    protected override async Task OnInitializedAsync()
+    {
+        if (!AuthService.IsAuthenticated)
+        {
+            Navigation.NavigateTo("/");
+            return;
+        }
+
+        // Si es Admin, redirigir a la vista de Productos admin
+        if (AuthService.IsAdmin)
+        {
+            Navigation.NavigateTo("/productos");
+            return;
+        }
+
+        await LoadProductos();
+    }
+
+    private async Task LoadProductos()
+    {
+        try
+        {
+            loading = true;
+            errorMessage = string.Empty;
+            var result = await ProductoApiClient.GetAllAsync();
+            // "SI NO ESTA ACTIVO QUE NO APAREZCA"
+            productos = result?.Where(p => p.EsActivo).ToList();
+        }
+        catch (Exception ex)
+        {
+            errorMessage = $"Error al cargar productos: {ex.Message}";
+        }
+        finally
+        {
+            loading = false;
+        }
+    }
+}
