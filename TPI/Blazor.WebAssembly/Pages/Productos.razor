@@ -1,0 +1,178 @@
+@page "/productos"
+@inject IJSRuntime JSRuntime
+@inject NavigationManager Navigation
+
+<PageTitle>Productos</PageTitle>
+
+<div class="container-fluid">
+    <div class="row">
+        <div class="col-12">
+            <h3>Productos</h3>
+
+            @if (!string.IsNullOrEmpty(errorMessage))
+            {
+                <div class="alert alert-danger alert-dismissible fade show" role="alert">
+                    @errorMessage
+                    <button type="button" class="btn-close" @onclick="() => errorMessage = string.Empty"></button>
+                </div>
+            }
+
+            @if (!string.IsNullOrEmpty(successMessage))
+            {
+                <div class="alert alert-success alert-dismissible fade show" role="alert">
+                    @successMessage
+                    <button type="button" class="btn-close" @onclick="() => successMessage = string.Empty"></button>
+                </div>
+            }
+
+            @if (esAdmin)
+            {
+                <div class="mb-3">
+                    <button class="btn btn-primary" @onclick="OpenAddModal">
+                        <i class="fas fa-plus"></i> Agregar
+                    </button>
+                </div>
+            }
+
+            @if (loading)
+            {
+                <div class="d-flex justify-content-center">
+                    <div class="spinner-border" role="status">
+                        <span class="visually-hidden">Cargando...</span>
+                    </div>
+                </div>
+            }
+            else
+            {
+                <div class="table-responsive">
+                    <table class="table table-striped table-hover">
+                        <thead class="table-dark">
+                            <tr>
+                                <th>Id</th>
+                                <th>Nombre</th>
+                                <th>Descripción</th>
+                                <th>Precio</th>
+                                <th>Stock</th>
+                                <th>Pre-venta</th>
+                                <th>Categoría</th>
+                                <th>Marca</th>
+                                <th>Especificaciones</th>
+                                <th>Fecha Alta</th>
+                                <th></th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            @if (productos != null && productos.Any())
+                            {
+                                @foreach (var producto in productos)
+                                {
+                                    <tr>
+                                        <td>@producto.Id</td>
+                                        <td>@producto.Nombre</td>
+                                        <td>@producto.Descripcion</td>
+                                        <td>$ @producto.Precio.ToString("N2")</td>
+                                        <td>@producto.Stock</td>
+                                        <td>@(producto.EsPreVenta ? "Sí" : "No")</td>
+                                        <td>@producto.Categoria</td>
+                                        <td>@producto.Marca</td>
+                                        <td class="small">@(producto.Especificaciones ?? "-")</td>
+                                        <td>@producto.FechaAlta.ToString("dd/MM/yyyy HH:mm:ss")</td>
+                                        <td>
+                                            @if (esAdmin)
+                                            {
+                                                <button class="btn btn-sm btn-outline-primary me-1" @onclick="() => OpenEditModal(producto)">
+                                                    <i class="fas fa-edit"></i> Editar
+                                                </button>
+                                                <button class="btn btn-sm btn-outline-danger" @onclick="() => ConfirmDelete(producto)">
+                                                    <i class="fas fa-trash"></i> Eliminar
+                                                </button>
+                                            }
+                                        </td>
+                                    </tr>
+                                }
+                            }
+                        </tbody>
+                    </table>
+                </div>
+            }
+        </div>
+    </div>
+</div>
+
+<ProductoModal @ref="productoModal" OnProductoChanged="LoadProductos" />
+
+@code {
+    private List<ProductoDTO>? productos;
+    private bool loading = true;
+    private string errorMessage = string.Empty;
+    private string successMessage = string.Empty;
+    private ProductoModal productoModal = null!;
+    private bool esAdmin = AuthService.IsAdmin;
+
+
+    protected override async Task OnInitializedAsync()
+    {
+        if (!AuthService.IsAuthenticated)
+        {
+            Navigation.NavigateTo("/");
+            return;
+        }
+
+        await LoadProductos();
+    }
+
+    private async Task LoadProductos()
+    {
+        try
+        {
+            loading = true;
+            productos = (await ProductoApiClient.GetAllAsync())?.ToList();
+            successMessage = string.Empty;
+        }
+        catch (Exception ex)
+        {
+            errorMessage = $"Error al cargar productos: {ex.Message}";
+        }
+        finally
+        {
+            loading = false;
+        }
+    }
+
+    private async Task OpenAddModal()
+    {
+        await productoModal.ShowAddModal();
+    }
+
+    private async Task OpenEditModal(ProductoDTO producto)
+    {
+        await productoModal.ShowEditModal(producto);
+    }
+
+    private async Task ConfirmDelete(ProductoDTO producto)
+    {
+        var confirm = await JSRuntime.InvokeAsync<bool>("confirm",
+            $"¿Está seguro que desea eliminar el producto {producto.Nombre}?");
+
+        if (confirm)
+        {
+            await DeleteProducto(producto.Id);
+        }
+    }
+
+    private async Task DeleteProducto(int id)
+    {
+        try
+        {
+            if (await ProductoApiClient.DeleteAsync(id))
+                successMessage = "Producto eliminado.";
+            else
+                errorMessage = "No se pudo eliminar el producto.";
+            await LoadProductos();
+        }
+        catch (Exception ex)
+        {
+            errorMessage = $"Error al eliminar producto: {ex.Message}";
+        }
+    }
+}
