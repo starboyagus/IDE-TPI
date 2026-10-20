@@ -47,6 +47,7 @@ namespace WindowsForm
             pnlEspecificaciones = new Panel();
             lblSinEspecificaciones = new Label();
             btnCerrar = new Button();
+            btnAgregar = new Button();
             grpProducto.SuspendLayout();
             grpEspecificaciones.SuspendLayout();
             SuspendLayout();
@@ -252,11 +253,23 @@ namespace WindowsForm
             btnCerrar.UseVisualStyleBackColor = true;
             btnCerrar.Click += btnCerrar_Click;
             // 
+            // btnAgregar
+            // 
+            btnAgregar.Anchor = AnchorStyles.Bottom | AnchorStyles.Right;
+            btnAgregar.Location = new Point(416, 415);
+            btnAgregar.Name = "btnAgregar";
+            btnAgregar.Size = new Size(75, 30);
+            btnAgregar.TabIndex = 3;
+            btnAgregar.Text = "Agregar";
+            btnAgregar.UseVisualStyleBackColor = true;
+            btnAgregar.Click += btnAgregar_Click;
+            // 
             // ProductoEspecificaciones
             // 
             AutoScaleDimensions = new SizeF(7F, 15F);
             AutoScaleMode = AutoScaleMode.Font;
             ClientSize = new Size(584, 455);
+            Controls.Add(btnAgregar);
             Controls.Add(btnCerrar);
             Controls.Add(grpEspecificaciones);
             Controls.Add(grpProducto);
@@ -294,5 +307,6 @@ namespace WindowsForm
         private Panel pnlEspecificaciones;
         private Label lblSinEspecificaciones;
         private Button btnCerrar;
+        private Button btnAgregar;
     }
 }

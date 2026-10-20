@@ -64,7 +64,7 @@ namespace Data
         public async Task<bool> ClaveExistsEnProductoAsync(int productoId, string clave, int? excludeId = null)
         {
             var query = _context.Especificaciones
-                .Where(e => e.ProductoId == productoId && e.Clave.ToLower() == clave.ToLower());
+                .Where(e => e.ProductoId == productoId && e.EsActivo && e.Clave.ToLower() == clave.ToLower());
 
             if (excludeId.HasValue)
                 query = query.Where(e => e.Id != excludeId.Value);

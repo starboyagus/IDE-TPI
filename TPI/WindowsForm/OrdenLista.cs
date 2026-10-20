@@ -1,6 +1,7 @@
-using API.Clients;
+﻿using API.Clients;
 using DTOs;
 using System;
+using System.Linq;
 using System.Threading.Tasks;
 using System.Windows.Forms;
 
@@ -74,6 +75,14 @@ namespace WindowsForm
             try
             {
                 var listaOrdenes = await OrdenApiClient.GetAllAsync();
+
+                if (!AuthService.AuthService.IsAdmin)
+                {
+                    int usuarioId = AuthService.AuthService.UsuarioActual!.Id;
+                    listaOrdenes = listaOrdenes?
+                        .Where(o => o.UsuarioId == usuarioId)
+                        .ToList();
+                }
 
                 dgvOrdenes.DataSource = null;
                 dgvOrdenes.DataSource = listaOrdenes;

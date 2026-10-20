@@ -24,6 +24,9 @@ namespace WindowsForm
 
         private async void ProductoEspecificaciones_Load(object sender, EventArgs e)
         {
+            // Solo un Admin puede dar de alta especificaciones; el resto solo las consulta.
+            btnAgregar.Visible = AuthService.AuthService.IsAdmin;
+
             CargarDatosProducto();
             await CargarEspecificacionesAsync();
         }
@@ -106,7 +109,24 @@ namespace WindowsForm
                     Anchor = AnchorStyles.Top | AnchorStyles.Right
                 };
                 // Posicionar a la derecha
-                lblValor.Location = new Point(anchoPanel - lblValor.PreferredWidth - 8, 5);
+                int bordeDerecho = anchoPanel - 8;
+
+                // Un Admin además ve los botones para modificar o eliminar cada especificación.
+                if (AuthService.AuthService.IsAdmin)
+                {
+                    Button btnEliminarFila = CrearBotonFila("Eliminar", bordeDerecho - 65);
+                    btnEliminarFila.Click += async (s, e) => await EliminarEspecificacionAsync(spec);
+
+                    Button btnEditarFila = CrearBotonFila("Editar", bordeDerecho - 65 - 5 - 65);
+                    btnEditarFila.Click += async (s, e) => await EditarEspecificacionAsync(spec);
+
+                    fila.Controls.Add(btnEditarFila);
+                    fila.Controls.Add(btnEliminarFila);
+
+                    bordeDerecho = btnEditarFila.Left - 10;
+                }
+
+                lblValor.Location = new Point(bordeDerecho - lblValor.PreferredWidth, 5);
 
                 fila.Controls.Add(lblClave);
                 fila.Controls.Add(lblValor);
@@ -128,9 +148,94 @@ namespace WindowsForm
             }
         }
 
+        private static Button CrearBotonFila(string texto, int x)
+        {
+            return new Button
+            {
+                Text = texto,
+                Location = new Point(x, 2),
+                Size = new Size(65, 24),
+                Font = new Font("Segoe UI", 8.25F),
+                UseVisualStyleBackColor = true
+            };
+        }
+
+        // Se vuelve a pedir la especificación a la API por si otro usuario la cambió o la borró mientras tanto.
+        private async Task EditarEspecificacionAsync(EspecificacionDTO spec)
+        {
+            try
+            {
+                var especificacion = await EspecificacionApiClient.GetAsync(spec.Id);
+
+                if (especificacion == null)
+                {
+                    MessageBox.Show("La especificación ya no existe.", "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                    await CargarEspecificacionesAsync();
+                    return;
+                }
+
+                using var detalle = new EspecificacionDetalle(FormMode.Update, especificacion);
+
+                if (detalle.ShowDialog(this) == DialogResult.OK)
+                {
+                    await CargarEspecificacionesAsync();
+                }
+            }
+            catch (Exception ex)
+            {
+                if (ApiClient.SesionVencida) return; // Home ya avisa y vuelve al login
+                MessageBox.Show($"Error al actualizar la especificación: {ex.Message}", "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+            }
+        }
+
+        private async Task EliminarEspecificacionAsync(EspecificacionDTO spec)
+        {
+            var result = MessageBox.Show($"¿Está seguro que desea eliminar la especificación {spec.Clave}?", "Confirmar eliminación",
+                MessageBoxButtons.YesNo, MessageBoxIcon.Question);
+
+            if (result != DialogResult.Yes)
+                return;
+
+            try
+            {
+                bool eliminada = await EspecificacionApiClient.DeleteAsync(spec.Id);
+
+                if (!eliminada)
+                {
+                    if (ApiClient.SesionVencida) return; // Home ya avisa y vuelve al login
+                    MessageBox.Show("No se pudo eliminar la especificación.", "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                    return;
+                }
+
+                await CargarEspecificacionesAsync();
+            }
+            catch (Exception ex)
+            {
+                if (ApiClient.SesionVencida) return; // Home ya avisa y vuelve al login
+                MessageBox.Show($"Error al eliminar la especificación: {ex.Message}", "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+            }
+        }
+
         private void btnCerrar_Click(object sender, EventArgs e)
         {
             this.Close();
+        }
+
+        // Abre el detalle en modo alta para el producto actual y, si se guardó, recarga la lista.
+        private async void btnAgregar_Click(object sender, EventArgs e)
+        {
+            var nuevaEspecificacion = new EspecificacionDTO
+            {
+                ProductoId = producto.Id,
+                Producto = producto.Nombre
+            };
+
+            using var detalle = new EspecificacionDetalle(FormMode.Add, nuevaEspecificacion);
+
+            if (detalle.ShowDialog(this) == DialogResult.OK)
+            {
+                await CargarEspecificacionesAsync();
+            }
         }
     }
 }
