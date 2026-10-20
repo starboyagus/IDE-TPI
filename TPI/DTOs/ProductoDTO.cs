@@ -17,6 +17,7 @@ namespace DTOs
         public string? Marca { get; set; }
         public DateTime FechaAlta { get; set; }
         public bool EsActivo { get; set; }
-        
+        public string DescripcionCompleta => $"{Nombre} - ${Precio} (Stock: {Stock})";
+
     }
 }

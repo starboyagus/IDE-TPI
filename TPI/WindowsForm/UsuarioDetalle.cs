@@ -60,7 +60,6 @@ namespace WindowsForm
         private void SetFormMode(FormMode value)
         {
             mode = value;
-
             if (Mode == FormMode.Add)
             {
                 idLabel.Visible = false;

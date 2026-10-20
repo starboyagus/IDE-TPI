@@ -200,7 +200,7 @@ namespace WindowsForm
             productosDisponibles = productos.Where(p => p.EsActivo && (p.EsPreVenta || p.Stock > 0)).ToList();
 
             productoComboBox.DataSource = productosDisponibles;
-            productoComboBox.DisplayMember = nameof(ProductoDTO.Nombre);
+            productoComboBox.DisplayMember = nameof(ProductoDTO.DescripcionCompleta);
             productoComboBox.ValueMember = nameof(ProductoDTO.Id);
 
             if (productosDisponibles.Any())

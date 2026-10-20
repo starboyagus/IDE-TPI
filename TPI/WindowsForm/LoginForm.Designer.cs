@@ -35,13 +35,14 @@
             txtPass = new TextBox();
             btnIngresar = new Button();
             lnkOlvidaPass = new LinkLabel();
+            lnkRegister = new LinkLabel();
             SuspendLayout();
             // 
             // label1
             // 
             label1.AutoSize = true;
             label1.Font = new Font("Segoe UI", 12F, FontStyle.Regular, GraphicsUnit.Point, 0);
-            label1.Location = new Point(33, 118);
+            label1.Location = new Point(53, 112);
             label1.Name = "label1";
             label1.Size = new Size(51, 21);
             label1.TabIndex = 0;
@@ -51,7 +52,7 @@
             // 
             label2.AutoSize = true;
             label2.Font = new Font("Segoe UI", 12F, FontStyle.Regular, GraphicsUnit.Point, 0);
-            label2.Location = new Point(33, 157);
+            label2.Location = new Point(53, 151);
             label2.Name = "label2";
             label2.Size = new Size(92, 21);
             label2.TabIndex = 1;
@@ -70,7 +71,7 @@
             // 
             // txtEmail
             // 
-            txtEmail.Location = new Point(138, 118);
+            txtEmail.Location = new Point(158, 112);
             txtEmail.Name = "txtEmail";
             txtEmail.PlaceholderText = "usuario@gmail.com";
             txtEmail.Size = new Size(186, 23);
@@ -78,7 +79,7 @@
             // 
             // txtPass
             // 
-            txtPass.Location = new Point(138, 159);
+            txtPass.Location = new Point(158, 153);
             txtPass.Name = "txtPass";
             txtPass.PasswordChar = '*';
             txtPass.Size = new Size(186, 23);
@@ -105,12 +106,26 @@
             lnkOlvidaPass.Text = "Olvide mi contraseña";
             lnkOlvidaPass.LinkClicked += lnkOlvidaPass_LinkClicked;
             // 
+            // lnkRegister
+            // 
+            lnkRegister.Anchor = AnchorStyles.Top | AnchorStyles.Bottom | AnchorStyles.Left | AnchorStyles.Right;
+            lnkRegister.AutoSize = true;
+            lnkRegister.LinkColor = Color.FromArgb(192, 0, 0);
+            lnkRegister.Location = new Point(227, 264);
+            lnkRegister.Name = "lnkRegister";
+            lnkRegister.Size = new Size(64, 15);
+            lnkRegister.TabIndex = 7;
+            lnkRegister.TabStop = true;
+            lnkRegister.Text = "Registrarse";
+            lnkRegister.LinkClicked += lnkRegister_LinkClicked;
+            // 
             // LoginForm
             // 
             AcceptButton = btnIngresar;
             AutoScaleDimensions = new SizeF(7F, 15F);
             AutoScaleMode = AutoScaleMode.Font;
-            ClientSize = new Size(401, 313);
+            ClientSize = new Size(401, 351);
+            Controls.Add(lnkRegister);
             Controls.Add(lnkOlvidaPass);
             Controls.Add(btnIngresar);
             Controls.Add(txtPass);
@@ -137,5 +152,6 @@
         private TextBox txtPass;
         private Button btnIngresar;
         private LinkLabel lnkOlvidaPass;
+        private LinkLabel lnkRegister;
     }
 }

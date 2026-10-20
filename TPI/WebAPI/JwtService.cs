@@ -78,6 +78,8 @@ namespace WebAPI
                 claims.Add(new Claim("permission", "usuarios.leer"));
                 claims.Add(new Claim("permission", "ordenes.leer"));
                 claims.Add(new Claim("permission", "ordenes.agregar"));
+                claims.Add(new Claim("permission", "especificaciones.leer"));
+                claims.Add(new Claim("permission", "usuarios.agregar"));
 
             }
 
