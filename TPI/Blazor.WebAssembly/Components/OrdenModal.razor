@@ -76,7 +76,7 @@
                                 }
                                 else
                                 {
-                                    <input type="text" class="form-control" value="@EstadoOrden.Procesando" readonly />
+                                    <input type="text" class="form-control" value="@EstadoOrden.Pendiente" readonly />
                                 }
                             </div>
                         </div>
@@ -214,7 +214,7 @@
         currentOrden = new OrdenDTO
         {
             Fecha = DateTime.Now,
-            Estado = EstadoOrden.Procesando,
+            Estado = EstadoOrden.Pendiente,
             UsuarioId = usuarioActual?.Id ?? 0,
             Usuario = usuarioActual != null ? $"{usuarioActual.Nombre} {usuarioActual.Apellido} ({usuarioActual.Email})" : null
         };
@@ -409,3 +409,4 @@
         StateHasChanged();
     }
 }
+

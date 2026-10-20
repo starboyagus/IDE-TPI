@@ -1,5 +1,19 @@
+:root {
+    --blanco: #EAF4FC;
+    --purpura: #DBBBF4;
+    --rosa: #FFD3DD;
+    --azul: #A0D8EF;
+    --negro: #212022;
+}
+
 html, body {
     font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif;
+    background-image: url(/bg.png);
+    background-size: cover; 
+}
+
+h3 {
+    color: var(--negro);
 }
 
 h1:focus {
@@ -8,12 +22,6 @@ h1:focus {
 
 a, .btn-link {
     color: #0071c1;
-}
-
-.btn-primary {
-    color: #fff;
-    background-color: #1b6ec2;
-    border-color: #1861ac;
 }
 
 .btn:focus, .btn:active:focus, .btn-link.nav-link:focus, .form-control:focus, .form-check-input:focus {
@@ -81,7 +89,7 @@ a, .btn-link {
         transform: rotate(-90deg);
     }
 
-        .loading-progress circle:last-child {
+       .loading-progress circle:last-child {
             stroke: #1b6ec2;
             stroke-dasharray: calc(3.141 * var(--blazor-load-percentage, 0%) * 0.8), 500%;
             transition: stroke-dasharray 0.05s ease-in-out;
@@ -94,7 +102,7 @@ a, .btn-link {
     inset: calc(20vh + 3.25rem) 0 auto 0.2rem;
 }
 
-    .loading-progress-text:after {
+.loading-progress-text:after {
         content: var(--blazor-load-percentage-text, "Loading");
     }
 

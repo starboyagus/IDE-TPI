@@ -75,7 +75,7 @@ namespace Application.Services
             await ValidarProductosAsync(dto.Items.ToList());
 
             var fechaAlta = DateTime.Now;
-            Orden orden = new Orden(0, dto.Fecha, EstadoOrden.Procesando, 0, dto.UsuarioId, dto.DireccionEnvio, fechaAlta, true);
+            Orden orden = new Orden(0, dto.Fecha, dto.Estado == 0 ? EstadoOrden.Pendiente : dto.Estado, 0, dto.UsuarioId, dto.DireccionEnvio, fechaAlta, true);
             dto.Total = 0;
             foreach (var i in dto.Items)
             {   
@@ -177,3 +177,4 @@ namespace Application.Services
         }
     }
 }
+

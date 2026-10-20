@@ -25,16 +25,71 @@
                 </div>
             }
 
-            <div class="mb-3">
+            <div class="d-flex flex-wrap align-items-center gap-2 mb-3">
                 <button class="btn btn-primary" @onclick="OpenAddModal">
                     <i class="fas fa-plus"></i> Agregar
                 </button>
+
+                <div class="vr mx-2 d-none d-sm-block"></div>
+
+                <div class="d-flex align-items-center flex-wrap gap-2">
+                    <span class="fw-semibold text-secondary small">
+                        @if (selectedOrden != null)
+                        {
+                            <span>Orden seleccionada: <strong>#@selectedOrden.Id</strong> (@selectedOrden.Usuario)</span>
+                        }
+                        else
+                        {
+                            <span class="text-muted"><i class="fas fa-info-circle me-1"></i>Seleccioná una fila o ID para cambiar estado:</span>
+                        }
+                    </span>
+
+                    <div class="btn-group" role="group" aria-label="Cambiar Estado">
+                        <button type="button"
+                                class="btn btn-outline-warning btn-sm mx-1 @(selectedOrden?.Estado == EstadoOrden.Pendiente ? "active fw-bold" : "")"
+                                disabled="@(selectedOrden == null || updatingState)"
+                                @onclick="() => CambiarEstadoAsync(EstadoOrden.Pendiente)">
+                            <i class="fas fa-clock me-1"></i>Pendiente
+                        </button>
+                        <button type="button"
+                                class="btn btn-outline-info btn-sm mx-1 @(selectedOrden?.Estado == EstadoOrden.Procesando ? "active fw-bold" : "")"
+                                disabled="@(selectedOrden == null || updatingState)"
+                                @onclick="() => CambiarEstadoAsync(EstadoOrden.Procesando)">
+                            <i class="fas fa-cogs me-1"></i>Procesando
+                        </button>
+                        <button type="button"
+                                class="btn btn-outline-primary btn-sm mx-1 @(selectedOrden?.Estado == EstadoOrden.Enviado ? "active fw-bold" : "")"
+                                disabled="@(selectedOrden == null || updatingState)"
+                                @onclick="() => CambiarEstadoAsync(EstadoOrden.Enviado)">
+                            <i class="fas fa-truck me-1"></i>Enviado
+                        </button>
+                        <button type="button"
+                                class="btn btn-outline-success btn-sm mx-1 @(selectedOrden?.Estado == EstadoOrden.Entregado ? "active fw-bold" : "")"
+                                disabled="@(selectedOrden == null || updatingState)"
+                                @onclick="() => CambiarEstadoAsync(EstadoOrden.Entregado)">
+                            <i class="fas fa-check-circle me-1"></i>Entregado
+                        </button>
+                        <button type="button"
+                                class="btn btn-outline-danger btn-sm mx-1 @(selectedOrden?.Estado == EstadoOrden.Cancelado ? "active fw-bold" : "")"
+                                disabled="@(selectedOrden == null || updatingState)"
+                                @onclick="() => CambiarEstadoAsync(EstadoOrden.Cancelado)">
+                            <i class="fas fa-ban me-1"></i>Cancelado
+                        </button>
+                    </div>
+
+                    @if (selectedOrden != null)
+                    {
+                        <button class="btn btn-sm btn-link text-decoration-none text-muted py-0" title="Deseleccionar" @onclick="() => selectedOrden = null">
+                            <i class="fas fa-times-circle"></i> Limpiar selección
+                        </button>
+                    }
+                </div>
             </div>
 
             @if (loading)
             {
-                <div class="d-flex justify-content-center">
-                    <div class="spinner-border" role="status">
+                <div class="d-flex justify-content-center my-4">
+                    <div class="spinner-border text-primary" role="status">
                         <span class="visually-hidden">Cargando...</span>
                     </div>
                 </div>
@@ -42,17 +97,18 @@
             else
             {
                 <div class="table-responsive">
-                    <table class="table table-striped table-hover">
+                    <table class="table table-striped table-hover align-middle">
                         <thead class="table-dark">
                             <tr>
+                                <th style="width: 50px;">Sel.</th>
                                 <th>Id</th>
                                 <th>Usuario</th>
                                 <th>Fecha</th>
                                 <th>Estado</th>
                                 <th>Total</th>
-                                <th>Dirección de Envío</th>
+                                <th>Dirección</th>
                                 <th>Productos</th>
-                                <th></th>
+                                <th class="text-end">Acciones</th>
                             </tr>
                         </thead>
                         <tbody>
@@ -60,15 +116,33 @@
                             {
                                 @foreach (var orden in ordenes)
                                 {
-                                    <tr>
-                                        <td>@orden.Id</td>
+                                    var isSelected = selectedOrden?.Id == orden.Id;
+                                    <tr class="@(isSelected ? "table-active border-primary border-2" : "")"
+                                        style="cursor: pointer;"
+                                        @onclick="() => SelectOrden(orden)">
+                                        <td class="text-center" @onclick:stopPropagation="true">
+                                            <input type="radio"
+                                                   name="ordenSelect"
+                                                   class="form-check-input"
+                                                   checked="@isSelected"
+                                                   @onchange="() => SelectOrden(orden)" />
+                                        </td>
+                                        <td>
+                                            <span class="badge @(isSelected ? "bg-primary text-white" : "bg-light text-dark border") font-monospace fs-6">
+                                                #@orden.Id
+                                            </span>
+                                        </td>
                                         <td>@orden.Usuario</td>
                                         <td>@orden.Fecha.ToString("dd/MM/yyyy HH:mm")</td>
-                                        <td>@orden.Estado</td>
-                                        <td>$ @orden.Total.ToString("N2")</td>
+                                        <td>
+                                            <span class="badge @GetBadgeClassForEstado(orden.Estado)">
+                                                @orden.Estado
+                                            </span>
+                                        </td>
+                                        <td class="fw-semibold">$ @orden.Total.ToString("N2")</td>
                                         <td>@orden.DireccionEnvio</td>
                                         <td class="small">@ResumenItems(orden)</td>
-                                        <td>
+                                        <td class="text-end" @onclick:stopPropagation="true">
                                             <button class="btn btn-sm btn-outline-primary me-1" @onclick="() => OpenEditModal(orden)">
                                                 <i class="fas fa-edit"></i> Editar
                                             </button>
@@ -78,6 +152,14 @@
                                         </td>
                                     </tr>
                                 }
+                            }
+                            else
+                            {
+                                <tr>
+                                    <td colspan="9" class="text-center text-muted py-4">
+                                        No hay órdenes registradas.
+                                    </td>
+                                </tr>
                             }
                         </tbody>
                     </table>
@@ -91,11 +173,12 @@
 
 @code {
     private List<OrdenDTO>? ordenes;
+    private OrdenDTO? selectedOrden;
     private bool loading = true;
+    private bool updatingState = false;
     private string errorMessage = string.Empty;
     private string successMessage = string.Empty;
     private OrdenModal ordenModal = null!;
-
 
     protected override async Task OnInitializedAsync()
     {
@@ -114,6 +197,86 @@
         await LoadOrdenes();
     }
 
+    private void SelectOrden(OrdenDTO orden)
+    {
+        if (selectedOrden?.Id == orden.Id)
+        {
+            selectedOrden = null; // Toggle selection
+        }
+        else
+        {
+            selectedOrden = orden;
+        }
+    }
+
+    private async Task CambiarEstadoAsync(EstadoOrden nuevoEstado)
+    {
+        if (selectedOrden == null)
+            return;
+
+        if (selectedOrden.Estado == nuevoEstado)
+        {
+            return;
+        }
+
+        try
+        {
+            updatingState = true;
+            errorMessage = string.Empty;
+
+            // Clonamos/asignamos los datos necesarios para el PUT
+            var ordenParaActualizar = new OrdenDTO
+            {
+                Id = selectedOrden.Id,
+                Fecha = selectedOrden.Fecha,
+                Estado = nuevoEstado,
+                Total = selectedOrden.Total,
+                UsuarioId = selectedOrden.UsuarioId,
+                Usuario = selectedOrden.Usuario,
+                DireccionEnvio = selectedOrden.DireccionEnvio,
+                FechaAlta = selectedOrden.FechaAlta,
+                EsActivo = selectedOrden.EsActivo,
+                Items = selectedOrden.Items
+            };
+
+            var response = await OrdenApiClient.UpdateAsync(ordenParaActualizar);
+
+            if (response != null && response.IsSuccessStatusCode)
+            {
+                successMessage = $"Estado de la orden #{selectedOrden.Id} actualizado a '{nuevoEstado}'.";
+                var updatedId = selectedOrden.Id;
+                await LoadOrdenes();
+                selectedOrden = ordenes?.FirstOrDefault(o => o.Id == updatedId);
+            }
+            else
+            {
+                var detail = response != null ? await response.Content.ReadAsStringAsync() : "Error desconocido";
+                errorMessage = $"No se pudo actualizar el estado de la orden: {detail}";
+            }
+        }
+        catch (Exception ex)
+        {
+            errorMessage = $"Error al cambiar estado: {ex.Message}";
+        }
+        finally
+        {
+            updatingState = false;
+        }
+    }
+
+    private static string GetBadgeClassForEstado(EstadoOrden estado)
+    {
+        return estado switch
+        {
+            EstadoOrden.Pendiente => "bg-warning text-dark",
+            EstadoOrden.Procesando => "bg-info text-dark",
+            EstadoOrden.Enviado => "bg-primary text-white",
+            EstadoOrden.Entregado => "bg-success text-white",
+            EstadoOrden.Cancelado => "bg-danger text-white",
+            _ => "bg-secondary text-white"
+        };
+    }
+
     private async Task LoadOrdenes()
     {
         try
@@ -122,7 +285,11 @@
             ordenes = (await OrdenApiClient.GetAllAsync())?
                 .OrderByDescending(o => o.Fecha)
                 .ToList();
-            successMessage = string.Empty;
+
+            if (selectedOrden != null && ordenes != null)
+            {
+                selectedOrden = ordenes.FirstOrDefault(o => o.Id == selectedOrden.Id);
+            }
         }
         catch (Exception ex)
         {
@@ -168,9 +335,17 @@
         try
         {
             if (await OrdenApiClient.DeleteAsync(id))
+            {
                 successMessage = "Orden eliminada.";
+                if (selectedOrden?.Id == id)
+                {
+                    selectedOrden = null;
+                }
+            }
             else
+            {
                 errorMessage = "No se pudo eliminar la orden.";
+            }
             await LoadOrdenes();
         }
         catch (Exception ex)
