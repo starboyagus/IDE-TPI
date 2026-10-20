@@ -1,0 +1,411 @@
+@inject IJSRuntime JSRuntime
+@using System.Text.Json
+
+@if (showModal)
+{
+    <div class="modal fade show d-block" tabindex="-1" style="background-color: rgba(0,0,0,0.5);">
+        <div class="modal-dialog modal-lg">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title">
+                        @if (mode == FormMode.Add)
+                        {
+                            <text>Nueva orden</text>
+                        }
+                        else
+                        {
+                            <text>Editar orden #@currentOrden.Id</text>
+                        }
+                    </h5>
+                    <button type="button" class="btn-close" @onclick="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <EditForm Model="currentOrden" OnValidSubmit="HandleValidSubmit">
+                        <DataAnnotationsValidator />
+
+
+                        <div class="row">
+                            <div class="col-md-6 mb-3">
+                                <label class="form-label">Usuario *</label>
+                                @if (mode == FormMode.Add && esAdmin)
+                                {
+                                    <InputSelect @bind-Value="currentOrden.UsuarioId" class="form-select">
+                                        <option value="0">-- Seleccioná un usuario --</option>
+                                        @foreach (var usuario in usuarios)
+                                        {
+                                            <option value="@usuario.Id">@usuario.Nombre @usuario.Apellido (@usuario.Email)</option>
+                                        }
+                                    </InputSelect>
+                                }
+                                else
+                                {
+                                    <input type="text" class="form-control" value="@currentOrden.Usuario" readonly />
+                                }
+                                @if (validationErrors.ContainsKey("UsuarioId"))
+                                {
+                                    <div class="text-danger small">@validationErrors["UsuarioId"]</div>
+                                }
+                            </div>
+
+                            <div class="col-md-6 mb-3">
+                                <label class="form-label">Fecha</label>
+                                <input type="text" class="form-control" value="@currentOrden.Fecha.ToString("dd/MM/yyyy HH:mm")" readonly />
+                            </div>
+                        </div>
+
+                        <div class="row">
+                            <div class="col-md-8 mb-3">
+                                <label class="form-label">Dirección de envío *</label>
+                                <InputText @bind-Value="currentOrden.DireccionEnvio" class="form-control" />
+                                @if (validationErrors.ContainsKey("DireccionEnvio"))
+                                {
+                                    <div class="text-danger small">@validationErrors["DireccionEnvio"]</div>
+                                }
+                            </div>
+
+                            <div class="col-md-4 mb-3">
+                                <label class="form-label">Estado</label>
+                                @if (mode == FormMode.Update)
+                                {
+                                    <InputSelect @bind-Value="currentOrden.Estado" class="form-select">
+                                        @foreach (var estado in Enum.GetValues<EstadoOrden>())
+                                        {
+                                            <option value="@estado">@estado</option>
+                                        }
+                                    </InputSelect>
+                                }
+                                else
+                                {
+                                    <input type="text" class="form-control" value="@EstadoOrden.Procesando" readonly />
+                                }
+                            </div>
+                        </div>
+
+                        @if (mode == FormMode.Add)
+                        {
+                            <div class="row align-items-end">
+                                <div class="col-md-7 mb-3">
+                                    <label class="form-label">Producto</label>
+                                    <select class="form-select" @bind="productoSeleccionadoId">
+                                        <option value="0">-- Seleccioná un producto --</option>
+                                        @foreach (var producto in productosDisponibles)
+                                        {
+                                            <option value="@producto.Id">@producto.Nombre - $ @producto.Precio.ToString("N2") @(producto.EsPreVenta ? "(Pre-venta)" : $"(Stock: {producto.Stock})")</option>
+                                        }
+                                    </select>
+                                </div>
+                                <div class="col-md-2 mb-3">
+                                    <label class="form-label">Cantidad</label>
+                                    <input type="number" min="1" class="form-control" @bind="cantidad" />
+                                </div>
+                                <div class="col-md-3 mb-3 d-grid">
+                                    <button type="button" class="btn btn-outline-primary" @onclick="AgregarItem">Agregar ítem</button>
+                                </div>
+                            </div>
+                            @if (!string.IsNullOrEmpty(itemError))
+                            {
+                                <div class="text-danger small mb-2">@itemError</div>
+                            }
+                        }
+
+                        <div class="table-responsive">
+                            <table class="table table-sm table-striped">
+                                <thead class="table-dark">
+                                    <tr>
+                                        <th>Producto</th>
+                                        <th>Cantidad</th>
+                                        <th>Precio Unit.</th>
+                                        <th>Subtotal</th>
+                                        @if (mode == FormMode.Add)
+                                        {
+                                            <th></th>
+                                        }
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    @if (currentOrden.Items.Any())
+                                    {
+                                        @foreach (var item in currentOrden.Items)
+                                        {
+                                            <tr>
+                                                <td>@item.Producto</td>
+                                                <td>@item.Cantidad</td>
+                                                <td>$ @item.PrecioUnitario.ToString("N2")</td>
+                                                <td>$ @item.Subtotal.ToString("N2")</td>
+                                                @if (mode == FormMode.Add)
+                                                {
+                                                    <td>
+                                                        <button type="button" class="btn btn-sm btn-outline-danger" @onclick="() => QuitarItem(item)">Quitar</button>
+                                                    </td>
+                                                }
+                                            </tr>
+                                        }
+                                    }
+                                    else
+                                    {
+                                        <tr>
+                                            <td colspan="5" class="text-muted">Todavía no agregaste productos.</td>
+                                        </tr>
+                                    }
+                                </tbody>
+                            </table>
+                        </div>
+                        @if (validationErrors.ContainsKey("Items"))
+                        {
+                            <div class="text-danger small mb-2">@validationErrors["Items"]</div>
+                        }
+
+                        <div class="mb-3 text-end fw-bold">
+                            Total: $ @Total.ToString("N2")
+                        </div>
+
+                        @if (!string.IsNullOrEmpty(errorMessage))
+                        {
+                            <div class="alert alert-danger">
+                                @errorMessage
+                            </div>
+                        }
+
+                        <div class="modal-footer">
+                            <button type="button" class="btn btn-secondary" @onclick="Close">Cancelar</button>
+                            <button type="submit" class="btn btn-primary" disabled="@saving">
+                                @if (saving)
+                                {
+                                    <span class="spinner-border spinner-border-sm me-2"></span>
+                                }
+                                @(mode == FormMode.Add ? "Confirmar orden" : "Actualizar")
+                            </button>
+                        </div>
+                    </EditForm>
+                </div>
+            </div>
+        </div>
+    </div>
+}
+
+@code {
+    [Parameter] public EventCallback OnOrdenChanged { get; set; }
+
+    private bool showModal = false;
+    private FormMode mode = FormMode.Add;
+    private OrdenDTO currentOrden = new OrdenDTO();
+    private List<UsuarioDTO> usuarios = new List<UsuarioDTO>();
+    private List<ProductoDTO> productosDisponibles = new List<ProductoDTO>();
+    private int productoSeleccionadoId = 0;
+    private int cantidad = 1;
+    private bool saving = false;
+    private string errorMessage = string.Empty;
+    private string itemError = string.Empty;
+    private Dictionary<string, string> validationErrors = new Dictionary<string, string>();
+
+    private bool esAdmin => AuthService.IsAdmin;
+    private decimal Total => currentOrden.Items.Sum(i => i.Subtotal);
+
+    public enum FormMode
+    {
+        Add,
+        Update
+    }
+
+    public async Task ShowAddModal()
+    {
+        mode = FormMode.Add;
+        var usuarioActual = AuthService.UsuarioActual;
+        currentOrden = new OrdenDTO
+        {
+            Fecha = DateTime.Now,
+            Estado = EstadoOrden.Procesando,
+            UsuarioId = usuarioActual?.Id ?? 0,
+            Usuario = usuarioActual != null ? $"{usuarioActual.Nombre} {usuarioActual.Apellido} ({usuarioActual.Email})" : null
+        };
+        cantidad = 1;
+        itemError = string.Empty;
+        ClearValidationErrors();
+        await CargarDatosAsync();
+        showModal = true;
+        StateHasChanged();
+    }
+
+    public void ShowEditModal(OrdenDTO orden)
+    {
+        mode = FormMode.Update;
+        currentOrden = new OrdenDTO
+        {
+            Id = orden.Id,
+            Fecha = orden.Fecha,
+            Estado = orden.Estado,
+            Total = orden.Total,
+            UsuarioId = orden.UsuarioId,
+            Usuario = orden.Usuario,
+            DireccionEnvio = orden.DireccionEnvio,
+            FechaAlta = orden.FechaAlta,
+            EsActivo = orden.EsActivo,
+            Items = orden.Items.ToList()
+        };
+        itemError = string.Empty;
+        ClearValidationErrors();
+        showModal = true;
+        StateHasChanged();
+    }
+
+    private async Task CargarDatosAsync()
+    {
+        try
+        {
+            var productos = await ProductoApiClient.GetAllAsync() ?? new List<ProductoDTO>();
+            productosDisponibles = productos.Where(p => p.EsActivo && (p.EsPreVenta || p.Stock > 0)).ToList();
+            productoSeleccionadoId = productosDisponibles.FirstOrDefault()?.Id ?? 0;
+
+            if (esAdmin)
+            {
+                var todos = await UsuarioApiClient.GetAllAsync() ?? new List<UsuarioDTO>();
+                usuarios = todos.Where(u => u.EsActivo).ToList();
+            }
+        }
+        catch (Exception ex)
+        {
+            errorMessage = $"Error al cargar productos y usuarios: {ex.Message}";
+        }
+    }
+
+    private void AgregarItem()
+    {
+        itemError = string.Empty;
+
+        var producto = productosDisponibles.FirstOrDefault(p => p.Id == productoSeleccionadoId);
+        if (producto == null)
+        {
+            itemError = "Seleccioná un producto de la lista.";
+            return;
+        }
+
+        if (cantidad <= 0)
+        {
+            itemError = "La cantidad debe ser mayor a 0.";
+            return;
+        }
+
+        var itemExistente = currentOrden.Items.FirstOrDefault(i => i.ProductoId == producto.Id);
+        int cantidadTotal = (itemExistente?.Cantidad ?? 0) + cantidad;
+
+        if (!producto.EsPreVenta && producto.Stock < cantidadTotal)
+        {
+            itemError = $"Stock insuficiente para '{producto.Nombre}'. Disponible: {producto.Stock}, en orden: {itemExistente?.Cantidad ?? 0}.";
+            return;
+        }
+
+        if (itemExistente != null)
+        {
+            itemExistente.Cantidad = cantidadTotal;
+        }
+        else
+        {
+            currentOrden.Items.Add(new OrdenItemDTO
+            {
+                ProductoId = producto.Id,
+                Producto = producto.Nombre,
+                Cantidad = cantidad,
+                PrecioUnitario = producto.Precio
+            });
+        }
+
+        cantidad = 1;
+        validationErrors.Remove("Items");
+    }
+
+    private void QuitarItem(OrdenItemDTO item)
+    {
+        currentOrden.Items.Remove(item);
+    }
+
+    private static async Task<string> ExtraerMensajeError(HttpResponseMessage response)
+    {
+        try
+        {
+            var body = await response.Content.ReadFromJsonAsync<JsonElement>();
+            if (body.ValueKind == JsonValueKind.Object && body.TryGetProperty("error", out var errorProp))
+            {
+                return errorProp.GetString() ?? "Ocurrió un error al guardar la orden.";
+            }
+        }
+        catch
+        {
+        }
+
+        return $"Ocurrió un error al guardar la orden ({(int)response.StatusCode} {response.ReasonPhrase}).";
+    }
+
+    private async Task HandleValidSubmit()
+    {
+        if (!ValidateOrden())
+            return;
+
+        currentOrden.DireccionEnvio = currentOrden.DireccionEnvio.Trim();
+        currentOrden.Total = Total;
+
+        try
+        {
+            saving = true; errorMessage = string.Empty;
+            var response = mode == FormMode.Add
+                ? await OrdenApiClient.AddAsync(currentOrden)
+                : await OrdenApiClient.UpdateAsync(currentOrden);
+
+            if (response == null || !response.IsSuccessStatusCode)
+            {
+                errorMessage = response != null ? await ExtraerMensajeError(response) : "No se obtuvo respuesta del servidor.";
+                return;
+            }
+
+            await OnOrdenChanged.InvokeAsync();
+            Close();
+        }
+        catch (Exception ex)
+        {
+            errorMessage = ex.Message;
+        }
+        finally
+        {
+            saving = false;
+        }
+    }
+
+    private bool ValidateOrden()
+    {
+        ClearValidationErrors();
+        bool isValid = true;
+
+        if (currentOrden.UsuarioId <= 0)
+        {
+            validationErrors["UsuarioId"] = "El Usuario es requerido";
+            isValid = false;
+        }
+
+        if (string.IsNullOrWhiteSpace(currentOrden.DireccionEnvio))
+        {
+            validationErrors["DireccionEnvio"] = "La Dirección de envío es requerida";
+            isValid = false;
+        }
+
+        if (mode == FormMode.Add && !currentOrden.Items.Any())
+        {
+            validationErrors["Items"] = "Debes agregar al menos un ítem a la orden";
+            isValid = false;
+        }
+
+        StateHasChanged();
+        return isValid;
+    }
+
+    private void ClearValidationErrors()
+    {
+        validationErrors.Clear();
+        errorMessage = string.Empty;
+    }
+
+    private void Close()
+    {
+        showModal = false;
+        ClearValidationErrors();
+        StateHasChanged();
+    }
+}

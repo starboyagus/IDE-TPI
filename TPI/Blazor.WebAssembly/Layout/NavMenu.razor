@@ -29,6 +29,19 @@
                         <span class="bi-plus-square-fill-nav-menu" aria-hidden="true"></span> Productos
                     </NavLink>
                 }
+
+                @if (AuthService.IsAdmin)
+                {
+                    <NavLink class="nav-link" href="ordenes" Match="NavLinkMatch.All">
+                        <span class="bi-plus-square-fill-nav-menu" aria-hidden="true"></span> Órdenes
+                    </NavLink>
+                }
+                else
+                {
+                    <NavLink class="nav-link" href="mis-ordenes" Match="NavLinkMatch.All">
+                        <span class="bi-plus-square-fill-nav-menu" aria-hidden="true"></span> Mis Órdenes
+                    </NavLink>
+                }
             }
             @if (AuthService.IsAdmin)
             {

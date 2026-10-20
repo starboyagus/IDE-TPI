@@ -1,0 +1,132 @@
+@page "/mis-ordenes"
+@inject NavigationManager Navigation
+
+<PageTitle>Mis Órdenes</PageTitle>
+
+<div class="container-fluid">
+    <div class="row">
+        <div class="col-12">
+            <h3>Mis Órdenes</h3>
+
+            @if (!string.IsNullOrEmpty(errorMessage))
+            {
+                <div class="alert alert-danger alert-dismissible fade show" role="alert">
+                    @errorMessage
+                    <button type="button" class="btn-close" @onclick="() => errorMessage = string.Empty"></button>
+                </div>
+            }
+
+            <div class="mb-3">
+                <button class="btn btn-primary" @onclick="OpenAddModal">
+                    <i class="fas fa-plus"></i> Nueva orden
+                </button>
+            </div>
+
+            @if (loading)
+            {
+                <div class="d-flex justify-content-center">
+                    <div class="spinner-border" role="status">
+                        <span class="visually-hidden">Cargando...</span>
+                    </div>
+                </div>
+            }
+            else if (ordenes == null || !ordenes.Any())
+            {
+                <div class="alert alert-info" role="alert">
+                    Todavía no hiciste ninguna orden.
+                </div>
+            }
+            else
+            {
+                <div class="table-responsive">
+                    <table class="table table-striped table-hover">
+                        <thead class="table-dark">
+                            <tr>
+                                <th>Nº</th>
+                                <th>Fecha</th>
+                                <th>Estado</th>
+                                <th>Total</th>
+                                <th>Dirección de Envío</th>
+                                <th>Productos</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            @foreach (var orden in ordenes)
+                            {
+                                <tr>
+                                    <td>@orden.Id</td>
+                                    <td>@orden.Fecha.ToString("dd/MM/yyyy HH:mm")</td>
+                                    <td>@orden.Estado</td>
+                                    <td>$ @orden.Total.ToString("N2")</td>
+                                    <td>@orden.DireccionEnvio</td>
+                                    <td class="small">@ResumenItems(orden)</td>
+                                </tr>
+                            }
+                        </tbody>
+                    </table>
+                </div>
+            }
+        </div>
+    </div>
+</div>
+
+<OrdenModal @ref="ordenModal" OnOrdenChanged="LoadOrdenes" />
+
+@code {
+    private List<OrdenDTO>? ordenes;
+    private bool loading = true;
+    private string errorMessage = string.Empty;
+    private OrdenModal ordenModal = null!;
+
+
+    protected override async Task OnInitializedAsync()
+    {
+        if (!AuthService.IsAuthenticated)
+        {
+            Navigation.NavigateTo("/");
+            return;
+        }
+
+        if (AuthService.IsAdmin)
+        {
+            Navigation.NavigateTo("/ordenes");
+            return;
+        }
+
+        await LoadOrdenes();
+    }
+
+    private async Task LoadOrdenes()
+    {
+        try
+        {
+            loading = true;
+            int usuarioId = AuthService.UsuarioActual!.Id;
+            ordenes = (await OrdenApiClient.GetAllAsync())?
+                .Where(o => o.UsuarioId == usuarioId)
+                .OrderByDescending(o => o.Fecha)
+                .ToList();
+        }
+        catch (Exception ex)
+        {
+            errorMessage = $"Error al cargar tus órdenes: {ex.Message}";
+        }
+        finally
+        {
+            loading = false;
+        }
+    }
+
+    private static string ResumenItems(OrdenDTO orden)
+    {
+        if (!orden.Items.Any())
+            return "-";
+
+        return string.Join(", ", orden.Items.Select(i => $"{i.Cantidad}x {i.Producto}"));
+    }
+
+    private async Task OpenAddModal()
+    {
+        await ordenModal.ShowAddModal();
+    }
+}

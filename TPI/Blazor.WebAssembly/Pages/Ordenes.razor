@@ -1,0 +1,181 @@
+@page "/ordenes"
+@inject IJSRuntime JSRuntime
+@inject NavigationManager Navigation
+
+<PageTitle>Órdenes</PageTitle>
+
+<div class="container-fluid">
+    <div class="row">
+        <div class="col-12">
+            <h3>Órdenes</h3>
+
+            @if (!string.IsNullOrEmpty(errorMessage))
+            {
+                <div class="alert alert-danger alert-dismissible fade show" role="alert">
+                    @errorMessage
+                    <button type="button" class="btn-close" @onclick="() => errorMessage = string.Empty"></button>
+                </div>
+            }
+
+            @if (!string.IsNullOrEmpty(successMessage))
+            {
+                <div class="alert alert-success alert-dismissible fade show" role="alert">
+                    @successMessage
+                    <button type="button" class="btn-close" @onclick="() => successMessage = string.Empty"></button>
+                </div>
+            }
+
+            <div class="mb-3">
+                <button class="btn btn-primary" @onclick="OpenAddModal">
+                    <i class="fas fa-plus"></i> Agregar
+                </button>
+            </div>
+
+            @if (loading)
+            {
+                <div class="d-flex justify-content-center">
+                    <div class="spinner-border" role="status">
+                        <span class="visually-hidden">Cargando...</span>
+                    </div>
+                </div>
+            }
+            else
+            {
+                <div class="table-responsive">
+                    <table class="table table-striped table-hover">
+                        <thead class="table-dark">
+                            <tr>
+                                <th>Id</th>
+                                <th>Usuario</th>
+                                <th>Fecha</th>
+                                <th>Estado</th>
+                                <th>Total</th>
+                                <th>Dirección de Envío</th>
+                                <th>Productos</th>
+                                <th></th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            @if (ordenes != null && ordenes.Any())
+                            {
+                                @foreach (var orden in ordenes)
+                                {
+                                    <tr>
+                                        <td>@orden.Id</td>
+                                        <td>@orden.Usuario</td>
+                                        <td>@orden.Fecha.ToString("dd/MM/yyyy HH:mm")</td>
+                                        <td>@orden.Estado</td>
+                                        <td>$ @orden.Total.ToString("N2")</td>
+                                        <td>@orden.DireccionEnvio</td>
+                                        <td class="small">@ResumenItems(orden)</td>
+                                        <td>
+                                            <button class="btn btn-sm btn-outline-primary me-1" @onclick="() => OpenEditModal(orden)">
+                                                <i class="fas fa-edit"></i> Editar
+                                            </button>
+                                            <button class="btn btn-sm btn-outline-danger" @onclick="() => ConfirmDelete(orden)">
+                                                <i class="fas fa-trash"></i> Eliminar
+                                            </button>
+                                        </td>
+                                    </tr>
+                                }
+                            }
+                        </tbody>
+                    </table>
+                </div>
+            }
+        </div>
+    </div>
+</div>
+
+<OrdenModal @ref="ordenModal" OnOrdenChanged="LoadOrdenes" />
+
+@code {
+    private List<OrdenDTO>? ordenes;
+    private bool loading = true;
+    private string errorMessage = string.Empty;
+    private string successMessage = string.Empty;
+    private OrdenModal ordenModal = null!;
+
+
+    protected override async Task OnInitializedAsync()
+    {
+        if (!AuthService.IsAuthenticated)
+        {
+            Navigation.NavigateTo("/");
+            return;
+        }
+
+        if (!AuthService.IsAdmin)
+        {
+            Navigation.NavigateTo("/mis-ordenes");
+            return;
+        }
+
+        await LoadOrdenes();
+    }
+
+    private async Task LoadOrdenes()
+    {
+        try
+        {
+            loading = true;
+            ordenes = (await OrdenApiClient.GetAllAsync())?
+                .OrderByDescending(o => o.Fecha)
+                .ToList();
+            successMessage = string.Empty;
+        }
+        catch (Exception ex)
+        {
+            errorMessage = $"Error al cargar órdenes: {ex.Message}";
+        }
+        finally
+        {
+            loading = false;
+        }
+    }
+
+    private static string ResumenItems(OrdenDTO orden)
+    {
+        if (!orden.Items.Any())
+            return "-";
+
+        return string.Join(", ", orden.Items.Select(i => $"{i.Cantidad}x {i.Producto}"));
+    }
+
+    private async Task OpenAddModal()
+    {
+        await ordenModal.ShowAddModal();
+    }
+
+    private void OpenEditModal(OrdenDTO orden)
+    {
+        ordenModal.ShowEditModal(orden);
+    }
+
+    private async Task ConfirmDelete(OrdenDTO orden)
+    {
+        var confirm = await JSRuntime.InvokeAsync<bool>("confirm",
+            $"¿Está seguro que desea eliminar la orden #{orden.Id}?");
+
+        if (confirm)
+        {
+            await DeleteOrden(orden.Id);
+        }
+    }
+
+    private async Task DeleteOrden(int id)
+    {
+        try
+        {
+            if (await OrdenApiClient.DeleteAsync(id))
+                successMessage = "Orden eliminada.";
+            else
+                errorMessage = "No se pudo eliminar la orden.";
+            await LoadOrdenes();
+        }
+        catch (Exception ex)
+        {
+            errorMessage = $"Error al eliminar orden: {ex.Message}";
+        }
+    }
+}
