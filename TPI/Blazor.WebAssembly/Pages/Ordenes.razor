@@ -97,7 +97,7 @@
             else
             {
                 <div class="table-responsive">
-                    <table class="table table-striped table-hover align-middle">
+                    <table class="table table-hover align-middle">
                         <thead class="table-dark">
                             <tr>
                                 <th style="width: 50px;">Sel.</th>
@@ -117,7 +117,7 @@
                                 @foreach (var orden in ordenes)
                                 {
                                     var isSelected = selectedOrden?.Id == orden.Id;
-                                    <tr class="@(isSelected ? "table-active border-primary border-2" : "")"
+                                    <tr class="@(isSelected ? "table-active" : "")"
                                         style="cursor: pointer;"
                                         @onclick="() => SelectOrden(orden)">
                                         <td class="text-center" @onclick:stopPropagation="true">
@@ -268,8 +268,8 @@
     {
         return estado switch
         {
-            EstadoOrden.Pendiente => "bg-warning text-dark",
-            EstadoOrden.Procesando => "bg-info text-dark",
+            EstadoOrden.Pendiente => "bg-warning text-white",
+            EstadoOrden.Procesando => "bg-info text-white",
             EstadoOrden.Enviado => "bg-primary text-white",
             EstadoOrden.Entregado => "bg-success text-white",
             EstadoOrden.Cancelado => "bg-danger text-white",

@@ -58,7 +58,7 @@
                                 <th>Marca</th>
                                 <th>Especificaciones</th>
                                 <th>Fecha Alta</th>
-                                <th></th>
+                                <th class="text-end">Acciones</th>
                             </tr>
                         </thead>
                         <tbody>
@@ -80,7 +80,7 @@
                                         <td>
                                             @if (esAdmin)
                                             {
-                                                <button class="btn btn-sm btn-outline-primary me-1" @onclick="() => OpenEditModal(producto)">
+                                                <button class="btn btn-sm btn-outline-primary m-1" @onclick="() => OpenEditModal(producto)">
                                                     <i class="fas fa-edit"></i> Editar
                                                 </button>
                                                 <button class="btn btn-sm btn-outline-danger" @onclick="() => ConfirmDelete(producto)">
