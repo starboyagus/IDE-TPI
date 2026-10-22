@@ -8,8 +8,7 @@
 
 html, body {
     font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif;
-    background-image: url(/bg.png);
-    background-size: cover; 
+    background-color: var(--blanco);
 }
 
 h3 {
