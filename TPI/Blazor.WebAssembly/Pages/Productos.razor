@@ -80,6 +80,9 @@
                                         <td>
                                             @if (esAdmin)
                                             {
+                                                <button class="btn btn-sm btn-outline-secondary m-1" @onclick="() => OpenEspecificacionesModal(producto)">
+                                                    <i class="fas fa-list"></i> Especificaciones
+                                                </button>
                                                 <button class="btn btn-sm btn-outline-primary m-1" @onclick="() => OpenEditModal(producto)">
                                                     <i class="fas fa-edit"></i> Editar
                                                 </button>
@@ -100,6 +103,7 @@
 </div>
 
 <ProductoModal @ref="productoModal" OnProductoChanged="LoadProductos" />
+<EspecificacionesModal @ref="especificacionesModal" />
 
 @code {
     private List<ProductoDTO>? productos;
@@ -107,6 +111,7 @@
     private string errorMessage = string.Empty;
     private string successMessage = string.Empty;
     private ProductoModal productoModal = null!;
+    private EspecificacionesModal especificacionesModal = null!;
     private bool esAdmin = AuthService.IsAdmin;
 
 
@@ -153,6 +158,11 @@
     private async Task OpenEditModal(ProductoDTO producto)
     {
         await productoModal.ShowEditModal(producto);
+    }
+
+    private async Task OpenEspecificacionesModal(ProductoDTO producto)
+    {
+        await especificacionesModal.Show(producto);
     }
 
     private async Task ConfirmDelete(ProductoDTO producto)

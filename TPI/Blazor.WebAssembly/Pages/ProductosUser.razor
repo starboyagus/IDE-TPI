@@ -52,6 +52,11 @@
                                 <span class="badge-preventa">PreVenta</span>
                             </div>
                         }
+                        <div class="producto-acciones">
+                            <button type="button" class="btn btn-sm btn-outline-dark" @onclick="() => OpenEspecificacionesModal(producto)">
+                                Ver especificaciones
+                            </button>
+                        </div>
                     </div>
                     <div class="producto-precio-box">
                         <div class="producto-precio-texto">
@@ -63,6 +68,8 @@
         </div>
     }
 </div>
+
+<EspecificacionesModal @ref="especificacionesModal" />
 
 <style>
     .productos-grid {
@@ -152,6 +159,10 @@
         letter-spacing: 0.3px;
     }
 
+    .producto-acciones {
+        margin-top: 8px;
+    }
+
     .producto-precio-box {
         flex: 0 0 38%;
         min-width: 110px;
@@ -176,6 +187,7 @@
     private List<ProductoDTO>? productos;
     private bool loading = true;
     private string errorMessage = string.Empty;
+    private EspecificacionesModal especificacionesModal = null!;
 
     protected override async Task OnInitializedAsync()
     {
@@ -213,5 +225,10 @@
         {
             loading = false;
         }
+    }
+
+    private async Task OpenEspecificacionesModal(ProductoDTO producto)
+    {
+        await especificacionesModal.Show(producto);
     }
 }

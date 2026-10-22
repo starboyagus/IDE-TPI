@@ -1,0 +1,119 @@
+@if (showModal)
+{
+    <div class="modal fade show d-block" tabindex="-1" style="background-color: rgba(0,0,0,0.5);">
+        <div class="modal-dialog modal-lg">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title">Especificaciones - @producto.Nombre</h5>
+                    <button type="button" class="btn-close" @onclick="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <div class="row mb-3">
+                        <div class="col-md-6">
+                            <div><strong>Precio:</strong> $ @producto.Precio.ToString("N2")</div>
+                            <div><strong>Stock:</strong> @producto.Stock</div>
+                            <div><strong>Pre-venta:</strong> @(producto.EsPreVenta ? "Sí" : "No")</div>
+                        </div>
+                        <div class="col-md-6">
+                            <div><strong>Categoría:</strong> @(producto.Categoria ?? "-")</div>
+                            <div><strong>Marca:</strong> @(producto.Marca ?? "-")</div>
+                        </div>
+                        <div class="col-12 mt-2">
+                            <strong>Descripción:</strong> @producto.Descripcion
+                        </div>
+                    </div>
+
+                    @if (!string.IsNullOrEmpty(errorMessage))
+                    {
+                        <div class="alert alert-danger">
+                            @errorMessage
+                        </div>
+                    }
+
+                    @if (loading)
+                    {
+                        <div class="d-flex justify-content-center">
+                            <div class="spinner-border" role="status">
+                                <span class="visually-hidden">Cargando...</span>
+                            </div>
+                        </div>
+                    }
+                    else if (especificaciones == null || !especificaciones.Any())
+                    {
+                        <div class="alert alert-info">
+                            Este producto no tiene especificaciones cargadas.
+                        </div>
+                    }
+                    else
+                    {
+                        <table class="table table-sm table-striped">
+                            <thead class="table-dark">
+                                <tr>
+                                    <th>Clave</th>
+                                    <th>Valor</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                @foreach (var especificacion in especificaciones)
+                                {
+                                    <tr>
+                                        <td>@especificacion.Clave</td>
+                                        <td>@especificacion.Valor @especificacion.Unidad</td>
+                                    </tr>
+                                }
+                            </tbody>
+                        </table>
+                    }
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" @onclick="Close">Cerrar</button>
+                </div>
+            </div>
+        </div>
+    </div>
+}
+
+@code {
+    private bool showModal = false;
+    private bool loading = false;
+    private ProductoDTO producto = new ProductoDTO();
+    private List<EspecificacionDTO>? especificaciones;
+    private string errorMessage = string.Empty;
+
+    public async Task Show(ProductoDTO productoSeleccionado)
+    {
+        producto = productoSeleccionado;
+        especificaciones = null;
+        errorMessage = string.Empty;
+        showModal = true;
+        StateHasChanged();
+
+        await LoadEspecificaciones();
+    }
+
+    private async Task LoadEspecificaciones()
+    {
+        try
+        {
+            loading = true;
+            especificaciones = (await EspecificacionApiClient.GetByProductoAsync(producto.Id))?
+                .OrderBy(e => e.Clave)
+                .ToList();
+        }
+        catch (Exception ex)
+        {
+            errorMessage = $"No se pudieron cargar las especificaciones: {ex.Message}";
+        }
+        finally
+        {
+            loading = false;
+            StateHasChanged();
+        }
+    }
+
+    private void Close()
+    {
+        showModal = false;
+        StateHasChanged();
+    }
+}
