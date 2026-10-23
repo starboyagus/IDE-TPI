@@ -103,7 +103,7 @@
 </div>
 
 <ProductoModal @ref="productoModal" OnProductoChanged="LoadProductos" />
-<EspecificacionesModal @ref="especificacionesModal" />
+<EspecificacionesModal @ref="especificacionesModal" OnEspecificacionesChanged="LoadProductos" />
 
 @code {
     private List<ProductoDTO>? productos;

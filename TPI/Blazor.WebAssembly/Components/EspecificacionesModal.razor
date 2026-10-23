@@ -1,3 +1,6 @@
+@inject IJSRuntime JSRuntime
+@using System.Text.Json
+
 @if (showModal)
 {
     <div class="modal fade show d-block" tabindex="-1" style="background-color: rgba(0,0,0,0.5);">
@@ -25,8 +28,73 @@
 
                     @if (!string.IsNullOrEmpty(errorMessage))
                     {
-                        <div class="alert alert-danger">
+                        <div class="alert alert-danger alert-dismissible fade show" role="alert">
                             @errorMessage
+                            <button type="button" class="btn-close" @onclick="() => errorMessage = string.Empty"></button>
+                        </div>
+                    }
+
+                    @if (!string.IsNullOrEmpty(successMessage))
+                    {
+                        <div class="alert alert-success alert-dismissible fade show" role="alert">
+                            @successMessage
+                            <button type="button" class="btn-close" @onclick="() => successMessage = string.Empty"></button>
+                        </div>
+                    }
+
+                    @if (esAdmin)
+                    {
+                        <div class="card mb-3">
+                            <div class="card-header">
+                                @(mode == FormMode.Add ? "Agregar especificación" : "Editar especificación")
+                            </div>
+                            <div class="card-body">
+                                <EditForm Model="currentEspecificacion" OnValidSubmit="HandleValidSubmit">
+                                    <DataAnnotationsValidator />
+
+                                    <div class="row align-items-start">
+                                        <div class="col-md-4 mb-2">
+                                            <label class="form-label">Clave *</label>
+                                            <InputText @bind-Value="currentEspecificacion.Clave" class="form-control" />
+                                            @if (validationErrors.ContainsKey("Clave"))
+                                            {
+                                                <div class="text-danger small">@validationErrors["Clave"]</div>
+                                            }
+                                        </div>
+
+                                        <div class="col-md-3 mb-2">
+                                            <label class="form-label">Valor *</label>
+                                            <InputText @bind-Value="currentEspecificacion.Valor" class="form-control" />
+                                            @if (validationErrors.ContainsKey("Valor"))
+                                            {
+                                                <div class="text-danger small">@validationErrors["Valor"]</div>
+                                            }
+                                        </div>
+
+                                        <div class="col-md-2 mb-2">
+                                            <label class="form-label">Unidad</label>
+                                            <InputText @bind-Value="currentEspecificacion.Unidad" class="form-control" />
+                                        </div>
+
+                                        <div class="col-md-3 mb-2">
+                                            <label class="form-label d-none d-md-block">&nbsp;</label>
+                                            <div class="d-flex gap-1">
+                                                <button type="submit" class="btn btn-primary flex-fill" disabled="@saving">
+                                                    @if (saving)
+                                                    {
+                                                        <span class="spinner-border spinner-border-sm me-1"></span>
+                                                    }
+                                                    @(mode == FormMode.Add ? "Agregar" : "Actualizar")
+                                                </button>
+                                                @if (mode == FormMode.Update)
+                                                {
+                                                    <button type="button" class="btn btn-secondary" @onclick="NuevaEspecificacion">Cancelar</button>
+                                                }
+                                            </div>
+                                        </div>
+                                    </div>
+                                </EditForm>
+                            </div>
                         </div>
                     }
 
@@ -51,14 +119,29 @@
                                 <tr>
                                     <th>Clave</th>
                                     <th>Valor</th>
+                                    @if (esAdmin)
+                                    {
+                                        <th class="text-end">Acciones</th>
+                                    }
                                 </tr>
                             </thead>
                             <tbody>
                                 @foreach (var especificacion in especificaciones)
                                 {
-                                    <tr>
+                                    <tr class="@(mode == FormMode.Update && currentEspecificacion.Id == especificacion.Id ? "table-warning" : "")">
                                         <td>@especificacion.Clave</td>
                                         <td>@especificacion.Valor @especificacion.Unidad</td>
+                                        @if (esAdmin)
+                                        {
+                                            <td class="text-end">
+                                                <button class="btn btn-sm btn-outline-primary me-1" @onclick="() => EditarEspecificacion(especificacion)">
+                                                    <i class="fas fa-edit"></i> Editar
+                                                </button>
+                                                <button class="btn btn-sm btn-outline-danger" @onclick="() => ConfirmDelete(especificacion)">
+                                                    <i class="fas fa-trash"></i> Eliminar
+                                                </button>
+                                            </td>
+                                        }
                                     </tr>
                                 }
                             </tbody>
@@ -74,17 +157,36 @@
 }
 
 @code {
+    [Parameter] public EventCallback OnEspecificacionesChanged { get; set; }
+
     private bool showModal = false;
     private bool loading = false;
+    private bool saving = false;
+    private bool huboCambios = false;
+    private FormMode mode = FormMode.Add;
     private ProductoDTO producto = new ProductoDTO();
     private List<EspecificacionDTO>? especificaciones;
+    private EspecificacionDTO currentEspecificacion = new EspecificacionDTO();
     private string errorMessage = string.Empty;
+    private string successMessage = string.Empty;
+    private Dictionary<string, string> validationErrors = new Dictionary<string, string>();
+
+    private bool esAdmin => AuthService.IsAdmin;
+
+    public enum FormMode
+    {
+        Add,
+        Update
+    }
 
     public async Task Show(ProductoDTO productoSeleccionado)
     {
         producto = productoSeleccionado;
         especificaciones = null;
         errorMessage = string.Empty;
+        successMessage = string.Empty;
+        huboCambios = false;
+        NuevaEspecificacion();
         showModal = true;
         StateHasChanged();
 
@@ -111,9 +213,161 @@
         }
     }
 
-    private void Close()
+    private void NuevaEspecificacion()
+    {
+        mode = FormMode.Add;
+        currentEspecificacion = new EspecificacionDTO
+        {
+            ProductoId = producto.Id
+        };
+        validationErrors.Clear();
+    }
+
+    private void EditarEspecificacion(EspecificacionDTO especificacion)
+    {
+        mode = FormMode.Update;
+        currentEspecificacion = new EspecificacionDTO
+        {
+            Id = especificacion.Id,
+            Clave = especificacion.Clave,
+            Valor = especificacion.Valor,
+            Unidad = especificacion.Unidad,
+            ProductoId = especificacion.ProductoId,
+            Producto = especificacion.Producto,
+            FechaAlta = especificacion.FechaAlta,
+            EsActivo = especificacion.EsActivo
+        };
+        validationErrors.Clear();
+        errorMessage = string.Empty;
+        successMessage = string.Empty;
+    }
+
+    private static async Task<string> ExtraerMensajeError(HttpResponseMessage response)
+    {
+        try
+        {
+            var body = await response.Content.ReadFromJsonAsync<JsonElement>();
+            if (body.ValueKind == JsonValueKind.Object && body.TryGetProperty("error", out var errorProp))
+            {
+                return errorProp.GetString() ?? "Ocurrió un error al guardar la especificación.";
+            }
+        }
+        catch
+        {
+        }
+
+        return $"Ocurrió un error al guardar la especificación ({(int)response.StatusCode} {response.ReasonPhrase}).";
+    }
+
+    private async Task HandleValidSubmit()
+    {
+        if (!ValidateEspecificacion())
+            return;
+
+        currentEspecificacion.Clave = currentEspecificacion.Clave.Trim();
+        currentEspecificacion.Valor = currentEspecificacion.Valor.Trim();
+        currentEspecificacion.Unidad = string.IsNullOrWhiteSpace(currentEspecificacion.Unidad)
+            ? null
+            : currentEspecificacion.Unidad.Trim();
+
+        try
+        {
+            saving = true; errorMessage = string.Empty; successMessage = string.Empty;
+            var response = mode == FormMode.Add
+                ? await EspecificacionApiClient.AddAsync(currentEspecificacion)
+                : await EspecificacionApiClient.UpdateAsync(currentEspecificacion);
+
+            if (response == null || !response.IsSuccessStatusCode)
+            {
+                errorMessage = response != null ? await ExtraerMensajeError(response) : "No se obtuvo respuesta del servidor.";
+                return;
+            }
+
+            successMessage = mode == FormMode.Add ? "Especificación agregada." : "Especificación actualizada.";
+            huboCambios = true;
+            NuevaEspecificacion();
+            await LoadEspecificaciones();
+        }
+        catch (Exception ex)
+        {
+            errorMessage = ex.Message;
+        }
+        finally
+        {
+            saving = false;
+        }
+    }
+
+    private bool ValidateEspecificacion()
+    {
+        validationErrors.Clear();
+        errorMessage = string.Empty;
+        bool isValid = true;
+
+        if (string.IsNullOrWhiteSpace(currentEspecificacion.Clave))
+        {
+            validationErrors["Clave"] = "La Clave es requerida";
+            isValid = false;
+        }
+
+        if (string.IsNullOrWhiteSpace(currentEspecificacion.Valor))
+        {
+            validationErrors["Valor"] = "El Valor es requerido";
+            isValid = false;
+        }
+
+        StateHasChanged();
+        return isValid;
+    }
+
+    private async Task ConfirmDelete(EspecificacionDTO especificacion)
+    {
+        var confirm = await JSRuntime.InvokeAsync<bool>("confirm",
+            $"¿Está seguro que desea eliminar la especificación {especificacion.Clave}?");
+
+        if (confirm)
+        {
+            await DeleteEspecificacion(especificacion);
+        }
+    }
+
+    private async Task DeleteEspecificacion(EspecificacionDTO especificacion)
+    {
+        try
+        {
+            errorMessage = string.Empty;
+            successMessage = string.Empty;
+
+            if (await EspecificacionApiClient.DeleteAsync(especificacion.Id))
+            {
+                successMessage = "Especificación eliminada.";
+                huboCambios = true;
+
+                if (mode == FormMode.Update && currentEspecificacion.Id == especificacion.Id)
+                    NuevaEspecificacion();
+            }
+            else
+            {
+                errorMessage = "No se pudo eliminar la especificación.";
+            }
+
+            await LoadEspecificaciones();
+        }
+        catch (Exception ex)
+        {
+            errorMessage = $"Error al eliminar especificación: {ex.Message}";
+        }
+    }
+
+    private async Task Close()
     {
         showModal = false;
         StateHasChanged();
+
+        if (huboCambios)
+        {
+            huboCambios = false;
+            await OnEspecificacionesChanged.InvokeAsync();
+        }
     }
 }
