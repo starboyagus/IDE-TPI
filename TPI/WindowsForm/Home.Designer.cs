@@ -39,9 +39,9 @@ namespace WindowsForm
             ordenesToolStripMenuItem = new ToolStripMenuItem();
             mnsPrincipal.SuspendLayout();
             SuspendLayout();
-            //
+            // 
             // mnsPrincipal
-            //
+            // 
             mnsPrincipal.Items.AddRange(new ToolStripItem[] { mnuOpciones, usuariosToolStripMenuItem, productoToolStripMenuItem, categoriaToolStripMenuItem, marcaToolStripMenuItem, ordenesToolStripMenuItem });
             mnsPrincipal.Location = new Point(0, 0);
             mnsPrincipal.Name = "mnsPrincipal";
@@ -55,18 +55,18 @@ namespace WindowsForm
             mnuOpciones.Name = "mnuOpciones";
             mnuOpciones.Size = new Size(69, 20);
             mnuOpciones.Text = "Opciones";
-            //
+            // 
             // mnuCerrarSesion
-            //
+            // 
             mnuCerrarSesion.Name = "mnuCerrarSesion";
-            mnuCerrarSesion.Size = new Size(96, 22);
+            mnuCerrarSesion.Size = new Size(142, 22);
             mnuCerrarSesion.Text = "Cerrar sesión";
             mnuCerrarSesion.Click += mnuCerrarSesion_Click;
-            //
+            // 
             // mnuSalir
-            //
+            // 
             mnuSalir.Name = "mnuSalir";
-            mnuSalir.Size = new Size(96, 22);
+            mnuSalir.Size = new Size(142, 22);
             mnuSalir.Text = "Salir";
             mnuSalir.Click += mnuSalir_Click;
             // 
@@ -83,11 +83,11 @@ namespace WindowsForm
             productoToolStripMenuItem.Size = new Size(68, 20);
             productoToolStripMenuItem.Text = "Producto";
             productoToolStripMenuItem.Click += productoToolStripMenuItem_Click;
-            //
+            // 
             // categoriaToolStripMenuItem
-            //
+            // 
             categoriaToolStripMenuItem.Name = "categoriaToolStripMenuItem";
-            categoriaToolStripMenuItem.Size = new Size(72, 20);
+            categoriaToolStripMenuItem.Size = new Size(75, 20);
             categoriaToolStripMenuItem.Text = "Categorias";
             categoriaToolStripMenuItem.Click += categoriaToolStripMenuItem_Click;
             // 
@@ -101,12 +101,12 @@ namespace WindowsForm
             // ordenesToolStripMenuItem
             // 
             ordenesToolStripMenuItem.Name = "ordenesToolStripMenuItem";
-            ordenesToolStripMenuItem.Size = new Size(64, 20);
+            ordenesToolStripMenuItem.Size = new Size(63, 20);
             ordenesToolStripMenuItem.Text = "Órdenes";
             ordenesToolStripMenuItem.Click += ordenesToolStripMenuItem_Click;
-            //
+            // 
             // Home
-            //
+            // 
             AutoScaleDimensions = new SizeF(7F, 15F);
             AutoScaleMode = AutoScaleMode.Font;
             ClientSize = new Size(1108, 600);

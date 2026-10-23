@@ -8,6 +8,8 @@ using Microsoft.IdentityModel.Tokens;
 using WebAPI;
 
 var builder = WebApplication.CreateBuilder(args);
+QuestPDF.Settings.License = QuestPDF.Infrastructure.LicenseType.Community;
+
 
 // Add Entity Framework Context
 builder.Services.AddDbContext<TPIContext>(options =>
@@ -54,8 +56,11 @@ builder.Services.AddScoped<IEspecificacionRepository, EspecificacionRepository>(
 builder.Services.AddScoped<IEspecificacionService, EspecificacionService>();
 builder.Services.AddScoped<IOrdenRepository, OrdenRepository>();
 builder.Services.AddScoped<IOrdenService, OrdenService>();
+builder.Services.AddScoped<IReporteRepository, ReporteRepository>();
+builder.Services.AddScoped<IReporteService, ReporteService>();
 
 builder.Services.AddScoped<IJwtService, JwtService>();
+
 
 // Agregar autenticacion JWT
 var jwtSettings = builder.Configuration.GetSection("JwtSettings");
@@ -117,7 +122,10 @@ builder.Services.AddAuthorization(options =>
     options.AddPolicy("OrdenesAgregar", policy => policy.RequireClaim("permission", "ordenes.agregar"));
     options.AddPolicy("OrdenesActualizar", policy => policy.RequireClaim("permission", "ordenes.actualizar"));
     options.AddPolicy("OrdenesEliminar", policy => policy.RequireClaim("permission", "ordenes.eliminar"));
-    
+
+    // Politicas para Reportes
+    options.AddPolicy("ReportesLeer", policy => policy.RequireClaim("permission", "reportes.leer"));
+
     // Fallback: Requerir autenticación para endpoints no especificados
     options.FallbackPolicy = options.DefaultPolicy;
 });
@@ -175,4 +183,5 @@ app.MapCategoriaEndpoints();
 app.MapMarcaEndpoints();
 app.MapEspecificacionEndpoints();
 app.MapOrdenEndpoints();
+app.MapReporteEndpoints();
 app.Run();

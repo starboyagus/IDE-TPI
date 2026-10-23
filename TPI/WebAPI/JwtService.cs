@@ -45,6 +45,8 @@ namespace WebAPI
                 claims.Add(new Claim("permission", "usuarios.actualizar"));
                 claims.Add(new Claim("permission", "usuarios.eliminar"));
 
+                claims.Add(new Claim("permission", "reportes.leer"));
+
                 claims.Add(new Claim("permission", "productos.leer"));
                 claims.Add(new Claim("permission", "productos.agregar"));
                 claims.Add(new Claim("permission", "productos.actualizar"));
