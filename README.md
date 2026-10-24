@@ -16,46 +16,67 @@ Proyecto Integrador — Tecnologías de Desarrollo de Software IDE
 
 El sistema consiste en una solución integral de software orientada a la gestión y comercialización de hardware de computadoras y componentes tecnológicos (CPUs, GPUs, RAM, periféricos, etc.). Permite la administración integral del catálogo de productos con sus especificaciones técnicas dinámicas, gestión de marcas, categorías, usuarios con control de roles y el procesamiento de órdenes de compra con detalle de ítems.
 
-La solución está construida sobre **.NET 8** siguiendo una **arquitectura en capas desacoplada (Clean Architecture / N-Capas)**, donde el núcleo del negocio reside en un backend distribuido expuesto mediante **ASP.NET Core Minimal APIs** con autenticación y autorización basada en tokens **JWT**. 
+La solución está construida sobre **.NET 8** siguiendo una **arquitectura en capas (N-Capas)**, donde la lógica de negocio reside en un backend expuesto mediante **ASP.NET Core Minimal APIs** con autenticación y autorización basada en tokens **JWT**.
 
-La API es consumida de manera unificada a través de una librería de clientes HTTP compartida (`API.Clients`) por dos aplicaciones frontend cliente:
-1. **Windows Forms (.NET 8)**: Aplicación de escritorio diseñada para la administración y operación rápida en el punto de venta o gestión interna.
-2. **Blazor WebAssembly (.NET 8)**: Aplicación web interactiva tipo SPA (Single Page Application) que permite la navegación y gestión remota desde el navegador.
+La API es consumida de manera unificada a través de una librería de clientes HTTP compartida (`API.Clients`) por dos aplicaciones frontend:
+1. **Windows Forms (.NET 8)**: aplicación de escritorio para la administración y operación interna.
+2. **Blazor WebAssembly (.NET 8)**: aplicación web SPA (Single Page Application) para la navegación, compras y gestión desde el navegador.
 
-La capa de persistencia se implementa con **Entity Framework Core 9** sobre **Microsoft SQL Server**, utilizando el patrón Repository, mapeo relacional con Fluent API, soporte para bajas lógicas (`EsActivo`), y sembrado inicial de datos (`Seed Data`).
+La capa de persistencia se implementa de forma híbrida para balancear productividad y rendimiento:
+- **Entity Framework Core 9** sobre **Microsoft SQL Server** para las operaciones transaccionales (CRUD), utilizando el patrón Repository, mapeo relacional con Fluent API, bajas lógicas (`EsActivo`) y datos iniciales de prueba (`HasData`). La base se crea automáticamente con `EnsureCreated()`.
+- **ADO.NET (`Microsoft.Data.SqlClient`)** para el módulo de reportes de ventas, con consultas SQL parametrizadas de agregación, agrupamiento y funciones de ventana.
+
+Para los reportes, la capa de servicios utiliza:
+- **QuestPDF** para generar el informe en formato PDF.
+- **ScottPlot 5** para generar los gráficos de barras como imágenes PNG del lado del servidor. Esas mismas imágenes se insertan en el PDF y se muestran en Blazor y en Windows Forms.
 
 ---
 
 ## ⚙️ Funcionalidades Principales
 
 - 🔐 **Autenticación y Seguridad**:
-  - Autenticación mediante tokens **JWT (JSON Web Tokens)** con expiración configurable.
-  - Almacenamiento seguro de contraseñas con derivación de claves **PBKDF2** (`Rfc2898DeriveBytes` con SHA-256) y generación de `Salt` criptográfico de 32 bytes por usuario.
-  - Autorización basada en políticas granulares (`[Authorize(Policy = "...")]`) tanto por entidad como por acción (`leer`, `agregar`, `actualizar`, `eliminar`).
+  - Autenticación mediante tokens **JWT (JSON Web Tokens)** con expiración configurable (`JwtSettings:ExpirationMinutes`).
+  - Almacenamiento seguro de contraseñas con derivación de claves **PBKDF2** (`Rfc2898DeriveBytes`, SHA-256, 10.000 iteraciones) y `Salt` criptográfico de 32 bytes por usuario.
+  - Autorización por políticas granulares por entidad y acción (`leer`, `agregar`, `actualizar`, `eliminar`): cada endpoint declara su política con `.RequireAuthorization("ProductosLeer")` y el token incluye los permisos (`permission`) según el rol.
   - Roles de usuario diferenciados: `Admin` (gestión integral) y `Usuario` (consulta y compras).
+  - Auto-registro de nuevos clientes desde el login de Windows Forms (enlace **"Registrarse"** en `LoginForm`).
+  - Detección de sesión vencida: un `DelegatingHandler` (`SesionExpiradaHandler`) intercepta las respuestas `401` y la aplicación vuelve a pedir el login.
 
 - 🧑‍💼 **Gestión de Usuarios**:
-  - Alta, baja lógica, modificación y consulta de usuarios.
-  - Búsqueda dinámica y filtrado por criterios (`UsuarioCriteria`: coincidencia por nombre, apellido y email).
+  - Alta, baja lógica, modificación y consulta de usuarios (Windows Forms y Blazor).
+  - Búsqueda por criterios (`UsuarioCriteria`: coincidencia por nombre, apellido y email).
   - Validación de unicidad de email y reglas de integridad en el dominio.
 
 - 📦 **Catálogo de Productos y Hardware**:
-  - Control de stock, precios unitarios, fecha de alta y estado de pre-venta (`EsPreVenta`).
-  - Relación obligatoria con categoría y marca.
-  - Bajas lógicas para preservar integridad referencial en órdenes históricas.
+  - Control de stock, precio, fecha de alta y estado de pre-venta (`EsPreVenta`).
+  - Relación obligatoria con categoría y marca, y control de nombres y descripciones duplicados.
+  - Bajas lógicas para preservar la integridad referencial en órdenes históricas.
+  - Vistas diferenciadas en Blazor: gestión administrativa (CRUD, `Productos.razor`) y catálogo para clientes (`ProductosUser.razor`).
 
 - ⚙️ **Especificaciones Técnicas Dinámicas**:
-  - Sistema de atributos clave-valor por producto con soporte para unidades de medida opcionales (ej. Cores: 6, Frecuencia: 3.5 GHz, TDP: 65 W, VRAM: 12 GB, Socket: AM4).
-  - Eliminación en cascada y consulta filtrada por producto.
+  - Sistema de atributos clave-valor por producto con unidad de medida opcional (ej. Cores: 6, Frecuencia: 3.5 GHz, TDP: 65 W, VRAM: 12 GB, Socket: AM4).
+  - Gestión en **Windows Forms** (`ProductoEspecificaciones`, `EspecificacionDetalle`) y en **Blazor WebAssembly** (`EspecificacionesModal`: CRUD para el Admin y solo lectura para el Usuario).
+  - Control de claves duplicadas por producto y consulta filtrada por producto.
 
 - 🏷️ **Categorías y Marcas**:
-  - Administración de familias de productos (CPU, RAM, GPU, Mouse, Auriculares) y marcas fabricantes (Nvidia, AMD, Logitech, Corsair, Sony).
+  - Administración completa (CRUD) de familias de productos (CPU, RAM, GPU, Mouse, Auriculares) y marcas fabricantes (Nvidia, AMD, Logitech, Corsair, Sony) en Windows Forms y Blazor (`Categorias.razor`, `Marcas.razor`).
   - Control de unicidad de nombres para prevenir duplicados.
 
 - 🧾 **Órdenes de Compra y Detalle de Ítems**:
   - Creación y seguimiento de órdenes vinculadas a usuarios clientes.
-  - Detalle de ítems (`OrdenItem`) con cantidad, precio unitario y cálculo automático de totales.
-  - Ciclo de estados de la orden mediante enumerador: `Pendiente`, `Procesando`, `Enviado`, `Entregado` y `Cancelado`.
+  - Detalle de ítems (`OrdenItem`) con cantidad, precio unitario al momento de la compra y cálculo automático de subtotales y total.
+  - Validación y descuento de stock al confirmar la orden (los productos en pre-venta no requieren stock).
+  - Ciclo de estados de la orden: `Pendiente`, `Procesando`, `Enviado`, `Entregado` y `Cancelado`.
+  - Historial de compras personal para clientes (`MisOrdenes.razor`) y gestión administrativa global (`Ordenes.razor` y `OrdenLista`).
+
+- 📊 **Módulo de Reportes de Ventas**:
+  - Consultas analíticas con **ADO.NET** (`SqlConnection`, `SqlCommand`, `SqlDataReader`) con parámetros tipados y funciones de agregación (`COUNT`, `SUM`, `AVG`, `SUM(...) OVER()`).
+  - **Resumen**: total facturado, cantidad de órdenes y ticket promedio, más ventas por mes, top de productos más vendidos y facturación por marca (monto y porcentaje).
+  - **Filtros**: rango de fechas, estado de la orden (por defecto excluye las canceladas) y cantidad de productos del top.
+  - **Exportación a PDF con QuestPDF**: informe en formato A4 con gráficos, tablas y numeración de páginas.
+  - **Gráficos de barras con ScottPlot**: generados en el servidor como PNG y reutilizados en el PDF, en Blazor y en Windows Forms.
+  - Disponible en ambos frontends: formulario `InformeVentas` en Windows Forms (pestañas con resumen, gráficos y tablas, más exportación a PDF) y página `/informes` en Blazor, con descarga del PDF.
+  - Acceso restringido al rol `Admin` (permiso `reportes.leer`).
 
 ---
 
@@ -64,50 +85,54 @@ La capa de persistencia se implementa con **Entity Framework Core 9** sobre **Mi
 - **Lenguaje**: C# 12
 - **Plataforma / Runtime**: .NET 8.0
 - **Backend**: ASP.NET Core Minimal APIs
-- **ORM & Persistencia**: Entity Framework Core 9.0 (SQL Server Provider, Migrations, Fluent API)
+- **ORM y persistencia transaccional**: Entity Framework Core 9.0 (SQL Server Provider, Fluent API, `EnsureCreated`)
+- **Acceso a datos para reportes**: ADO.NET (`Microsoft.Data.SqlClient`)
+- **Generación de PDF**: QuestPDF (licencia Community)
+- **Gráficos**: ScottPlot 5 (imágenes PNG generadas en el servidor)
 - **Base de Datos**: Microsoft SQL Server / LocalDB
-- **Seguridad**: JWT Bearer (`Microsoft.AspNetCore.Authentication.JwtBearer`), Hashing PBKDF2 SHA-256 con Salt
+- **Seguridad**: JWT Bearer (`Microsoft.AspNetCore.Authentication.JwtBearer`), hashing PBKDF2 SHA-256 con Salt
 - **Documentación de API**: Swagger / OpenAPI (Swashbuckle)
+- **Configuración de clientes**: `appsettings.json` (URL de la API), leído con `Microsoft.Extensions.Configuration` en Windows Forms
 - **Frontends**:
   - **Escritorio**: Windows Forms (.NET 8)
   - **Web**: Blazor WebAssembly (.NET 8 SPA)
-- **Comunicación**: `HttpClient` fuertemente tipado con `System.Net.Http.Json`
+- **Comunicación**: `HttpClient` compartido con `System.Net.Http.Json`
 
 ---
 
 ## 🏗️ Arquitectura del Sistema
 
-El proyecto se encuentra modularizado en 9 proyectos independientes dentro de la solución:
+El proyecto se encuentra modularizado en 9 proyectos dentro de la solución:
 
 ```mermaid
 flowchart TD
     subgraph UI["Capa de Presentación (Frontends)"]
-        WF["🖥️ WindowsForm\n(Desktop UI .NET 8)"]
-        BWA["🌐 Blazor.WebAssembly\n(Web SPA .NET 8)"]
+        WF["🖥️ WindowsForm\n(Desktop UI .NET 8 + Informes)"]
+        BWA["🌐 Blazor.WebAssembly\n(Web SPA .NET 8 + Informes)"]
     end
 
     subgraph ClientCore["Capa de Soporte de Clientes"]
-        AC["📦 API.Clients\n(Consumo REST HTTP tipado)"]
+        AC["📦 API.Clients\n(Consumo REST HTTP, sesión vencida)"]
         AS["🔑 AuthService\n(Gestión de Sesión, Token y Roles)"]
     end
 
-    subgraph API["Capa de Servicios Distribuidos"]
+    subgraph API["Capa de Servicios"]
         WAPI["⚡ WebAPI\n(Minimal APIs, JWT, Políticas, CORS, Swagger)"]
     end
 
     subgraph App["Capa de Aplicación"]
-        SVC["⚙️ Application.Services\n(Lógica de negocio, validaciones)"]
-        DTO["📋 DTOs\n(Contratos de transporte desacoplados)"]
+        SVC["⚙️ Application.Services\n(Lógica de negocio, QuestPDF, ScottPlot)"]
+        DTO["📋 DTOs\n(Contratos de transporte)"]
     end
 
-    subgraph Persist["Capa de Acceso a Datos (Infraestructura)"]
-        REPO["💾 Data\n(Repositorios e Interfaces EF Core)"]
+    subgraph Persist["Capa de Acceso a Datos"]
+        REPO["💾 Data\n(Repositorios EF Core + Reportes ADO.NET)"]
         CTX["🗄️ TPIContext\n(DbContext, Fluent API, Seed Data)"]
         DB[("🛢️ SQL Server / LocalDB")]
     end
 
     subgraph Core["Capa de Dominio"]
-        DOM["🏛️ Domain.Model\n(Entidades ricas, Validaciones, Enums)"]
+        DOM["🏛️ Domain.Model\n(Entidades, Validaciones, Enums, Criterios)"]
     end
 
     WF --> AC
@@ -128,15 +153,15 @@ flowchart TD
 
 ### Descripción de cada Proyecto:
 
-1. **`Domain.Model`**: Contiene las entidades puras del dominio de negocio con encapsulamiento estricto, métodos mutadores con validaciones y lógica de hasheo/verificación criptográfica. No tiene dependencias externas.
-2. **`DTOs`**: Clases POCO utilizadas para la comunicación entre capas y la serialización JSON en la API, protegiendo las entidades del dominio de exposición indebida.
-3. **`Data`**: Implementación de la persistencia con EF Core (`TPIContext`), definición de repositorios (`*Repository`), interfaces (`I*Repository`) y configuración de entidades mediante Fluent API.
-4. **`Application.Services`**: Servicios de orquestación de negocio que coordinan la interacción entre los repositorios y los DTOs, validando reglas antes de persistir o retornar datos.
-5. **`WebAPI`**: Aplicación ASP.NET Core que expone los endpoints HTTP organizados por entidad, autentica mediante JWT y protege cada recurso según los permisos del usuario.
-6. **`API.Clients`**: Librería compartida de clientes HTTP (`*ApiClient`) que encapsula las llamadas a la WebAPI y la gestión del token en la cabecera `Authorization: Bearer <token>`.
-7. **`AuthService`**: Manejo centralizado del estado de la sesión activa en cliente (Token, datos del usuario autenticado, eventos de login/logout y comprobación de rol de administrador).
-8. **`WindowsForm`**: Aplicación desktop con formularios para login, listados con DataGridView, filtrado y modales de edición/alta de todas las entidades.
-9. **`Blazor.WebAssembly`**: Aplicación web SPA basada en componentes Razor para visualización y administración en navegadores web modernos.
+1. **`Domain.Model`**: entidades del dominio con encapsulamiento (setters privados), métodos `Set...` con validaciones, lógica de hasheo y verificación de contraseñas, y modelos de criterios y de resultados de reportes (`UsuarioCriteria`, `ReporteCriteria`, `VentasResumen`, etc.). No tiene dependencias externas.
+2. **`DTOs`**: clases utilizadas para la comunicación entre capas y la serialización JSON en la API (incluyendo DTOs de órdenes, especificaciones y reportes), evitando exponer directamente las entidades del dominio.
+3. **`Data`**: persistencia híbrida: EF Core (`TPIContext`) para operaciones transaccionales mediante el patrón Repository, y **ADO.NET** (`ReporteRepository`) con `SqlConnection`, `SqlCommand` y `SqlDataReader` para las consultas de los reportes.
+4. **`Application.Services`**: servicios que coordinan repositorios y DTOs, validan reglas de negocio y generan los reportes: gráficos con **ScottPlot** (`GraficosReporte`) y PDF con **QuestPDF** (`InformeVentasPDF`).
+5. **`WebAPI`**: aplicación ASP.NET Core que expone los endpoints HTTP organizados por entidad y de reportes (`ReporteEndpoints`: datos JSON, gráficos y PDF), autentica mediante JWT y protege cada recurso según los permisos del usuario.
+6. **`API.Clients`**: librería compartida de clientes HTTP (`*ApiClient`, incluyendo `ReporteApiClient`) que encapsula las llamadas a la WebAPI, envía el token en la cabecera `Authorization: Bearer <token>`, toma la URL de la API desde la configuración de cada aplicación y detecta la sesión vencida (`SesionExpiradaHandler`).
+7. **`AuthService`**: manejo centralizado del estado de la sesión en el cliente (token, datos del usuario autenticado, eventos de login/logout y comprobación de rol de administrador).
+8. **`WindowsForm`**: aplicación de escritorio MDI con login, auto-registro, listados con `DataGridView`, formularios de alta/edición de entidades y el informe de ventas (`InformeVentas`) con pestañas de resumen, gráficos y tablas, y exportación a PDF.
+9. **`Blazor.WebAssembly`**: aplicación web SPA basada en componentes Razor para administración, catálogo de clientes, compras (`MisOrdenes`) y el informe de ventas (`/informes`) con gráficos y descarga de PDF.
 
 ---
 
@@ -265,7 +290,6 @@ classDiagram
 
     class Orden {
         +int Id
-        +DateTime Fecha
         +EstadoOrden Estado
         +decimal Total
         +int UsuarioId
@@ -275,7 +299,6 @@ classDiagram
         +bool EsActivo
         +ICollection~OrdenItem~ Items
         +SetId(int id)
-        +SetFecha(DateTime fecha)
         +SetEstado(EstadoOrden estado)
         +SetTotal(decimal total)
         +SetUsuarioId(int usuarioId)
@@ -299,6 +322,44 @@ classDiagram
         +SetPrecioUnitario(decimal precioUnitario)
     }
 
+    class ReporteCriteria {
+        +DateTime Desde
+        +DateTime Hasta
+        +EstadoOrden? Estado
+        +int Top
+    }
+
+    class VentasResumen {
+        +int CantidadOrdenes
+        +decimal TotalFacturado
+        +decimal TicketPromedio
+    }
+
+    class VentasPorMes {
+        +int Anio
+        +int Mes
+        +int CantidadOrdenes
+        +decimal TotalFacturado
+        +decimal TicketPromedio
+    }
+
+    class ProductoVendido {
+        +int ProductoId
+        +string Producto
+        +string Categoria
+        +string Marca
+        +int UnidadesVendidas
+        +decimal Facturacion
+    }
+
+    class FacturacionMarca {
+        +int MarcaId
+        +string Marca
+        +int UnidadesVendidas
+        +decimal Facturacion
+        +decimal Porcentaje
+    }
+
     Usuario ..> RolUsuario : tiene
     Orden ..> EstadoOrden : tiene
     Orden "0..*" --> "1" Usuario : UsuarioId / Usuario
@@ -308,6 +369,7 @@ classDiagram
     Producto "0..*" --> "1" Marca : MarcaId / Marca
     Producto "1" *-- "0..*" Especificacion : Especificaciones
     UsuarioCriteria ..> Usuario : filtra
+    ReporteCriteria ..> Orden : filtra (ADO.NET)
 ```
 
 > [!NOTE]
@@ -320,134 +382,137 @@ classDiagram
 ```
 IDE-TPI/
 ├── docs/
-│   ├── conversaciones-ia/
-│   └── DDC.png
+│   ├── conversaciones-ia/      # Bitácora documentada de sesiones de asistencia con IA
+│   └── DDC.png                 # Diagrama de clases de diseño conceptual original
 ├── TPI/
-│   ├── API.Clients/            # Clientes HTTP tipados para consumo de la API REST
-│   │   ├── ApiClient.cs
+│   ├── API.Clients/            # Clientes HTTP para consumo de la API REST
+│   │   ├── ApiClient.cs        # HttpClient compartido: URL configurable y token JWT
+│   │   ├── SesionExpiradaHandler.cs # Detecta respuestas 401 (sesión vencida)
 │   │   ├── CategoriaApiClient.cs
 │   │   ├── EspecificacionApiClient.cs
 │   │   ├── MarcaApiClient.cs
 │   │   ├── OrdenApiClient.cs
 │   │   ├── ProductoApiClient.cs
+│   │   ├── ReporteApiClient.cs # Informe, gráficos y descarga de PDF
 │   │   └── UsuarioApiClient.cs
-│   ├── Application.Services/   # Servicios de negocio e interfaces
+│   ├── Application.Services/   # Servicios de negocio y generación de reportes
+│   │   ├── Reportes/
+│   │   │   ├── GraficosReporte.cs     # Gráficos de barras con ScottPlot (PNG)
+│   │   │   └── InformeVentasPDF.cs    # Generación del informe PDF con QuestPDF
 │   │   ├── CategoriaService.cs / ICategoriaService.cs
 │   │   ├── EspecificacionService.cs / IEspecificacionService.cs
 │   │   ├── MarcaService.cs / IMarcaService.cs
 │   │   ├── OrdenService.cs / IOrdenService.cs
 │   │   ├── ProductoService.cs / IProductoService.cs
+│   │   ├── ReporteService.cs / IReporteService.cs
 │   │   └── UsuarioService.cs / IUsuarioService.cs
 │   ├── AuthService/            # Estado de sesión y autenticación cliente
 │   │   └── AuthService.cs
 │   ├── Blazor.WebAssembly/     # Cliente web SPA en Blazor WebAssembly (.NET 8)
-│   │   ├── Components/         # Modales de Categorías y Usuarios
-│   │   ├── Layout/             # MainLayout, NavMenu
-│   │   ├── Pages/              # Login, Home, Categorías, Usuarios
+│   │   ├── Components/         # Modales de Categorías, Marcas, Productos, Especificaciones, Órdenes y Usuarios
+│   │   │   ├── CategoriaModal.razor
+│   │   │   ├── EspecificacionesModal.razor
+│   │   │   ├── MarcaModal.razor
+│   │   │   ├── OrdenModal.razor
+│   │   │   ├── ProductoModal.razor
+│   │   │   └── UsuarioModal.razor
+│   │   ├── Layout/             # MainLayout, NavMenu con control de roles
+│   │   ├── Pages/
+│   │   │   ├── Categorias.razor
+│   │   │   ├── Home.razor
+│   │   │   ├── Informes.razor
+│   │   │   ├── Login.razor
+│   │   │   ├── Marcas.razor
+│   │   │   ├── MisOrdenes.razor
+│   │   │   ├── Ordenes.razor
+│   │   │   ├── Productos.razor
+│   │   │   ├── ProductosUser.razor
+│   │   │   └── Usuarios.razor
+│   │   ├── wwwroot/            # appsettings.json (URL de la API), estilos, bg.png, script de descarga de PDF
 │   │   └── Program.cs
-│   ├── Data/                   # DbContext de EF Core, repositorios y persistencia
+│   ├── Data/                   # DbContext de EF Core, repositorios y reportes en ADO.NET
 │   │   ├── CategoriaRepository.cs / ICategoriaRepository.cs
 │   │   ├── EspecificacionRepository.cs / IEspecificacionRepository.cs
 │   │   ├── MarcaRepository.cs / IMarcaRepository.cs
 │   │   ├── OrdenRepository.cs / IOrdenRepository.cs
 │   │   ├── ProductoRepository.cs / IProductoRepository.cs
+│   │   ├── ReporteRepository.cs / IReporteRepository.cs # Consultas ADO.NET de reportes
 │   │   ├── UsuarioRepository.cs / IUsuarioRepository.cs
 │   │   └── TPIContext.cs
-│   ├── Domain.Model/           # Entidades de dominio, validaciones y enums
+│   ├── Domain.Model/           # Entidades de dominio, validaciones, criterios y enums
 │   │   ├── Categoria.cs
 │   │   ├── Especificacion.cs
 │   │   ├── EstadoOrden.cs
+│   │   ├── FacturacionMarca.cs
 │   │   ├── Marca.cs
 │   │   ├── Orden.cs
 │   │   ├── OrdenItem.cs
 │   │   ├── Producto.cs
+│   │   ├── ProductoVendido.cs
+│   │   ├── ReporteCriteria.cs
 │   │   ├── RolUsuario.cs
 │   │   ├── Usuario.cs
-│   │   └── UsuarioCriteria.cs
+│   │   ├── UsuarioCriteria.cs
+│   │   ├── VentasPorMes.cs
+│   │   └── VentasResumen.cs
 │   ├── DTOs/                   # Data Transfer Objects
 │   │   ├── AuthResponseDTO.cs
 │   │   ├── CategoriaDTO.cs
 │   │   ├── EspecificacionDTO.cs
+│   │   ├── FacturacionMarcaDTO.cs
+│   │   ├── GraficosInformeDTO.cs
+│   │   ├── InformesVentasDTO.cs
 │   │   ├── LoginDTO.cs
 │   │   ├── MarcaDTO.cs
 │   │   ├── OrdenDTO.cs
 │   │   ├── OrdenItemDTO.cs
 │   │   ├── ProductoDTO.cs
+│   │   ├── ProductoVendidoDTO.cs
 │   │   ├── UsuarioCriteriaDTO.cs
-│   │   └── UsuarioDTO.cs
+│   │   ├── UsuarioDTO.cs
+│   │   ├── VentasPorMesDTO.cs
+│   │   └── VentasResumenDTO.cs
 │   ├── WebAPI/                 # Backend REST (Minimal APIs, JWT, Swagger)
 │   │   ├── CategoriaEndpoints.cs
 │   │   ├── EspecificacionEndpoints.cs
 │   │   ├── MarcaEndpoints.cs
 │   │   ├── OrdenEndpoints.cs
 │   │   ├── ProductoEndpoints.cs
+│   │   ├── ReporteEndpoints.cs # Informe (JSON), gráficos y PDF
 │   │   ├── UsuarioEndpoints.cs
 │   │   ├── JwtService.cs
 │   │   ├── Program.cs
 │   │   └── appsettings.json
 │   └── WindowsForm/            # Cliente de escritorio Windows Forms (.NET 8)
-│       ├── LoginForm.cs
-│       ├── Home.cs
+│       ├── Program.cs          # Configuración inicial (URL de la API y cultura es-AR)
+│       ├── appsettings.json    # URL de la API
+│       ├── LoginForm.cs        # Login con opción de auto-registro
+│       ├── Home.cs             # Formulario MDI principal con menú según rol
 │       ├── UsuarioLista.cs / UsuarioDetalle.cs
 │       ├── CategoriaLista.cs / CategoriaDetalle.cs
 │       ├── MarcaLista.cs / MarcaDetalle.cs
 │       ├── ProductoLista.cs / ProductoDetalle.cs / ProductoEspecificaciones.cs
-│       └── OrdenLista.cs / OrdenDetalle.cs
+│       ├── EspecificacionDetalle.cs
+│       ├── OrdenLista.cs / OrdenDetalle.cs
+│       └── InformeVentas.cs    # Informe de ventas: resumen, gráficos, tablas y exportación a PDF
 └── README.md
 ```
-
 ---
 
-## 📌 Tareas Pendientes (To-Do List)
+### 💡 Análisis y Cobertura de Reportes
 
-Lista de tareas y mejoras planificadas para las siguientes etapas del proyecto:
+Evaluando el modelo de negocio del e-commerce, se detalla el estado de implementación de los reportes:
 
-### 🌐 Blazor Web
-- [ ] **Crear una orden (`usuario only`)**:
-  - Implementar flujo de carrito de compras o checkout directo desde el catálogo de productos.
-  - Selección de cantidades, cálculo de subtotal y total en tiempo real, e ingreso de dirección de envío.
-  - Envío del payload a la API (`POST /ordenes`) asociando el `UsuarioId` del cliente autenticado.
-- [ ] **CRUD de órdenes (`admin only`)**:
-  - Vista administrativa de todas las órdenes registradas en el sistema.
-  - Edición del estado de la orden (`Pendiente`, `Procesando`, `Enviado`, `Entregado`, `Cancelado`).
-  - Modificación de dirección de envío y cancelación / baja lógica de órdenes.
-- [ ] **Ver mis órdenes (`usuario only`)**:
-  - Pantalla de historial de pedidos exclusiva para el cliente autenticado (`GET /ordenes` filtrado por su `UsuarioId`).
-  - Visualización del detalle de ítems comprados, precio histórico, total y estado de entrega.
-
-### 🖥️ Windows Forms
-- [ ] **Pantalla de inicio / Dashboard (`Home`)**:
-  - *Estado actual*: Formulario base vacío tras iniciar sesión.
-  - *Propuesta de implementación*:
-    - **Panel de bienvenida**: Saludo personalizado con nombre, apellido, email y badge del rol (`Administrador` o `Usuario`).
-    - **Métricas rápidas (KPIs)**: Tarjetas con contadores clave (total de productos en catálogo, órdenes pendientes de despacho, productos con stock crítico/en preventa, usuarios registrados).
-    - **Accesos directos**: Botones rápidos hacia "Nuevo Producto", "Nueva Orden", "Gestión de Stock" y "Ver Clientes".
-    - **Alertas de inventario**: Grilla compacta con los productos próximos a agotar existencias.
-
-### 📊 Reportes (Windows Forms y Blazor Web)
-- [ ] **Módulo de Reportes con ADO.NET y Motor de Reportes**:
-  - Implementar consultas analíticas directas con **ADO.NET** (`SqlConnection`, `SqlCommand`, `SqlDataReader` o `DataTable`) para optimizar rendimiento y demostrar consultas SQL avanzadas (joins, agregaciones, agrupaciones y filtros parametrizados).
-  - Integrar un motor de reportes moderno para .NET 8:
-    - **Opción recomendada (PDF multiplataforma)**: **QuestPDF** — generación de reportes y facturas mediante código C# fluido, exportable a PDF y consumible tanto en Web (Blazor/API) como en escritorio (WinForms).
-    - **Opción para WinForms / Web**: **FastReport Open Source** — reportes visuales con diseñador y visor integrado.
-    - **Opción clásica**: **Microsoft Reporting Services / RDLC (ReportViewer)** — tradicional para Windows Forms en entornos académicos.
-
----
-
-### 💡 Análisis y Ranking de Reportes para el Proyecto
-
-Evaluando el modelo de dominio del e-commerce (Productos, Categorías, Marcas, Especificaciones, Órdenes, Detalle y Usuarios), se detallan los reportes sugeridos ordenados por **cuál aportaría mayor valor y relevancia al TP**:
-
-| Prioridad | Reporte | Descripción y Justificación para el TP | Justificación Técnica (ADO.NET) |
-|:---:|---|---|---|
-| 🥇 **1** | **Ventas por Período y Estado de Órdenes** | **El reporte principal de cualquier e-commerce.** Permite filtrar por rango de fechas (desde/hasta) y estado (`Entregado`, `Pendiente`, etc.). Muestra total facturado, ticket promedio y cantidad de órdenes. Indispensable para la toma de decisiones. | Consulta con `JOIN` entre `Ordenes` y `Usuarios`, filtro `WHERE Fecha BETWEEN @Desde AND @Hasta`, `GROUP BY` por estado/mes y agregaciones `COUNT()` y `SUM(Total)`. |
-| 🥈 **2** | **Top Productos Más Vendidos y Facturación por Categoría/Marca** | **Excelente para análisis comercial del catálogo.** Permite ver qué componentes tienen mayor rotación (unidades vendidas) y qué marcas/categorías generan más ingresos (ej. placas de video vs procesadores, Nvidia vs AMD). | Query con `JOIN` entre `OrdenItems`, `Productos`, `Categorias` y `Marcas`, agrupando por producto con `SUM(Cantidad)` y ordenando descendentemente. |
-| 🥉 **3** | **Comprobante / Factura de Orden de Compra** | **Gran utilidad práctica y visual.** Permite generar la factura o remito imprimible/PDF de una orden específica con datos del cliente, dirección de entrega, detalle de ítems, precio unitario y total final. | Consulta parametrizada por `@OrdenId` combinando cabecera de orden (`Orden` + `Usuario`) con líneas de detalle (`OrdenItems` + `Producto`). |
-| 4 | **Stock Crítico y Alerta de Reposición (con Pre-Ventas)** | **Ideal para la gestión de inventario en Windows Forms.** Muestra productos cuyo stock es inferior a un umbral mínimo o que están configurados en preventa (`EsPreVenta = 1`), agrupados por marca para reposición a proveedores. | Query con filtros condicionales: `WHERE (Stock <= @UmbralMinimo OR EsPreVenta = 1) AND EsActivo = 1 ORDER BY CategoriaId, Stock ASC`. |
-| 5 | **Ranking de Clientes con Mayor Actividad / Compras** | Identifica a los clientes más recurrentes o con mayor volumen de compra acumulado. Útil para promociones o estadísticas de clientes. | `JOIN` entre `Usuarios` y `Ordenes`, con `COUNT(o.Id)` y `SUM(o.Total)` agrupado por cliente. |
+| Prioridad | Reporte | Descripción y Valor para el Negocio | Implementación Técnica | Estado |
+|:---:|---|---|---|:---:|
+| 🥇 **1** | **Ventas por Período y Estado de Órdenes** | Reporte principal de facturación. Filtra por rango de fechas (desde/hasta) y estado (`Entregado`, `Pendiente`, etc.). Muestra total facturado, ticket promedio, cantidad de órdenes y evolución mensual. | Consultas ADO.NET sobre `Ordenes` con filtro `FechaAlta >= @Desde AND FechaAlta < DATEADD(DAY, 1, @Hasta)` y por estado (por defecto excluye canceladas y eliminadas), `GROUP BY YEAR/MONTH(FechaAlta)` y agregaciones `COUNT()`, `SUM(Total)` y `AVG(Total)`. | ✅ **Implementado** (WinForms, Blazor, PDF y gráficos) |
+| 🥈 **2** | **Top Productos Más Vendidos y Facturación por Marca** | Análisis comercial de rotación de stock e ingresos generados por cada fabricante y componente de hardware. | Consultas ADO.NET con `JOIN` entre `OrdenItems`, `Ordenes`, `Productos`, `Categorias` y `Marcas`, agrupando con `SUM(Cantidad)` y `SUM(Cantidad * PrecioUnitario)` (precio al momento de la venta), `TOP (@Top)` y porcentaje sobre el total con `SUM(...) OVER()`. | ✅ **Implementado** (WinForms, Blazor, PDF y gráficos) |
+| 🥉 **3** | **Comprobante / Factura de Orden de Compra** | Generación de comprobante imprimible de una orden específica con datos del cliente, dirección, detalle de ítems y total final. | Consulta parametrizada por `@OrdenId` combinando cabecera de orden con líneas de detalle. | ⏳ *Sugerido para próxima etapa* |
+| 4 | **Stock Crítico y Alerta de Reposición** | Detección de productos cuyo stock es inferior al umbral mínimo o en condición de pre-venta. | Filtro condicional sobre productos activos con ordenamiento por criticidad de inventario. | ⏳ *Sugerido para próxima etapa* |
+| 5 | **Ranking de Clientes con Mayor Facturación** | Identificación de los clientes más recurrentes y con mayor volumen histórico de compra. | `JOIN` entre `Usuarios` y `Ordenes` agrupado por cliente. | ⏳ *Sugerido para próxima etapa* |
 
 > [!TIP]
-> **Recomendación para la entrega:** Implementar el **Reporte 1 (Ventas por Período)** junto con el **Reporte 2 (Top Productos/Marcas)** o el **Reporte 3 (Factura de Compra)**. Esta combinación cubre de manera óptima las expectativas de la cátedra para consultas complejas en ADO.NET y visualización de datos.
+> **Alcance de la entrega:** se implementaron los dos reportes de mayor impacto (**Reporte 1: Ventas por Período** y **Reporte 2: Top Productos y Facturación por Marca**), combinando consultas SQL en **ADO.NET**, gráficos generados con **ScottPlot**, exportación a **PDF (QuestPDF)** y visualización en **ambos clientes** (Windows Forms y Blazor WebAssembly).
 
 ---
 
@@ -469,20 +534,36 @@ En [TPI/WebAPI/appsettings.json](TPI/WebAPI/appsettings.json), verificar o ajust
 ```
 
 > [!TIP]
-> Al iniciar la `WebAPI`, `context.Database.EnsureCreated()` creará automáticamente la base de datos `TPI` y cargará los datos de prueba iniciales (seed de categorías, marcas, productos, especificaciones y usuarios).
+> Al iniciar la `WebAPI`, `context.Database.EnsureCreated()` creará automáticamente la base de datos `TPI` y cargará los datos de prueba iniciales (categorías, marcas, productos, especificaciones y usuarios).
 
-### 2. Ejecutar la WebAPI
+> [!WARNING]
+> `EnsureCreated()` solo crea la base si no existe: **no actualiza tablas existentes**. Si la base se creó con una versión anterior del modelo, hay que eliminarla para que se vuelva a crear (o aplicar el cambio a mano).
 
-Abrir una terminal en el directorio raíz o en `TPI/WebAPI` y ejecutar:
+### 2. Configuración de la URL de la API en los clientes
+
+Ambos frontends leen la dirección de la API desde su propio `appsettings.json` (por defecto `http://localhost:5183/`):
+
+- Windows Forms: [TPI/WindowsForm/appsettings.json](TPI/WindowsForm/appsettings.json)
+- Blazor: [TPI/Blazor.WebAssembly/wwwroot/appsettings.json](TPI/Blazor.WebAssembly/wwwroot/appsettings.json)
+
+```json
+{
+  "ApiBaseUrl": "http://localhost:5183/"
+}
+```
+
+### 3. Ejecutar la WebAPI
+
+Desde la raíz del repositorio:
 
 ```bash
 dotnet run --project TPI/WebAPI
 ```
 
-- La API iniciará por defecto en `http://localhost:5183/`.
-- Acceso a la documentación interactiva Swagger: `http://localhost:5183/swagger`.
+- La API inicia por defecto en `http://localhost:5183/`.
+- Documentación interactiva Swagger: `http://localhost:5183/swagger`.
 
-### 3. Ejecutar el Cliente Windows Forms
+### 4. Ejecutar el Cliente Windows Forms
 
 En una nueva terminal:
 
@@ -490,13 +571,15 @@ En una nueva terminal:
 dotnet run --project TPI/WindowsForm
 ```
 
-### 4. Ejecutar el Cliente Blazor WebAssembly
+### 5. Ejecutar el Cliente Blazor WebAssembly
 
 En una nueva terminal:
 
 ```bash
 dotnet run --project TPI/Blazor.WebAssembly
 ```
+
+- La aplicación web inicia por defecto en `http://localhost:5011/`.
 
 ---
 
@@ -506,8 +589,8 @@ La base de datos se inicializa con los siguientes usuarios para pruebas:
 
 | Rol | Email | Contraseña | Permisos |
 |---|---|---|---|
-| **Administrador** | `juan@gmail.com` | `usuario123` | Acceso completo (CRUD de usuarios, productos, marcas, categorías, especificaciones y órdenes) |
-| **Usuario** | `agus@gmail.com` | `usuario123` | Navegación, consulta y compras |
+| **Administrador** | `juan@gmail.com` | `usuario123` | Acceso completo (CRUD de usuarios, productos, marcas, categorías, especificaciones y órdenes, e informes) |
+| **Usuario** | `agus@gmail.com` | `usuario123` | Navegación del catálogo, consulta de especificaciones y compras |
 
 ---
 
