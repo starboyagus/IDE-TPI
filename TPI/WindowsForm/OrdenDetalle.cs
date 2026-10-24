@@ -92,7 +92,7 @@ namespace WindowsForm
             this.estadoComboBox.DataSource = Enum.GetValues(typeof(EstadoOrden));
             if (this.Mode == FormMode.Add && this.Orden.Estado == default)
             {
-                this.estadoComboBox.SelectedItem = EstadoOrden.Procesando;
+                this.estadoComboBox.SelectedItem = EstadoOrden.Pendiente;
             }
             else
             {
@@ -124,7 +124,7 @@ namespace WindowsForm
             {
                 idLabel.Visible = false;
                 idTextBox.Visible = false;
-                estadoComboBox.SelectedItem = EstadoOrden.Procesando;
+                estadoComboBox.SelectedItem = EstadoOrden.Pendiente;
                 estadoComboBox.Enabled = false;
 
                 lblProducto.Visible = true;
