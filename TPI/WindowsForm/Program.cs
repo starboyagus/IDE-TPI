@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Globalization;
 using System.Windows.Forms;
 using API.Clients;
 using Microsoft.Extensions.Configuration;
@@ -11,6 +12,12 @@ namespace WindowsForm
         [STAThread]
         static void Main()
         {
+            var cultura = new CultureInfo("es-AR");
+            CultureInfo.DefaultThreadCurrentCulture = cultura;
+            CultureInfo.DefaultThreadCurrentUICulture = cultura;
+            CultureInfo.CurrentCulture = cultura;
+            CultureInfo.CurrentUICulture = cultura;
+
             Application.EnableVisualStyles();
             Application.SetCompatibleTextRenderingDefault(false);
 

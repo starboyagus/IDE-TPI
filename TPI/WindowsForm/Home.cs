@@ -92,6 +92,7 @@ namespace WindowsForm
             categoriaToolStripMenuItem.Visible = esAdmin;
             marcaToolStripMenuItem.Visible = esAdmin;
             ordenesToolStripMenuItem.Visible = true;
+            informesToolStripMenuItem.Visible = esAdmin;
 
             if (usuario != null)
             {
@@ -138,6 +139,11 @@ namespace WindowsForm
         private void ordenesToolStripMenuItem_Click(object sender, EventArgs e)
         {
             AbrirHijo<OrdenLista>();
+        }
+
+        private void informesToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            AbrirHijo<InformeVentas>();
         }
     }
 }

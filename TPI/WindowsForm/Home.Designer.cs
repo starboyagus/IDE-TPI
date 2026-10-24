@@ -37,12 +37,13 @@ namespace WindowsForm
             categoriaToolStripMenuItem = new ToolStripMenuItem();
             marcaToolStripMenuItem = new ToolStripMenuItem();
             ordenesToolStripMenuItem = new ToolStripMenuItem();
+            informesToolStripMenuItem = new ToolStripMenuItem();
             mnsPrincipal.SuspendLayout();
             SuspendLayout();
             // 
             // mnsPrincipal
             // 
-            mnsPrincipal.Items.AddRange(new ToolStripItem[] { mnuOpciones, usuariosToolStripMenuItem, productoToolStripMenuItem, categoriaToolStripMenuItem, marcaToolStripMenuItem, ordenesToolStripMenuItem });
+            mnsPrincipal.Items.AddRange(new ToolStripItem[] { mnuOpciones, usuariosToolStripMenuItem, productoToolStripMenuItem, categoriaToolStripMenuItem, marcaToolStripMenuItem, ordenesToolStripMenuItem, informesToolStripMenuItem });
             mnsPrincipal.Location = new Point(0, 0);
             mnsPrincipal.Name = "mnsPrincipal";
             mnsPrincipal.Size = new Size(1108, 24);
@@ -105,6 +106,13 @@ namespace WindowsForm
             ordenesToolStripMenuItem.Text = "Órdenes";
             ordenesToolStripMenuItem.Click += ordenesToolStripMenuItem_Click;
             // 
+            // informesToolStripMenuItem
+            // 
+            informesToolStripMenuItem.Name = "informesToolStripMenuItem";
+            informesToolStripMenuItem.Size = new Size(66, 20);
+            informesToolStripMenuItem.Text = "Informes";
+            informesToolStripMenuItem.Click += informesToolStripMenuItem_Click;
+            // 
             // Home
             // 
             AutoScaleDimensions = new SizeF(7F, 15F);
@@ -134,5 +142,6 @@ namespace WindowsForm
         private ToolStripMenuItem categoriaToolStripMenuItem;
         private ToolStripMenuItem marcaToolStripMenuItem;
         private ToolStripMenuItem ordenesToolStripMenuItem;
+        private ToolStripMenuItem informesToolStripMenuItem;
     }
 }
