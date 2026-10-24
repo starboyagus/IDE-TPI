@@ -356,7 +356,7 @@ namespace WindowsForm
             this.Close();
         }
 
-        private static async Task<string> ExtraerMensajeError(HttpResponseMessage response)
+        internal static async Task<string> ExtraerMensajeError(HttpResponseMessage response)
         {
             try
             {

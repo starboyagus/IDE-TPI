@@ -32,11 +32,10 @@ namespace API.Clients
             return await ApiClient.Http.PutAsJsonAsync("ordenes", orden);
         }
 
-        public static async Task<bool> DeleteAsync(int id)
+        public static async Task<HttpResponseMessage> DeleteAsync(int id)
         {
-            var response = await ApiClient.Http.DeleteAsync($"ordenes/{id}");
+            return await ApiClient.Http.DeleteAsync($"ordenes/{id}");
 
-            return response.IsSuccessStatusCode;
         }
 
         public static async Task<HttpResponseMessage> AddAsync(OrdenDTO orden)

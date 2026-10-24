@@ -108,9 +108,9 @@ namespace Application.Services
             {
                 return false;
             }
-            if (existing.Estado == EstadoOrden.Entregado)
+            if (existing.Estado == EstadoOrden.Entregado || existing.Estado == EstadoOrden.Cancelado)
             {
-                throw new ArgumentException("La orden ya fue entregada y no puede eliminarse");
+                throw new ArgumentException($"La orden ya esta {existing.Estado} y no puede eliminarse");
             }
             return await ordenRepository.DeleteAsync(id);
         }
@@ -178,12 +178,30 @@ namespace Application.Services
             {
                 return false;
             }
-            if(existing.Estado == EstadoOrden.Entregado){
-                throw new ArgumentException("La orden ya fue entregada y no puede modificarse");
+            if(existing.Estado == EstadoOrden.Entregado || existing.Estado==EstadoOrden.Cancelado){
+                throw new ArgumentException($"La orden ya esta {existing.Estado} y no puede modificarse");
+            }
+            bool seCancela = dto.Estado == EstadoOrden.Cancelado && (existing.Estado == EstadoOrden.Pendiente || existing.Estado == EstadoOrden.Procesando);
+            if (seCancela)
+            {
+                ReintegrarStock(existing);
             }
 
             Orden orden = new Orden(dto.Id, dto.Estado, existing.Total, dto.UsuarioId, dto.DireccionEnvio, existing.FechaAlta, existing.EsActivo);
             return await ordenRepository.UpdateAsync(orden);
+        }
+
+        private static void ReintegrarStock(Orden orden)
+        {
+            foreach (var item in orden.Items)
+            {
+                var producto = item.Producto;
+                // Solo se había descontado stock de los productos que no son preventa
+                if (producto != null && !producto.EsPreVenta)
+                {
+                    producto.SetStock(producto.Stock + item.Cantidad);
+                }
+            }
         }
     }
 }

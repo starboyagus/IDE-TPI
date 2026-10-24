@@ -29,8 +29,9 @@ namespace Domain.Model
 
         private void ValidarModificable()
         {
-            if (Estado == EstadoOrden.Entregado)
-                throw new ArgumentException("La orden ya fue entregada y no puede modificarse.");
+             if(Estado == EstadoOrden.Entregado || Estado==EstadoOrden.Cancelado){
+                throw new ArgumentException($"La orden ya esta {Estado} y no puede modificarse");
+            }
         }
 
         public void SetId(int id)

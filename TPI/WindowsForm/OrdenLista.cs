@@ -179,10 +179,11 @@ namespace WindowsForm
             try
             {
                 var response = await OrdenApiClient.DeleteAsync(orden.Id);
-                if (!response)
+                if (!response.IsSuccessStatusCode)
                 {
                     if (ApiClient.SesionVencida) return; // Home ya avisa y vuelve al login
-                    MessageBox.Show($"No se pudo eliminar la orden.", "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                    string mensaje = await OrdenDetalle.ExtraerMensajeError(response);
+                    MessageBox.Show(mensaje,"No se pudo eliminar", MessageBoxButtons.OK, MessageBoxIcon.Error);
                     return;
                 }
             }
