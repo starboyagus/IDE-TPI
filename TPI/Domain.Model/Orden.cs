@@ -18,13 +18,19 @@ namespace Domain.Model
 
         public Orden(int id, EstadoOrden estado, decimal total, int usuarioId, string direccionEnvio, DateTime fechaAlta, bool esActivo)
         {
-            SetId(id);
-            SetEstado(estado);
+            SetId(id);         
             SetTotal(total);
             SetUsuarioId(usuarioId);
             SetDireccionEnvio(direccionEnvio);
             SetFechaAlta(fechaAlta);
             SetEsActivo(esActivo);
+            SetEstado(estado);
+        }
+
+        private void ValidarModificable()
+        {
+            if (Estado == EstadoOrden.Entregado)
+                throw new ArgumentException("La orden ya fue entregada y no puede modificarse.");
         }
 
         public void SetId(int id)
@@ -36,18 +42,21 @@ namespace Domain.Model
 
         public void SetEstado(EstadoOrden estado)
         {
+            ValidarModificable();
             if (!Enum.IsDefined(typeof(EstadoOrden), estado))
                 throw new ArgumentException("El estado no es válido.", nameof(estado));
             Estado = estado;
         }
         public void SetTotal(decimal total)
         {
+            ValidarModificable();
             if (total < 0)
                 throw new ArgumentException("El total no puede ser negativo.", nameof(total));
             Total = total;
         }
         public void SetUsuarioId(int usuarioId)
         {
+            ValidarModificable();
             if (usuarioId <= 0)
                 throw new ArgumentException("El usuario es obligatorio.", nameof(usuarioId));
             UsuarioId = usuarioId;
@@ -55,6 +64,7 @@ namespace Domain.Model
 
         public void SetDireccionEnvio(string direccionEnvio)
         {
+            ValidarModificable();
             if (string.IsNullOrWhiteSpace(direccionEnvio))
                 throw new ArgumentException("La dirección de envío no puede ser nula o vacía.", nameof(direccionEnvio));
             DireccionEnvio = direccionEnvio;
@@ -69,9 +79,10 @@ namespace Domain.Model
 
         public void SetEsActivo(bool esActivo)
         {
+            ValidarModificable();
             EsActivo = esActivo;
         }
 
-        
+
     }
 }

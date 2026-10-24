@@ -15,6 +15,14 @@ namespace WindowsForm
             ConfigurarColumnas();
         }
 
+        private void ConfigurarBotonesSegunRol()
+        {
+            bool esAdmin = AuthService.AuthService.IsAdmin;
+
+            btnActualizar.Visible = esAdmin;
+            btnEliminar.Visible = esAdmin;
+        }
+
         private void ConfigurarColumnas()
         {
             dgvOrdenes.AutoGenerateColumns = false;
@@ -98,6 +106,7 @@ namespace WindowsForm
 
         private async void OrdenLista_Load(object sender, EventArgs e)
         {
+            ConfigurarBotonesSegunRol();
             await Listar();
         }
 

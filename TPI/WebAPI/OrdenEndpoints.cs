@@ -78,17 +78,26 @@ namespace WebAPI
 
             app.MapDelete("/ordenes/{id}", async (int id, IOrdenService ordenService) =>
             {
-                var deleted = await ordenService.DeleteAsync(id);
-
-                if (!deleted)
+                try
                 {
-                    return Results.NotFound();
+                    var deleted = await ordenService.DeleteAsync(id);
+
+                    if (!deleted)
+                    {
+                        return Results.NotFound();
+                    }
+
+                    return Results.NoContent();
+                }
+                catch (ArgumentException ex)
+                {
+                    return Results.BadRequest(new { error = ex.Message });
                 }
 
-                return Results.NoContent();
             })
             .WithName("DeleteOrden")
             .Produces(StatusCodes.Status204NoContent)
+            .Produces(StatusCodes.Status400BadRequest)
             .Produces(StatusCodes.Status404NotFound)
             .WithOpenApi()
             .RequireAuthorization("OrdenesEliminar");

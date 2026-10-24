@@ -103,6 +103,15 @@ namespace Application.Services
         }
         public async Task<bool> DeleteAsync(int id)
         {
+            var existing = await ordenRepository.GetAsync(id);
+            if (existing == null)
+            {
+                return false;
+            }
+            if (existing.Estado == EstadoOrden.Entregado)
+            {
+                throw new ArgumentException("La orden ya fue entregada y no puede eliminarse");
+            }
             return await ordenRepository.DeleteAsync(id);
         }
         public async Task<OrdenDTO?> GetAsync(int id)
@@ -168,6 +177,9 @@ namespace Application.Services
             if(existing == null)
             {
                 return false;
+            }
+            if(existing.Estado == EstadoOrden.Entregado){
+                throw new ArgumentException("La orden ya fue entregada y no puede modificarse");
             }
 
             Orden orden = new Orden(dto.Id, dto.Estado, existing.Total, dto.UsuarioId, dto.DireccionEnvio, existing.FechaAlta, existing.EsActivo);
