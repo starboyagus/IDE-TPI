@@ -86,7 +86,7 @@ namespace WindowsForm
         private void SetOrden()
         {
             this.idTextBox.Text = this.Orden.Id > 0 ? this.Orden.Id.ToString() : "";
-            this.dtpFecha.Value = this.Orden.Fecha == default ? DateTime.Now : this.Orden.Fecha;
+            this.dtpFecha.Value = this.Orden.FechaAlta == default ? DateTime.Now : this.Orden.FechaAlta;
             this.direccionTextBox.Text = this.Orden.DireccionEnvio ?? "";
 
             this.estadoComboBox.DataSource = Enum.GetValues(typeof(EstadoOrden));
@@ -118,6 +118,7 @@ namespace WindowsForm
         private void SetFormMode(FormMode value)
         {
             mode = value;
+            dtpFecha.Enabled = false;
 
             if (Mode == FormMode.Add)
             {
@@ -138,7 +139,6 @@ namespace WindowsForm
             {
                 idLabel.Visible = true;
                 idTextBox.Visible = true;
-                dtpFecha.Enabled = false;
                 usuarioComboBox.Enabled = false;
                 estadoComboBox.Enabled = AuthService.AuthService.IsAdmin;
 
@@ -314,7 +314,6 @@ namespace WindowsForm
                 return;
 
             this.Orden.DireccionEnvio = direccionTextBox.Text.Trim();
-            this.Orden.Fecha = dtpFecha.Value;
             this.Orden.UsuarioId = (int)usuarioComboBox.SelectedValue!;
 
             if (estadoComboBox.SelectedItem is EstadoOrden estado)

@@ -7,7 +7,6 @@ namespace Domain.Model
     public class Orden
     {
         public int Id { get; private set; }
-        public DateTime Fecha { get; private set; }
         public EstadoOrden Estado { get; private set; }
         public decimal Total{ get; private set; }
         public int UsuarioId { get; private set; }
@@ -17,10 +16,9 @@ namespace Domain.Model
         public bool EsActivo { get; private set; }
         public ICollection<OrdenItem> Items { get; private set; } = new List<OrdenItem>();
 
-        public Orden(int id, DateTime fecha, EstadoOrden estado, decimal total, int usuarioId, string direccionEnvio, DateTime fechaAlta, bool esActivo)
+        public Orden(int id, EstadoOrden estado, decimal total, int usuarioId, string direccionEnvio, DateTime fechaAlta, bool esActivo)
         {
             SetId(id);
-            SetFecha(fecha);
             SetEstado(estado);
             SetTotal(total);
             SetUsuarioId(usuarioId);
@@ -34,13 +32,6 @@ namespace Domain.Model
             if (id < 0)
                 throw new ArgumentException("El Id debe ser mayor que 0.", nameof(id));
             Id = id;
-        }
-
-        public void SetFecha(DateTime fecha)
-        {
-            if (fecha == default)
-                throw new ArgumentException("La fecha no puede ser nula.", nameof(fecha));
-            Fecha = fecha;
         }
 
         public void SetEstado(EstadoOrden estado)

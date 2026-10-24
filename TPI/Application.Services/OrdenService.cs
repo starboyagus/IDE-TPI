@@ -75,7 +75,7 @@ namespace Application.Services
             await ValidarProductosAsync(dto.Items.ToList());
 
             var fechaAlta = DateTime.Now;
-            Orden orden = new Orden(0, dto.Fecha, dto.Estado == 0 ? EstadoOrden.Pendiente : dto.Estado, 0, dto.UsuarioId, dto.DireccionEnvio, fechaAlta, true);
+            Orden orden = new Orden(0, dto.Estado == 0 ? EstadoOrden.Pendiente : dto.Estado, 0, dto.UsuarioId, dto.DireccionEnvio, fechaAlta, true);
             dto.Total = 0;
             foreach (var i in dto.Items)
             {   
@@ -116,7 +116,6 @@ namespace Application.Services
             return new OrdenDTO
             {
                 Id = orden.Id,
-                Fecha = orden.Fecha,
                 Estado = orden.Estado,
                 Total = orden.Total,
                 UsuarioId = orden.UsuarioId,
@@ -144,7 +143,6 @@ namespace Application.Services
             return ordenes.Select(orden => new OrdenDTO
             {
                 Id = orden.Id,
-                Fecha = orden.Fecha,
                 Estado = orden.Estado,
                 Total = orden.Total,
                 UsuarioId = orden.UsuarioId,
@@ -172,7 +170,7 @@ namespace Application.Services
                 return false;
             }
 
-            Orden orden = new Orden(dto.Id, dto.Fecha, dto.Estado, existing.Total, dto.UsuarioId, dto.DireccionEnvio, existing.FechaAlta, existing.EsActivo);
+            Orden orden = new Orden(dto.Id, dto.Estado, existing.Total, dto.UsuarioId, dto.DireccionEnvio, existing.FechaAlta, existing.EsActivo);
             return await ordenRepository.UpdateAsync(orden);
         }
     }

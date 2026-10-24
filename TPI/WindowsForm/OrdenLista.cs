@@ -39,7 +39,7 @@ namespace WindowsForm
             {
                 Name = "Fecha",
                 HeaderText = "Fecha",
-                DataPropertyName = nameof(OrdenDTO.Fecha),
+                DataPropertyName = nameof(OrdenDTO.FechaAlta),
                 FillWeight = 70,
                 DefaultCellStyle = { Format = "dd/MM/yyyy HH:mm" }
             });

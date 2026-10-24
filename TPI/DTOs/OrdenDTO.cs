@@ -10,7 +10,6 @@ namespace DTOs
     public class OrdenDTO
     {
         public int Id { get; set; }
-        public DateTime Fecha { get; set; }
         public EstadoOrden Estado { get; set; }
         public decimal Total{ get; set; }
         public int UsuarioId { get; set; }

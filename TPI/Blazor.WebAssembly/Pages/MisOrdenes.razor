@@ -55,7 +55,7 @@
                             {
                                 <tr>
                                     <td>@orden.Id</td>
-                                    <td>@orden.Fecha.ToString("dd/MM/yyyy HH:mm")</td>
+                                    <td>@orden.FechaAlta.ToString("dd/MM/yyyy HH:mm")</td>
                                     <td>@orden.Estado</td>
                                     <td>$ @orden.Total.ToString("N2")</td>
                                     <td>@orden.DireccionEnvio</td>
@@ -104,7 +104,7 @@
             int usuarioId = AuthService.UsuarioActual!.Id;
             ordenes = (await OrdenApiClient.GetAllAsync())?
                 .Where(o => o.UsuarioId == usuarioId)
-                .OrderByDescending(o => o.Fecha)
+                .OrderByDescending(o => o.FechaAlta)
                 .ToList();
         }
         catch (Exception ex)

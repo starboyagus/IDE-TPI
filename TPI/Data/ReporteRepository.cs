@@ -16,8 +16,8 @@ namespace Data
 
         private const string FiltroOrdenes = @"
             o.EsActivo = 1
-            AND o.Fecha >= @Desde
-            AND o.Fecha <  DATEADD(DAY, 1, @Hasta)
+            AND o.FechaAlta >= @Desde
+            AND o.FechaAlta <  DATEADD(DAY, 1, @Hasta)
             AND ((@Estado IS NULL AND o.Estado <> 5) OR o.Estado = @Estado)";
 
         private const string SqlResumen = @"
@@ -28,14 +28,14 @@ namespace Data
             WHERE " + FiltroOrdenes;
 
         private const string SqlPorMes = @"
-            SELECT YEAR(o.Fecha)  AS Anio,
-                   MONTH(o.Fecha) AS Mes,
+            SELECT YEAR(o.FechaAlta)  AS Anio,
+                   MONTH(o.FechaAlta) AS Mes,
                    COUNT(*)       AS CantidadOrdenes,
                    SUM(o.Total)   AS TotalFacturado,
                    AVG(o.Total)   AS TicketPromedio
             FROM Ordenes o
             WHERE " + FiltroOrdenes + @"
-            GROUP BY YEAR(o.Fecha), MONTH(o.Fecha)
+            GROUP BY YEAR(o.FechaAlta), MONTH(o.FechaAlta)
             ORDER BY Anio, Mes";
 
         private const string SqlTopProductos = @"

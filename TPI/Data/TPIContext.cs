@@ -271,8 +271,6 @@ namespace Data
                 entity.HasKey(e => e.Id);
                 entity.Property(e => e.Id)
                     .ValueGeneratedOnAdd();
-                entity.Property(e => e.Fecha)
-                    .IsRequired();
                 entity.Property(e => e.Estado)
                     .IsRequired()
                     .HasConversion<int>();

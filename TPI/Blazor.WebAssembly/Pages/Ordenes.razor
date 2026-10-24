@@ -133,7 +133,7 @@
                                             </span>
                                         </td>
                                         <td>@orden.Usuario</td>
-                                        <td>@orden.Fecha.ToString("dd/MM/yyyy HH:mm")</td>
+                                        <td>@orden.FechaAlta.ToString("dd/MM/yyyy HH:mm")</td>
                                         <td>
                                             <span class="badge @GetBadgeClassForEstado(orden.Estado)">
                                                 @orden.Estado
@@ -228,7 +228,6 @@
             var ordenParaActualizar = new OrdenDTO
             {
                 Id = selectedOrden.Id,
-                Fecha = selectedOrden.Fecha,
                 Estado = nuevoEstado,
                 Total = selectedOrden.Total,
                 UsuarioId = selectedOrden.UsuarioId,
@@ -283,7 +282,7 @@
         {
             loading = true;
             ordenes = (await OrdenApiClient.GetAllAsync())?
-                .OrderByDescending(o => o.Fecha)
+                .OrderByDescending(o => o.FechaAlta)
                 .ToList();
 
             if (selectedOrden != null && ordenes != null)
