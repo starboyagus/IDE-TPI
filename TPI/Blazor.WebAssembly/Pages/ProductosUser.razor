@@ -3,7 +3,7 @@
 
 <PageTitle>Productos</PageTitle>
 
-<div class="container-fluid py-2">
+<div class="container-fluid">
     <div class="row mb-3">
         <div class="col-12">
             <h3>Productos</h3>
@@ -37,7 +37,9 @@
         <div class="productos-grid">
             @foreach (var producto in productos)
             {
-                <div class="producto-card">
+                <div class="producto-card" role="button" tabindex="0"
+                     title="Ver especificaciones"
+                     @onclick="() => OpenEspecificacionesModal(producto)">
                     <div class="producto-info">
                         <div class="producto-nombre">@producto.Nombre</div>
                         <div class="producto-subtitulo">
@@ -52,11 +54,6 @@
                                 <span class="badge-preventa">PreVenta</span>
                             </div>
                         }
-                        <div class="producto-acciones">
-                            <button type="button" class="btn btn-sm btn-outline-dark" @onclick="() => OpenEspecificacionesModal(producto)">
-                                Ver especificaciones
-                            </button>
-                        </div>
                     </div>
                     <div class="producto-precio-box">
                         <div class="producto-precio-texto">
@@ -93,10 +90,12 @@
     .producto-card {
         display: flex;
         flex-direction: row;
-        background-color: #dcdcdc;
+        gap: 12px;
+        padding: 10px;
+        background-color: #e8e8e8;
         border-radius: 14px;
-        overflow: hidden;
-        min-height: 120px;
+        min-height: 118px;
+        cursor: pointer;
         box-shadow: 0 2px 4px rgba(0, 0, 0, 0.08);
         transition: transform 0.15s ease, box-shadow 0.15s ease;
     }
@@ -108,35 +107,32 @@
 
     .producto-info {
         flex: 1 1 auto;
-        padding: 12px 14px;
+        min-width: 0;
+        padding: 2px 0 0 4px;
         display: flex;
         flex-direction: column;
         justify-content: flex-start;
-        background-color: #dcdcdc;
     }
 
     .producto-nombre {
         font-weight: 700;
-        font-size: 0.92rem;
-        text-transform: uppercase;
-        color: #1a1a1a;
+        font-size: 1rem;
+        color: #111111;
         line-height: 1.25;
-        margin-bottom: 3px;
         word-break: break-word;
     }
 
     .producto-subtitulo {
-        font-size: 0.8rem;
-        color: #4a4a4a;
-        margin-bottom: 4px;
-        line-height: 1.2;
+        font-size: 0.95rem;
+        color: #1a1a1a;
+        line-height: 1.25;
     }
 
     .producto-descripcion {
-        font-size: 0.78rem;
-        color: #555555;
-        margin-bottom: 8px;
+        font-size: 0.95rem;
+        color: #1a1a1a;
         line-height: 1.25;
+        margin-bottom: 8px;
         display: -webkit-box;
         -webkit-line-clamp: 2;
         -webkit-box-orient: vertical;
@@ -149,37 +145,36 @@
     }
 
     .badge-preventa {
-        background-color: #00e676;
-        color: #050505;
-        font-weight: 700;
-        font-size: 0.72rem;
-        padding: 3px 10px;
-        border-radius: 4px;
         display: inline-block;
-        letter-spacing: 0.3px;
-    }
-
-    .producto-acciones {
-        margin-top: 8px;
+        padding: 2px 20px;
+        font-size: 0.9rem;
+        font-weight: 400;
+        color: #111111;
+        background: linear-gradient(180deg, #9af59a 0%, #4ccf4c 100%);
+        border: 1px solid #3fae3f;
+        border-radius: 4px;
+        box-shadow: 0 2px 4px rgba(0, 0, 0, 0.3);
     }
 
     .producto-precio-box {
-        flex: 0 0 38%;
+        flex: 0 0 48%;
         min-width: 110px;
-        background-color: #5a5a5a;
         display: flex;
         align-items: center;
         justify-content: center;
         text-align: center;
-        padding: 10px 8px;
+        padding: 8px;
+        border-radius: 8px;
+        background: linear-gradient(180deg, #0a9ff0 0%, #0072ad 100%);
+        box-shadow: inset 0 0 0 1px rgba(255, 255, 255, 0.15);
     }
 
     .producto-precio-texto {
-        font-weight: 800;
-        font-size: 1.25rem;
-        color: #111111;
-        letter-spacing: -0.5px;
-        word-break: break-word;
+        font-weight: 300;
+        font-size: clamp(1.4rem, 2.2vw, 2.1rem);
+        color: #ffffff;
+        line-height: 1.1;
+        overflow-wrap: anywhere;
     }
 </style>
 

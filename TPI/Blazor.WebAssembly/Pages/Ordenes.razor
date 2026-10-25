@@ -333,7 +333,8 @@
     {
         try
         {
-            if (await OrdenApiClient.DeleteAsync(id))
+            var response = await OrdenApiClient.DeleteAsync(id);
+            if (response.IsSuccessStatusCode)
             {
                 successMessage = "Orden eliminada.";
                 if (selectedOrden?.Id == id)

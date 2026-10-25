@@ -8,7 +8,7 @@
 @if (isAuthenticated)
 {
     <h2>Bienvenido @username!</h2>
-    <div class="container-fluid">
+    
         <h3>Informe de ventas</h3>
 
         @if (!string.IsNullOrEmpty(errorMessage))
@@ -71,32 +71,50 @@
             <h5>Ventas por mes</h5>
             @if (graficos?.VentasPorMes != null)
             {
-                <img class="img-fluid mb-2" src="data:image/png;base64,@graficos.VentasPorMes" alt="Facturación por mes" />
+                <img class="img-fluid mb-2 mx-auto d-block" src="data:image/png;base64,@graficos.VentasPorMes" alt="Facturación por mes" />
             }
             <table class="table table-sm table-striped mb-4">
-                ...
+                <thead class="table-dark"><tr><th>Mes</th><th class="text-end">Órdenes</th><th class="text-end">Facturación</th><th class="text-end">Ticket promedio</th></tr></thead>
+                <tbody>
+                    @foreach (var d in informe.VentasPorMes)
+                    {
+                        <tr><td>@d.Periodo</td><td class="text-end">@d.CantidadOrdenes</td><td class="text-end">$ @d.TotalFacturado.ToString("N2")</td><td class="text-end">$ @d.TicketPromedio.ToString("N2")</td></tr>
+                    }
+                </tbody>
             </table>
 
             <h5>Productos más vendidos</h5>
             @if (graficos?.TopProductos != null)
             {
-                <img class="img-fluid mb-2" src="data:image/png;base64,@graficos.TopProductos" alt="Productos más vendidos" />
+                <img class="img-fluid mb-2 mx-auto d-block" src="data:image/png;base64,@graficos.TopProductos" alt="Productos más vendidos" />
             }
             <table class="table table-sm table-striped mb-4">
-                ...
+                <thead class="table-dark"><tr><th>Producto</th><th>Categoría</th><th>Marca</th><th class="text-end">Unidades</th><th class="text-end">Facturación</th></tr></thead>
+                <tbody>
+                    @foreach (var d in informe.TopProductos)
+                    {
+                        <tr><td>@d.Producto</td><td>@d.Categoria</td><td>@d.Marca</td><td class="text-end">@d.UnidadesVendidas</td><td class="text-end">$ @d.Facturacion.ToString("N2")</td></tr>
+                    }
+                </tbody>
             </table>
 
             <h5>Facturación por marca</h5>
             @if (graficos?.FacturacionPorMarca != null)
             {
-                <img class="img-fluid mb-2" src="data:image/png;base64,@graficos.FacturacionPorMarca" alt="Facturación por marca" />
+                <img class="img-fluid mb-2 mx-auto d-block" src="data:image/png;base64,@graficos.FacturacionPorMarca" alt="Facturación por marca" />
             }
             <table class="table table-sm table-striped">
-                ...
+                <thead class="table-dark"><tr><th>Marca</th><th class="text-end">Unidades</th><th class="text-end">Facturación</th><th class="text-end">%</th></tr></thead>
+                <tbody>
+                    @foreach (var d in informe.FacturacionPorMarca)
+                    {
+                        <tr><td>@d.Marca</td><td class="text-end">@d.UnidadesVendidas</td><td class="text-end">$ @d.Facturacion.ToString("N2")</td><td class="text-end">@d.Porcentaje.ToString("N2") %</td></tr>
+                    }
+                </tbody>
             </table>
 
         }
-    </div>
+    
 }
 
 @code {
