@@ -36,9 +36,6 @@ namespace API.Clients
 
             return await ApiClient.Http.PutAsJsonAsync("productos", producto);
 
-            //response.EnsureSuccessStatusCode();
-
-            //return await response.Content.ReadFromJsonAsync<ProductoDTO>();
         }
 
         public static async Task<bool> DeleteAsync(int id)
@@ -52,9 +49,6 @@ namespace API.Clients
         {
             return await ApiClient.Http.PostAsJsonAsync("productos", producto);
 
-            //response.EnsureSuccessStatusCode();
-
-            //return await response.Content.ReadFromJsonAsync<ProductoDTO>();
         }
     }
 }

@@ -308,11 +308,6 @@ namespace Data
                 entity.Property(e => e.PrecioUnitario)
                     .IsRequired()
                     .HasColumnType("decimal(18,2)");
-                /*entity.Property(e => e.FechaAlta)
-                    .IsRequired();
-                entity.Property(e => e.EsActivo)
-                    .IsRequired()
-                    .HasColumnType("bit");*/
                 // Relaciones
                 entity.HasOne(oi => oi.Orden)
                       .WithMany(o => o.Items)

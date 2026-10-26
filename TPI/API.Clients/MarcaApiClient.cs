@@ -35,9 +35,6 @@ namespace API.Clients
 
             return await ApiClient.Http.PutAsJsonAsync("marcas", marca);
 
-            //response.EnsureSuccessStatusCode();
-
-            //return await response.Content.ReadFromJsonAsync<MarcaDTO>();
         }
 
         public static async Task<bool> DeleteAsync(int id)
@@ -51,9 +48,6 @@ namespace API.Clients
         {
             return await ApiClient.Http.PostAsJsonAsync("marcas", marca);
 
-            //response.EnsureSuccessStatusCode();
-
-            //return await response.Content.ReadFromJsonAsync<MarcaDTO>();
         }
     }
 }

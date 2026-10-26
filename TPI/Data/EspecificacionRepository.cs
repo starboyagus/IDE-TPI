@@ -26,8 +26,6 @@ namespace Data
             marca.SetEsActivo(false);
             await _context.SaveChangesAsync();
             return true;
-
-            //Revisar 
         }
 
         public async Task<Especificacion?> GetAsync(int id)

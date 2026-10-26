@@ -19,6 +19,5 @@ namespace DTOs
         public bool EsActivo { get; set; }
         public List<OrdenItemDTO> Items { get; set; } = new();
 
-        // This property is a string to hold the list of items in the order, you can change it to a collection if needed.
     }
 }
