@@ -141,9 +141,14 @@ namespace WindowsForm
             AbrirHijo<OrdenLista>();
         }
 
-        private void informesToolStripMenuItem_Click(object sender, EventArgs e)
+        private void mnuVentas_Click(object sender, EventArgs e)
         {
             AbrirHijo<InformeVentas>();
+        }
+
+        private void mnuStockCritico_Click(object sender, EventArgs e)
+        {
+            AbrirHijo<InformeStockCritico>();
         }
     }
 }

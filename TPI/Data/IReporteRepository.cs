@@ -1,4 +1,4 @@
-﻿using Domain.Model;
+using Domain.Model;
 
 namespace Data
 {
@@ -8,5 +8,10 @@ namespace Data
         Task<IEnumerable<VentasPorMes>> GetVentasPorMesAsync(ReporteCriteria criteria);
         Task<IEnumerable<ProductoVendido>> GetTopProductosAsync(ReporteCriteria criteria);
         Task<IEnumerable<FacturacionMarca>> GetFacturacionPorMarcaAsync(ReporteCriteria criteria);
+
+        Task<IEnumerable<ProductoStockCritico>> GetProductosStockCriticoAsync(int umbralMinimo, string? tipoFiltro, int? categoriaId = null, int? marcaId = null);
+        Task<StockCriticoResumen> GetResumenStockCriticoAsync(int umbralMinimo);
+        Task<IEnumerable<StockPorCategoria>> GetStockCriticoPorCategoriaAsync(int umbralMinimo);
+        Task<IEnumerable<StockPorMarca>> GetStockCriticoPorMarcaAsync(int umbralMinimo);
     }
 }

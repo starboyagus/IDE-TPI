@@ -1,4 +1,4 @@
-﻿using System.Net.Http.Json;
+using System.Net.Http.Json;
 using Domain.Model;
 using DTOs;
 
@@ -31,5 +31,37 @@ namespace API.Clients
             return await response.Content.ReadFromJsonAsync<GraficosInformeDTO>();
         }
 
+        private static string FiltrosStock(int umbral, string? tipo, int? categoriaId, int? marcaId)
+        {
+            var query = $"umbral={umbral}";
+            if (!string.IsNullOrWhiteSpace(tipo))
+                query += $"&tipo={Uri.EscapeDataString(tipo)}";
+            if (categoriaId.HasValue)
+                query += $"&categoriaId={categoriaId.Value}";
+            if (marcaId.HasValue)
+                query += $"&marcaId={marcaId.Value}";
+            return query;
+        }
+
+        public static async Task<InformeStockCriticoDTO?> GetInformeStockCriticoAsync(int umbral = 5, string? tipo = null, int? categoriaId = null, int? marcaId = null)
+        {
+            var response = await ApiClient.Http.GetAsync($"reportes/stock-critico?{FiltrosStock(umbral, tipo, categoriaId, marcaId)}");
+            response.EnsureSuccessStatusCode();
+            return await response.Content.ReadFromJsonAsync<InformeStockCriticoDTO>();
+        }
+
+        public static async Task<byte[]> GetInformeStockCriticoPdfAsync(int umbral = 5, string? tipo = null, int? categoriaId = null, int? marcaId = null)
+        {
+            var response = await ApiClient.Http.GetAsync($"reportes/stock-critico/pdf?{FiltrosStock(umbral, tipo, categoriaId, marcaId)}");
+            response.EnsureSuccessStatusCode();
+            return await response.Content.ReadAsByteArrayAsync();
+        }
+
+        public static async Task<GraficosInformeStockDTO?> GetGraficosInformeStockAsync(int umbral = 5, string? tipo = null, int? categoriaId = null, int? marcaId = null)
+        {
+            var response = await ApiClient.Http.GetAsync($"reportes/stock-critico/graficos?{FiltrosStock(umbral, tipo, categoriaId, marcaId)}");
+            response.EnsureSuccessStatusCode();
+            return await response.Content.ReadFromJsonAsync<GraficosInformeStockDTO>();
+        }
     }
 }

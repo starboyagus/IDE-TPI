@@ -154,6 +154,7 @@ using (var scope = app.Services.CreateScope())
     try
     {
         context.Database.EnsureCreated();
+        context.SembrarOrdenesSiVacio();
         Console.WriteLine("✅ Conexión exitosa a la base de datos.");
     }
     catch (Exception ex)

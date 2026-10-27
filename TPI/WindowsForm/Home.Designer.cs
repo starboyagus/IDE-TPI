@@ -38,6 +38,10 @@ namespace WindowsForm
             marcaToolStripMenuItem = new ToolStripMenuItem();
             ordenesToolStripMenuItem = new ToolStripMenuItem();
             informesToolStripMenuItem = new ToolStripMenuItem();
+            mnuVentas = new ToolStripMenuItem();
+            mnuStockCritico = new ToolStripMenuItem();
+            informeVentasToolStripMenuItem = new ToolStripMenuItem();
+            informeStockCriticoToolStripMenuItem = new ToolStripMenuItem();
             mnsPrincipal.SuspendLayout();
             SuspendLayout();
             // 
@@ -108,10 +112,34 @@ namespace WindowsForm
             // 
             // informesToolStripMenuItem
             // 
+            informesToolStripMenuItem.DropDownItems.AddRange(new ToolStripItem[] { mnuVentas, mnuStockCritico });
             informesToolStripMenuItem.Name = "informesToolStripMenuItem";
             informesToolStripMenuItem.Size = new Size(66, 20);
             informesToolStripMenuItem.Text = "Informes";
-            informesToolStripMenuItem.Click += informesToolStripMenuItem_Click;
+            // 
+            // mnuVentas
+            // 
+            mnuVentas.Name = "mnuVentas";
+            mnuVentas.Size = new Size(180, 22);
+            mnuVentas.Text = "Ventas";
+            mnuVentas.Click += mnuVentas_Click;
+            // 
+            // mnuStockCritico
+            // 
+            mnuStockCritico.Name = "mnuStockCritico";
+            mnuStockCritico.Size = new Size(180, 22);
+            mnuStockCritico.Text = "Stock Critico";
+            mnuStockCritico.Click += mnuStockCritico_Click;
+            // 
+            // informeVentasToolStripMenuItem
+            // 
+            informeVentasToolStripMenuItem.Name = "informeVentasToolStripMenuItem";
+            informeVentasToolStripMenuItem.Size = new Size(32, 19);
+            // 
+            // informeStockCriticoToolStripMenuItem
+            // 
+            informeStockCriticoToolStripMenuItem.Name = "informeStockCriticoToolStripMenuItem";
+            informeStockCriticoToolStripMenuItem.Size = new Size(32, 19);
             // 
             // Home
             // 
@@ -143,5 +171,9 @@ namespace WindowsForm
         private ToolStripMenuItem marcaToolStripMenuItem;
         private ToolStripMenuItem ordenesToolStripMenuItem;
         private ToolStripMenuItem informesToolStripMenuItem;
+        private ToolStripMenuItem informeVentasToolStripMenuItem;
+        private ToolStripMenuItem informeStockCriticoToolStripMenuItem;
+        private ToolStripMenuItem mnuVentas;
+        private ToolStripMenuItem mnuStockCritico;
     }
 }

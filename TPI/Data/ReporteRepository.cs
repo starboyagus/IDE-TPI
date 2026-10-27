@@ -1,4 +1,4 @@
-ï»¿using System.Data;
+using System.Data;
 using Domain.Model;
 using Microsoft.Data.SqlClient;
 using Microsoft.EntityFrameworkCore;
@@ -167,6 +167,178 @@ namespace Data
                     UnidadesVendidas = reader.GetInt32(reader.GetOrdinal("UnidadesVendidas")),
                     Facturacion = reader.GetDecimal(reader.GetOrdinal("Facturacion")),
                     Porcentaje = reader.GetDecimal(reader.GetOrdinal("Porcentaje"))
+                });
+            }
+
+            return resultado;
+        }
+    
+        public async Task<IEnumerable<ProductoStockCritico>> GetProductosStockCriticoAsync(int umbralMinimo, string? tipoFiltro, int? categoriaId = null, int? marcaId = null)
+        {
+            var resultado = new List<ProductoStockCritico>();
+
+            var sql = @"
+                SELECT p.Id,
+                       p.Nombre,
+                       c.Nombre AS Categoria,
+                       m.Nombre AS Marca,
+                       p.Precio,
+                       p.Stock,
+                       p.EsPreVenta,
+                       CASE 
+                           WHEN p.Stock = 0 AND p.EsPreVenta = 0 THEN 'Sin Stock'
+                           WHEN p.Stock <= @Umbral AND p.EsPreVenta = 0 THEN 'Stock Crítico'
+                           WHEN p.EsPreVenta = 1 AND p.Stock = 0 THEN 'Pre-Venta (Sin Stock)'
+                           WHEN p.EsPreVenta = 1 THEN 'Pre-Venta'
+                           ELSE 'Normal'
+                       END AS Criticidad,
+                       CASE 
+                           WHEN p.Stock = 0 AND p.EsPreVenta = 0 THEN 1
+                           WHEN p.Stock <= @Umbral AND p.EsPreVenta = 0 THEN 2
+                           WHEN p.EsPreVenta = 1 AND p.Stock = 0 THEN 3
+                           WHEN p.EsPreVenta = 1 THEN 4
+                           ELSE 5
+                       END AS PrioridadCriticidad
+                FROM Productos p
+                INNER JOIN Categorias c ON c.Id = p.CategoriaId
+                INNER JOIN Marcas     m ON m.Id = p.MarcaId
+                WHERE p.EsActivo = 1
+                  AND (p.Stock <= @Umbral OR p.EsPreVenta = 1)";
+
+            if (tipoFiltro == "SinStock")
+                sql += " AND p.Stock = 0 AND p.EsPreVenta = 0";
+            else if (tipoFiltro == "StockBajo")
+                sql += " AND p.Stock > 0 AND p.Stock <= @Umbral AND p.EsPreVenta = 0";
+            else if (tipoFiltro == "PreVenta")
+                sql += " AND p.EsPreVenta = 1";
+
+            if (categoriaId.HasValue)
+                sql += " AND p.CategoriaId = @CategoriaId";
+            if (marcaId.HasValue)
+                sql += " AND p.MarcaId = @MarcaId";
+
+            sql += " ORDER BY PrioridadCriticidad ASC, p.Stock ASC, p.Nombre ASC";
+
+            using var conn = new SqlConnection(_connectionString);
+            using var cmd = new SqlCommand(sql, conn);
+            cmd.Parameters.Add("@Umbral", SqlDbType.Int).Value = umbralMinimo;
+            if (categoriaId.HasValue)
+                cmd.Parameters.Add("@CategoriaId", SqlDbType.Int).Value = categoriaId.Value;
+            if (marcaId.HasValue)
+                cmd.Parameters.Add("@MarcaId", SqlDbType.Int).Value = marcaId.Value;
+
+            await conn.OpenAsync();
+            using var reader = await cmd.ExecuteReaderAsync();
+            while (await reader.ReadAsync())
+            {
+                resultado.Add(new ProductoStockCritico
+                {
+                    Id = reader.GetInt32(reader.GetOrdinal("Id")),
+                    Nombre = reader.GetString(reader.GetOrdinal("Nombre")),
+                    Categoria = reader.GetString(reader.GetOrdinal("Categoria")),
+                    Marca = reader.GetString(reader.GetOrdinal("Marca")),
+                    Precio = reader.GetDecimal(reader.GetOrdinal("Precio")),
+                    Stock = reader.GetInt32(reader.GetOrdinal("Stock")),
+                    EsPreVenta = reader.GetBoolean(reader.GetOrdinal("EsPreVenta")),
+                    Criticidad = reader.GetString(reader.GetOrdinal("Criticidad")),
+                    PrioridadCriticidad = reader.GetInt32(reader.GetOrdinal("PrioridadCriticidad"))
+                });
+            }
+
+            return resultado;
+        }
+
+        public async Task<StockCriticoResumen> GetResumenStockCriticoAsync(int umbralMinimo)
+        {
+            const string sql = @"
+                SELECT 
+                    COUNT(*) AS TotalAlertas,
+                    ISNULL(SUM(CASE WHEN p.Stock = 0 AND p.EsPreVenta = 0 THEN 1 ELSE 0 END), 0) AS CantidadSinStock,
+                    ISNULL(SUM(CASE WHEN p.Stock > 0 AND p.Stock <= @Umbral AND p.EsPreVenta = 0 THEN 1 ELSE 0 END), 0) AS CantidadStockBajo,
+                    ISNULL(SUM(CASE WHEN p.EsPreVenta = 1 THEN 1 ELSE 0 END), 0) AS CantidadPreVenta
+                FROM Productos p
+                WHERE p.EsActivo = 1
+                  AND (p.Stock <= @Umbral OR p.EsPreVenta = 1)";
+
+            using var conn = new SqlConnection(_connectionString);
+            using var cmd = new SqlCommand(sql, conn);
+            cmd.Parameters.Add("@Umbral", SqlDbType.Int).Value = umbralMinimo;
+
+            await conn.OpenAsync();
+            using var reader = await cmd.ExecuteReaderAsync();
+            await reader.ReadAsync();
+
+            return new StockCriticoResumen
+            {
+                TotalAlertas = reader.GetInt32(reader.GetOrdinal("TotalAlertas")),
+                CantidadSinStock = reader.GetInt32(reader.GetOrdinal("CantidadSinStock")),
+                CantidadStockBajo = reader.GetInt32(reader.GetOrdinal("CantidadStockBajo")),
+                CantidadPreVenta = reader.GetInt32(reader.GetOrdinal("CantidadPreVenta"))
+            };
+        }
+
+        public async Task<IEnumerable<StockPorCategoria>> GetStockCriticoPorCategoriaAsync(int umbralMinimo)
+        {
+            var resultado = new List<StockPorCategoria>();
+
+            const string sql = @"
+                SELECT c.Id AS CategoriaId,
+                       c.Nombre AS Categoria,
+                       COUNT(*) AS CantidadProductos
+                FROM Productos p
+                INNER JOIN Categorias c ON c.Id = p.CategoriaId
+                WHERE p.EsActivo = 1
+                  AND (p.Stock <= @Umbral OR p.EsPreVenta = 1)
+                GROUP BY c.Id, c.Nombre
+                ORDER BY CantidadProductos DESC";
+
+            using var conn = new SqlConnection(_connectionString);
+            using var cmd = new SqlCommand(sql, conn);
+            cmd.Parameters.Add("@Umbral", SqlDbType.Int).Value = umbralMinimo;
+
+            await conn.OpenAsync();
+            using var reader = await cmd.ExecuteReaderAsync();
+            while (await reader.ReadAsync())
+            {
+                resultado.Add(new StockPorCategoria
+                {
+                    CategoriaId = reader.GetInt32(reader.GetOrdinal("CategoriaId")),
+                    Categoria = reader.GetString(reader.GetOrdinal("Categoria")),
+                    CantidadProductos = reader.GetInt32(reader.GetOrdinal("CantidadProductos"))
+                });
+            }
+
+            return resultado;
+        }
+
+        public async Task<IEnumerable<StockPorMarca>> GetStockCriticoPorMarcaAsync(int umbralMinimo)
+        {
+            var resultado = new List<StockPorMarca>();
+
+            const string sql = @"
+                SELECT m.Id AS MarcaId,
+                       m.Nombre AS Marca,
+                       COUNT(*) AS CantidadProductos
+                FROM Productos p
+                INNER JOIN Marcas m ON m.Id = p.MarcaId
+                WHERE p.EsActivo = 1
+                  AND (p.Stock <= @Umbral OR p.EsPreVenta = 1)
+                GROUP BY m.Id, m.Nombre
+                ORDER BY CantidadProductos DESC";
+
+            using var conn = new SqlConnection(_connectionString);
+            using var cmd = new SqlCommand(sql, conn);
+            cmd.Parameters.Add("@Umbral", SqlDbType.Int).Value = umbralMinimo;
+
+            await conn.OpenAsync();
+            using var reader = await cmd.ExecuteReaderAsync();
+            while (await reader.ReadAsync())
+            {
+                resultado.Add(new StockPorMarca
+                {
+                    MarcaId = reader.GetInt32(reader.GetOrdinal("MarcaId")),
+                    Marca = reader.GetString(reader.GetOrdinal("Marca")),
+                    CantidadProductos = reader.GetInt32(reader.GetOrdinal("CantidadProductos"))
                 });
             }
 

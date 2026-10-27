@@ -1,0 +1,301 @@
+@page "/stock-critico"
+@inject NavigationManager Navigation
+@inject IJSRuntime JSRuntime
+
+<PageTitle>Stock Crítico y Alerta de Reposición</PageTitle>
+
+@if (isAuthenticated)
+{
+    <div class="d-flex align-items-center justify-content-between mb-2">
+        <div>
+            <h3 class="mb-0">Stock Crítico y Alerta de Reposición</h3>
+            <small class="text-muted">Detección de productos activos bajo umbral mínimo o en pre-venta, ordenados por criticidad.</small>
+        </div>
+    </div>
+
+    @if (!string.IsNullOrEmpty(errorMessage))
+    {
+        <div class="alert alert-danger alert-dismissible fade show" role="alert">
+            @errorMessage
+            <button type="button" class="btn-close" @onclick="() => errorMessage = string.Empty"></button>
+        </div>
+    }
+
+    <div class="card p-3 mb-4 shadow-sm">
+        <div class="row align-items-end g-3">
+            <div class="col-md-3">
+                <label class="form-label fw-bold">Umbral mínimo</label>
+                <input type="number" min="0" max="1000" class="form-control" @bind="umbral" />
+            </div>
+            <div class="col-md-4">
+                <label class="form-label fw-bold">Filtro condicional</label>
+                <select class="form-select" @bind="tipoFiltro">
+                    <option value="">Todos en alerta</option>
+                    <option value="SinStock">Sin stock (0)</option>
+                    <option value="StockBajo">Stock bajo umbral</option>
+                    <option value="PreVenta">Solo pre-venta</option>
+                </select>
+            </div>
+            <div class="col-md-5 d-flex gap-2">
+                <button class="btn btn-primary flex-fill" @onclick="VerInforme" disabled="@loading">
+                    @if (loading)
+                    {
+                        <span class="spinner-border spinner-border-sm me-1"></span>
+                    }
+                    Ver informe
+                </button>
+                <button class="btn btn-outline-dark flex-fill" @onclick="DescargarPdf" disabled="@descargando">
+                    @if (descargando)
+                    {
+                        <span class="spinner-border spinner-border-sm me-1"></span>
+                    }
+                    Descargar PDF
+                </button>
+            </div>
+        </div>
+    </div>
+
+    @if (loading)
+    {
+        <div class="d-flex justify-content-center my-5">
+            <div class="spinner-border text-primary" role="status"><span class="visually-hidden">Cargando...</span></div>
+        </div>
+    }
+    else if (informe != null)
+    {
+        <div class="row mb-4 g-3">
+            <div class="col-md-3">
+                <div class="card card-body text-center border-primary shadow-sm">
+                    <small class="text-muted fw-bold">TOTAL EN ALERTA</small>
+                    <h2 class="text-primary mb-0 mt-1">@informe.Resumen.TotalAlertas</h2>
+                </div>
+            </div>
+            <div class="col-md-3">
+                <div class="card card-body text-center border-danger shadow-sm">
+                    <small class="text-muted fw-bold">SIN STOCK (0)</small>
+                    <h2 class="text-danger mb-0 mt-1">@informe.Resumen.CantidadSinStock</h2>
+                </div>
+            </div>
+            <div class="col-md-3">
+                <div class="card card-body text-center border-warning shadow-sm">
+                    <small class="text-muted fw-bold">STOCK CRÍTICO</small>
+                    <h2 class="text-warning mb-0 mt-1">@informe.Resumen.CantidadStockBajo</h2>
+                </div>
+            </div>
+            <div class="col-md-3">
+                <div class="card card-body text-center border-info shadow-sm">
+                    <small class="text-muted fw-bold">EN PRE-VENTA</small>
+                    <h2 class="text-info mb-0 mt-1">@informe.Resumen.CantidadPreVenta</h2>
+                </div>
+            </div>
+        </div>
+
+        @if (graficos?.PorCriticidad != null)
+        {
+            <div class="card p-3 mb-4 shadow-sm text-center">
+                <img class="img-fluid mx-auto d-block" src="data:image/png;base64,@graficos.PorCriticidad" alt="Distribución por criticidad" />
+            </div>
+        }
+
+        <div class="card p-3 mb-4 shadow-sm">
+            <h5 class="card-title mb-3">Productos en condición de alerta (@informe.Productos.Count)</h5>
+            @if (informe.Productos.Count == 0)
+            {
+                <div class="alert alert-info mb-0">No se encontraron productos que cumplan las condiciones del filtro.</div>
+            }
+            else
+            {
+                <div class="table-responsive">
+                    <table class="table table-sm table-hover align-middle mb-0">
+                        <thead class="table-dark">
+                            <tr>
+                                <th>ID</th>
+                                <th>Producto</th>
+                                <th>Categoría</th>
+                                <th>Marca</th>
+                                <th class="text-end">Stock</th>
+                                <th class="text-center">Pre-Venta</th>
+                                <th>Criticidad</th>
+                                <th class="text-end">Precio</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            @foreach (var p in informe.Productos)
+                            {
+                                <tr class="@(p.Stock == 0 && !p.EsPreVenta ? "table-danger" : (p.Stock <= informe.UmbralMinimo && !p.EsPreVenta ? "table-warning" : ""))">
+                                    <td>@p.Id</td>
+                                    <td class="fw-bold">@p.Nombre</td>
+                                    <td>@p.Categoria</td>
+                                    <td>@p.Marca</td>
+                                    <td class="text-end fw-bold">@p.Stock</td>
+                                    <td class="text-center">
+                                        @if (p.EsPreVenta)
+                                        {
+                                            <span class="badge bg-info text-dark">Sí</span>
+                                        }
+                                        else
+                                        {
+                                            <span class="text-muted">No</span>
+                                        }
+                                    </td>
+                                    <td>
+                                        @if (p.Stock == 0 && !p.EsPreVenta)
+                                        {
+                                            <span class="badge bg-danger">Agotado (0)</span>
+                                        }
+                                        else if (p.Stock <= informe.UmbralMinimo && !p.EsPreVenta)
+                                        {
+                                            <span class="badge bg-warning text-dark">Stock Crítico</span>
+                                        }
+                                        else if (p.EsPreVenta)
+                                        {
+                                            <span class="badge bg-info text-dark">Pre-Venta</span>
+                                        }
+                                        else
+                                        {
+                                            <span class="badge bg-secondary">@p.Criticidad</span>
+                                        }
+                                    </td>
+                                    <td class="text-end">$ @p.Precio.ToString("N2")</td>
+                                </tr>
+                            }
+                        </tbody>
+                    </table>
+                </div>
+            }
+        </div>
+
+        <div class="row">
+            <div class="col-md-6 mb-4">
+                <div class="card p-3 h-100 shadow-sm">
+                    <h5>Alertas por categoría</h5>
+                    @if (graficos?.PorCategoria != null)
+                    {
+                        <img class="img-fluid mb-2 mx-auto d-block" src="data:image/png;base64,@graficos.PorCategoria" alt="Por categoría" />
+                    }
+                    <table class="table table-sm table-striped">
+                        <thead class="table-dark">
+                            <tr>
+                                <th>Categoría</th>
+                                <th class="text-end">Productos en alerta</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            @foreach (var c in informe.PorCategoria)
+                            {
+                                <tr>
+                                    <td>@c.Categoria</td>
+                                    <td class="text-end fw-bold">@c.CantidadProductos</td>
+                                </tr>
+                            }
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+
+            <div class="col-md-6 mb-4">
+                <div class="card p-3 h-100 shadow-sm">
+                    <h5>Alertas por marca</h5>
+                    @if (graficos?.PorMarca != null)
+                    {
+                        <img class="img-fluid mb-2 mx-auto d-block" src="data:image/png;base64,@graficos.PorMarca" alt="Por marca" />
+                    }
+                    <table class="table table-sm table-striped">
+                        <thead class="table-dark">
+                            <tr>
+                                <th>Marca</th>
+                                <th class="text-end">Productos en alerta</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            @foreach (var m in informe.PorMarca)
+                            {
+                                <tr>
+                                    <td>@m.Marca</td>
+                                    <td class="text-end fw-bold">@m.CantidadProductos</td>
+                                </tr>
+                            }
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    }
+}
+
+@code {
+    private bool isAuthenticated = false;
+    private int umbral = 5;
+    private string tipoFiltro = "";
+    private InformeStockCriticoDTO? informe;
+    private GraficosInformeStockDTO? graficos;
+    private bool loading = false;
+    private bool descargando = false;
+    private string errorMessage = string.Empty;
+
+    protected override async Task OnInitializedAsync()
+    {
+        isAuthenticated = AuthService.IsAuthenticated;
+
+        if (!isAuthenticated)
+        {
+            Navigation.NavigateTo("/login");
+            return;
+        }
+
+        if (!AuthService.IsAdmin)
+        {
+            Navigation.NavigateTo("/productos-user");
+            return;
+        }
+
+        await VerInforme();
+    }
+
+    private async Task VerInforme()
+    {
+        try
+        {
+            loading = true;
+            errorMessage = string.Empty;
+
+            var tipo = string.IsNullOrWhiteSpace(tipoFiltro) ? null : tipoFiltro;
+
+            var tareaInforme = ReporteApiClient.GetInformeStockCriticoAsync(umbral, tipo);
+            var tareaGraficos = ReporteApiClient.GetGraficosInformeStockAsync(umbral, tipo);
+
+            informe = await tareaInforme;
+            graficos = await tareaGraficos;
+        }
+        catch (Exception ex)
+        {
+            errorMessage = $"Error al cargar el informe: {ex.Message}";
+        }
+        finally
+        {
+            loading = false;
+        }
+    }
+
+    private async Task DescargarPdf()
+    {
+        try
+        {
+            descargando = true;
+            var tipo = string.IsNullOrWhiteSpace(tipoFiltro) ? null : tipoFiltro;
+            var pdf = await ReporteApiClient.GetInformeStockCriticoPdfAsync(umbral, tipo);
+
+            await JSRuntime.InvokeVoidAsync("descargarArchivo",
+                $"informe-stock-critico-{DateTime.Now:yyyyMMddHHmmss}.pdf",
+                Convert.ToBase64String(pdf));
+        }
+        catch (Exception ex)
+        {
+            errorMessage = $"Error al descargar el PDF: {ex.Message}";
+        }
+        finally
+        {
+            descargando = false;
+        }
+    }
+}
