@@ -13,6 +13,7 @@ namespace Application.Services
         Task<bool> DeleteAsync(int id);
         Task<OrdenDTO?> GetAsync(int id);
         Task<IEnumerable<OrdenDTO>> GetAllAsync();
+        Task<IEnumerable<OrdenDTO>> GetByUsuarioAsync(int usuarioId);
         Task<bool> UpdateAsync(OrdenDTO dto);
     }
 }

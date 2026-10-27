@@ -53,6 +53,16 @@ namespace Data
                 .ToListAsync();
         }
 
+        public async Task<IEnumerable<Orden>> GetByUsuarioAsync(int usuarioId)
+        {
+            return await _context.Ordenes
+                .Include(o => o.Items)
+                .ThenInclude(i => i.Producto)
+                .Include(o => o.Usuario)
+                .Where(o => o.EsActivo && o.UsuarioId == usuarioId)
+                .ToListAsync();
+        }
+
         public async Task<bool> UpdateAsync(Orden orden)
         {
             var existing = await _context.Ordenes.FindAsync(orden.Id);

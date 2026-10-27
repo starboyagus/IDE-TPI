@@ -1,4 +1,6 @@
-﻿using Application.Services;
+﻿using System.Security.Claims;
+using Application.Services;
+using Domain.Model;
 using DTOs;
 
 namespace WebAPI
@@ -7,11 +9,11 @@ namespace WebAPI
     {
         public static void MapOrdenEndpoints(this WebApplication app)
         {
-            app.MapGet("/ordenes/{id}", async (int id, IOrdenService ordenService) =>
+            app.MapGet("/ordenes/{id}", async (int id, ClaimsPrincipal user, IOrdenService ordenService) =>
             {
                 OrdenDTO? dto = await ordenService.GetAsync(id);
 
-                if (dto == null)
+                if (dto == null || (!user.EsAdmin() && dto.UsuarioId != user.GetUsuarioId()))
                 {
                     return Results.NotFound();
                 }
@@ -24,9 +26,11 @@ namespace WebAPI
             .WithOpenApi()
             .RequireAuthorization("OrdenesLeer");
 
-            app.MapGet("/ordenes", async (IOrdenService ordenService) =>
+            app.MapGet("/ordenes", async (ClaimsPrincipal user, IOrdenService ordenService) =>
             {
-                var dtos = await ordenService.GetAllAsync();
+                var dtos = user.EsAdmin()
+                    ? await ordenService.GetAllAsync()
+                    : await ordenService.GetByUsuarioAsync(user.GetUsuarioId());
 
                 return Results.Ok(dtos);
             })
@@ -35,10 +39,15 @@ namespace WebAPI
             .WithOpenApi()
             .RequireAuthorization("OrdenesLeer");
 
-            app.MapPost("/ordenes", async (OrdenDTO dto, IOrdenService ordenService) =>
+            app.MapPost("/ordenes", async (OrdenDTO dto, ClaimsPrincipal user, IOrdenService ordenService) =>
             {
                 try
                 {
+                    if (!user.EsAdmin())
+                    {
+                        dto.UsuarioId = user.GetUsuarioId();
+                    }
+
                     OrdenDTO ordenDTO = await ordenService.AddAsync(dto);       
                     return Results.Created($"/ordenes/{ordenDTO.Id}", ordenDTO);
                 }
@@ -102,5 +111,14 @@ namespace WebAPI
             .WithOpenApi()
             .RequireAuthorization("OrdenesEliminar");
         }
+
+        private static int GetUsuarioId(this ClaimsPrincipal user)
+        {
+            var valor = user.FindFirstValue(ClaimTypes.NameIdentifier) ?? user.FindFirstValue("sub");
+            return int.Parse(valor!);
+        }
+
+        private static bool EsAdmin(this ClaimsPrincipal user) =>
+            user.IsInRole(RolUsuario.Admin.ToString());
     }
 }

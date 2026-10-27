@@ -170,6 +170,33 @@ namespace Application.Services
                 }).ToList()
             }).ToList();
         }
+        public async Task<IEnumerable<OrdenDTO>> GetByUsuarioAsync(int usuarioId)
+        {
+            var ordenes = await ordenRepository.GetByUsuarioAsync(usuarioId);
+            return ordenes.Select(MapearDTO).ToList();
+        }
+
+        private static OrdenDTO MapearDTO(Orden orden) => new OrdenDTO
+        {
+            Id = orden.Id,
+            Estado = orden.Estado,
+            Total = orden.Total,
+            UsuarioId = orden.UsuarioId,
+            Usuario = orden.Usuario != null ? $"{orden.Usuario.Nombre} {orden.Usuario.Apellido}" : null,
+            DireccionEnvio = orden.DireccionEnvio,
+            FechaAlta = orden.FechaAlta,
+            EsActivo = orden.EsActivo,
+            Items = orden.Items.Select(i => new OrdenItemDTO
+            {
+                Id = i.Id,
+                OrdenId = i.OrdenId,
+                ProductoId = i.ProductoId,
+                Producto = i.Producto?.Nombre,
+                Cantidad = i.Cantidad,
+                PrecioUnitario = i.PrecioUnitario
+            }).ToList()
+        };
+
         public async Task<bool> UpdateAsync(OrdenDTO dto)
         {
             await ValidarUsuarioAsync(dto.UsuarioId);

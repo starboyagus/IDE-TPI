@@ -8,6 +8,7 @@ namespace Data
         Task<bool> DeleteAsync(int id);
         Task<Orden?> GetAsync(int id);
         Task<IEnumerable<Orden>> GetAllAsync();
+        Task<IEnumerable<Orden>> GetByUsuarioAsync(int usuarioId);
         Task<bool> UpdateAsync(Orden orden);
     }
 }
