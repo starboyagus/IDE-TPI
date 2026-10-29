@@ -169,6 +169,11 @@ namespace WindowsForm
                     return;
                 }
 
+                if (!AuthService.AuthService.IsAuthenticated)
+                {
+                    MessageBox.Show("Cuenta creada. Ya podés iniciar sesión.", "Registro", MessageBoxButtons.OK, MessageBoxIcon.Information);
+                }
+
                 this.Close();
             }
             catch (Exception ex)

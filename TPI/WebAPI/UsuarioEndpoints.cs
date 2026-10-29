@@ -52,7 +52,7 @@ namespace WebAPI
             .Produces<UsuarioDTO>(StatusCodes.Status201Created)
             .Produces(StatusCodes.Status400BadRequest)
             .WithOpenApi()
-            .RequireAuthorization("UsuariosAgregar");
+            .AllowAnonymous();
 
             app.MapPut("/usuarios", async (UsuarioDTO dto, IUsuarioService usuarioService) =>
             {

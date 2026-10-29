@@ -41,7 +41,6 @@ namespace WebAPI
             {
                 // Admin tiene todos los permisos
                 claims.Add(new Claim("permission", "usuarios.leer"));
-                claims.Add(new Claim("permission", "usuarios.agregar"));
                 claims.Add(new Claim("permission", "usuarios.actualizar"));
                 claims.Add(new Claim("permission", "usuarios.eliminar"));
 

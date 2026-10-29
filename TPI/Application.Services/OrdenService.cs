@@ -1,4 +1,4 @@
-using Data;
+﻿using Data;
 using Domain.Model;
 using DTOs;
 using System;
@@ -223,7 +223,7 @@ namespace Application.Services
             foreach (var item in orden.Items)
             {
                 var producto = item.Producto;
-                // Solo se hab�a descontado stock de los productos que no son preventa
+                // Solo se había descontado stock de los productos que no son preventa
                 if (producto != null && !producto.EsPreVenta)
                 {
                     producto.SetStock(producto.Stock + item.Cantidad);

@@ -1,4 +1,4 @@
-using System.Data;
+﻿using System.Data;
 using Domain.Model;
 using Microsoft.Data.SqlClient;
 using Microsoft.EntityFrameworkCore;
@@ -187,7 +187,7 @@ namespace Data
                        p.EsPreVenta,
                        CASE 
                            WHEN p.Stock = 0 AND p.EsPreVenta = 0 THEN 'Sin Stock'
-                           WHEN p.Stock <= @Umbral AND p.EsPreVenta = 0 THEN 'Stock Cr�tico'
+                           WHEN p.Stock <= @Umbral AND p.EsPreVenta = 0 THEN 'Stock Crítico'
                            WHEN p.EsPreVenta = 1 AND p.Stock = 0 THEN 'Pre-Venta (Sin Stock)'
                            WHEN p.EsPreVenta = 1 THEN 'Pre-Venta'
                            ELSE 'Normal'
