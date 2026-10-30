@@ -104,7 +104,7 @@ namespace Application.Services
         public async Task<bool> DeleteAsync(int id)
         {
             var existing = await ordenRepository.GetAsync(id);
-            if (existing == null)
+            if (existing == null || !existing.EsActivo)
             {
                 return false;
             }
@@ -112,6 +112,8 @@ namespace Application.Services
             {
                 throw new ArgumentException($"La orden ya esta {existing.Estado} y no puede eliminarse");
             }
+
+            ReintegrarStock(existing);
             return await ordenRepository.DeleteAsync(id);
         }
         public async Task<OrdenDTO?> GetAsync(int id)
@@ -208,7 +210,7 @@ namespace Application.Services
             if(existing.Estado == EstadoOrden.Entregado || existing.Estado==EstadoOrden.Cancelado){
                 throw new ArgumentException($"La orden ya esta {existing.Estado} y no puede modificarse");
             }
-            bool seCancela = dto.Estado == EstadoOrden.Cancelado && (existing.Estado == EstadoOrden.Pendiente || existing.Estado == EstadoOrden.Procesando);
+            bool seCancela = dto.Estado == EstadoOrden.Cancelado && existing.Estado != EstadoOrden.Cancelado;
             if (seCancela)
             {
                 ReintegrarStock(existing);

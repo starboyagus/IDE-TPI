@@ -10,7 +10,7 @@
                     <h5 class="modal-title">
                         @if (mode == FormMode.Add)
                         {
-                            <text>Agregar</text>
+                            <text>@TituloAgregar</text>
                         }
                         else
                         {
@@ -44,7 +44,7 @@
 
                         <div class="mb-3">
                             <label class="form-label">Email *</label>
-                            <InputText @bind-Value="currentUsuario.Email" class="form-control" />
+                            <InputText @bind-Value="currentUsuario.Email" class="form-control" autocomplete="off" />
                             @if (validationErrors.ContainsKey("Email"))
                             {
                                 <div class="text-danger small">@validationErrors["Email"]</div>
@@ -62,7 +62,7 @@
 
                         <div class="mb-3">
                             <label class="form-label">@(mode == FormMode.Add ? "Contraseña *" : "Nueva contraseña (opcional)")</label>
-                            <InputText type="password" @bind-Value="currentUsuario.Contrasenia" class="form-control" />
+                            <InputText type="password" @bind-Value="currentUsuario.Contrasenia" class="form-control" autocomplete="new-password" />
                             @if (validationErrors.ContainsKey("Contrasenia"))
                             {
                                 <div class="text-danger small">@validationErrors["Contrasenia"]</div>
@@ -103,7 +103,7 @@
                                 {
                                     <span class="spinner-border spinner-border-sm me-2"></span>
                                 }
-                                @(mode == FormMode.Add ? "Agregar" : "Actualizar")
+                                @(mode == FormMode.Add ? BotonAgregar : "Actualizar")
                             </button>
                         </div>
                     </EditForm>
@@ -115,6 +115,8 @@
 
 @code {
     [Parameter] public EventCallback OnUsuarioChanged { get; set; }
+    [Parameter] public string TituloAgregar { get; set; } = "Agregar";
+    [Parameter] public string BotonAgregar { get; set; } = "Agregar";
 
     private bool showModal = false;
     private FormMode mode = FormMode.Add;
