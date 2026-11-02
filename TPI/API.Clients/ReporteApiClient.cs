@@ -31,35 +31,31 @@ namespace API.Clients
             return await response.Content.ReadFromJsonAsync<GraficosInformeDTO>();
         }
 
-        private static string FiltrosStock(int umbral, string? tipo, int? categoriaId, int? marcaId)
+        private static string FiltrosStock(int umbral, string? tipo)
         {
             var query = $"umbral={umbral}";
             if (!string.IsNullOrWhiteSpace(tipo))
                 query += $"&tipo={Uri.EscapeDataString(tipo)}";
-            if (categoriaId.HasValue)
-                query += $"&categoriaId={categoriaId.Value}";
-            if (marcaId.HasValue)
-                query += $"&marcaId={marcaId.Value}";
             return query;
         }
 
-        public static async Task<InformeStockCriticoDTO?> GetInformeStockCriticoAsync(int umbral = 5, string? tipo = null, int? categoriaId = null, int? marcaId = null)
+        public static async Task<InformeStockCriticoDTO?> GetInformeStockCriticoAsync(int umbral = 5, string? tipo = null)
         {
-            var response = await ApiClient.Http.GetAsync($"reportes/stock-critico?{FiltrosStock(umbral, tipo, categoriaId, marcaId)}");
+            var response = await ApiClient.Http.GetAsync($"reportes/stock-critico?{FiltrosStock(umbral, tipo)}");
             response.EnsureSuccessStatusCode();
             return await response.Content.ReadFromJsonAsync<InformeStockCriticoDTO>();
         }
 
-        public static async Task<byte[]> GetInformeStockCriticoPdfAsync(int umbral = 5, string? tipo = null, int? categoriaId = null, int? marcaId = null)
+        public static async Task<byte[]> GetInformeStockCriticoPdfAsync(int umbral = 5, string? tipo = null)
         {
-            var response = await ApiClient.Http.GetAsync($"reportes/stock-critico/pdf?{FiltrosStock(umbral, tipo, categoriaId, marcaId)}");
+            var response = await ApiClient.Http.GetAsync($"reportes/stock-critico/pdf?{FiltrosStock(umbral, tipo)}");
             response.EnsureSuccessStatusCode();
             return await response.Content.ReadAsByteArrayAsync();
         }
 
-        public static async Task<GraficosInformeStockDTO?> GetGraficosInformeStockAsync(int umbral = 5, string? tipo = null, int? categoriaId = null, int? marcaId = null)
+        public static async Task<GraficosInformeStockDTO?> GetGraficosInformeStockAsync(int umbral = 5, string? tipo = null)
         {
-            var response = await ApiClient.Http.GetAsync($"reportes/stock-critico/graficos?{FiltrosStock(umbral, tipo, categoriaId, marcaId)}");
+            var response = await ApiClient.Http.GetAsync($"reportes/stock-critico/graficos?{FiltrosStock(umbral, tipo)}");
             response.EnsureSuccessStatusCode();
             return await response.Content.ReadFromJsonAsync<GraficosInformeStockDTO>();
         }
